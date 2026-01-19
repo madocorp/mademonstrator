@@ -1,0 +1,110 @@
+/*
+  Bright
+  Academic
+  print-friendly, book-like, serious
+*/
+
+Slide {
+  font: LiberationSerif-Regular;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  x: 0px;
+  y: 0px;
+  backgroundColor: #ffffff;
+}
+
+Content {
+  position: absolute;
+  x: 0px;
+  y: middle;
+  width: 100%;
+  padding: 5%h, 6%w;
+  color: #1f2937;
+  fontSize: 28px;
+  textAlign: center;
+}
+
+MainTitle {
+  font: LiberationSerif-Bold;
+  fontSize: 72px;
+  margin: 0px, 0px, 16%h, 0px;
+  textAlign: center;
+  width: 70%;
+  color: #111827;
+}
+
+Title {
+  font: LiberationSerif-Bold;
+  fontSize: 48px;
+  margin: 30px, 0px;
+  padding: 6px, 32px, 2px, 32px;
+  textAlign: center;
+  width: 100%;
+  backgroundColor: #e5e7eb;
+  color: #111827;
+}
+
+SubTitle {
+  font: LiberationSerif-Bold;
+  fontSize: 32px;
+  color: #374151;
+  margin: 1%h, 5%;
+  width: 90%;
+}
+
+Paragraph {
+  font: LiberationSerif-Regular;
+  textAlign: left;
+  fontSize: 28px;
+  margin: 1%h, 5%;
+  width: 90%;
+}
+
+Block1 { width: 49%; fontSize: 28px; margin: 14px, 0px; }
+Block2 { width: 32%; fontSize: 28px; margin: 14px, 0px; }
+Block3 { width: 24%; fontSize: 28px; margin: 14px, 0px; }
+
+List {
+  font: LiberationSerif-Regular;
+  width: 90%;
+  fontSize: 32px;
+  margin: 1%h, 5%, 1%h, 5%;
+}
+
+Bullet {
+  fontSize: 44px;
+  font: LiberationSans-Bold;
+  padding: 0px, 28px, 0px, 0px;
+  ascent: 30px;
+}
+
+Code {
+  font: LiberationMono-Regular;
+  width: 80%;
+  margin: 1%h, 10%;
+  backgroundColor: #f3f4f6;
+  color: #111827;
+  padding: 6px, 6px, 2px, 6px;
+  fontSize: 26px;
+  border: 2px;
+  borderColor: #9ca3af;
+}
+
+Quotation {
+  font: LiberationSerif-Italic;
+  width: 80%;
+  margin: 0px, 10%;
+  backgroundColor: #f9fafb;
+  padding: 14px, 30px, 10px, 30px;
+  fontSize: 30px;
+  borderLeft: 3px;
+  borderColor: #9ca3af;
+}
+
+Link { fontSize: 26px; color: #2563eb; }
+LinkId { fontSize: 26px; color: #1d4ed8; marginRight: 10px; }
+
+.emphasized { font: LiberationSans-Bold; color: #b45309; }
+.inlinecode { font: LiberationMono-Regular; color: #1f2937; }
+

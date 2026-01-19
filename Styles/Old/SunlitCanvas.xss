@@ -1,0 +1,108 @@
+/*
+  Bright
+  Warm
+  friendly, creative, approachable
+*/
+
+Slide {
+  font: DejaVuSans-Regular;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  x: 0px;
+  y: 0px;
+  backgroundColor: #fffaf3;
+}
+
+Content {
+  position: absolute;
+  x: 0px;
+  y: middle;
+  width: 100%;
+  padding: 5%h, 6%w;
+  color: #3f2a1d;
+  fontSize: 30px;
+  textAlign: center;
+}
+
+MainTitle {
+  font: DejaVuSans-Bold;
+  fontSize: 76px;
+  margin: 0px, 0px, 17%h, 0px;
+  textAlign: center;
+  width: 75%;
+  color: #7c2d12;
+}
+
+Title {
+  font: DejaVuSans-Bold;
+  fontSize: 50px;
+  margin: 32px, 0px;
+  padding: 8px, 36px, 4px, 36px;
+  textAlign: center;
+  width: 100%;
+  backgroundColor: #fed7aa;
+  color: #7c2d12;
+}
+
+SubTitle {
+  font: DejaVuSans-Bold;
+  fontSize: 34px;
+  color: #9a3412;
+  margin: 1.5%h, 5%;
+  width: 90%;
+}
+
+Paragraph {
+  textAlign: left;
+  fontSize: 30px;
+  margin: 1.5%h, 5%;
+  width: 90%;
+}
+
+Block1 { width: 49%; fontSize: 30px; margin: 16px, 0px; }
+Block2 { width: 32%; fontSize: 30px; margin: 16px, 0px; }
+Block3 { width: 24%; fontSize: 30px; margin: 16px, 0px; }
+
+List {
+  width: 90%;
+  fontSize: 34px;
+  margin: 1.5%h, 5%, 1.5%h, 5%;
+}
+
+Bullet {
+  fontSize: 48px;
+  font: DejaVuSans-Bold;
+  padding: 0px, 34px, 0px, 0px;
+  ascent: 32px;
+}
+
+Code {
+  font: DejaVuMono-Regular;
+  width: 82%;
+  margin: 1.5%h, 9%;
+  backgroundColor: #ffedd5;
+  color: #7c2d12;
+  padding: 8px, 8px, 4px, 8px;
+  fontSize: 28px;
+  border: 3px;
+  borderColor: #fdba74;
+}
+
+Quotation {
+  font: DejaVuSerif-Italic;
+  width: 82%;
+  margin: 0px, 9%;
+  backgroundColor: #fff7ed;
+  padding: 18px, 36px, 12px, 36px;
+  fontSize: 34px;
+  borderLeft: 4px;
+  borderColor: #fdba74;
+}
+
+Link { fontSize: 28px; color: #ea580c; }
+LinkId { fontSize: 28px; color: #c2410c; marginRight: 12px; }
+
+.emphasized { font: DejaVuSans-Bold; color: #b45309; }
+.inlinecode { font: DejaVuSansMono; color: #9a3412; }
+

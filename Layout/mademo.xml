@@ -1,0 +1,91 @@
+
+<Window title="MaDemonstrator" name="presentation-window">
+  <Event type="KeyPress">\MADEMO\Controller::keyPressHandler</Event>
+
+  <Slide></Slide>
+
+  <Panel name="edit">
+    <PanelTitle>Edit slide</PanelTitle>
+    <PanelContent>
+      <TextEditor name="mdeditor" tokenizer="\MADEMO\Tokenizer\Md"></TextEditor>
+      <TextBox name="cheatsheet" file="Layout/cheatsheet.txt"></TextBox>
+      <ButtonBox>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="F2" onPress="MADEMO\Controller::saveSlide">Save</Button>
+      </ButtonBox>
+    </PanelContent>
+  </Panel>
+
+  <Panel name="sort">
+    <PanelTitle>Sort slides</PanelTitle>
+    <PanelContent>
+      <Label>Slides:<ListBox name="order" valueType="order" movable="true"></ListBox></Label>
+      <ButtonBox>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSort">Save</Button>
+      </ButtonBox>
+    </PanelContent>
+  </Panel>
+
+  <Panel name="settings">
+    <PanelTitle>Settings</PanelTitle>
+    <PanelContent>
+      <Label>Default style:<Input name="defaultStyle" /></Label>
+      <Label>Default directory:<File name="defaultDir" start="~" file="false" /></Label>
+      <Label>Presentation window: (full, max or WxH+X+Y:display)<Input name="presentationWindow" /></Label>
+      <Label>Helper window: (none, max or WxH+X+Y:display)<Input name="promptBox" /></Label>
+      <Label>Browser command: (%url%)<Input name="browserCmd" /></Label>
+      <ButtonBox>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSettings">Save</Button>
+      </ButtonBox>
+    </PanelContent>
+  </Panel>
+
+  <Panel name="about">
+    <PanelTitle>MaDemonstrator</PanelTitle>
+    <PanelContent>
+       <Image value="Layout/mademo.png" />
+       <Label class="license">Unlicense:
+         <TextBox class="license-text" file="UNLICENSE"></TextBox>
+       </Label>
+       <Label class="version">Version:<NL/>0.0.0.0.0.0.1</Label>
+    </PanelContent>
+  </Panel>
+
+  <Menu>
+    <MenuBar>
+      <MenuBarItem name="menu-presentation">Presentation</MenuBarItem>
+      <MenuBarItem name="menu-edit">Edit</MenuBarItem>
+      <MenuBarItem name="menu-slide">Slide</MenuBarItem>
+      <MenuBarItem name="menu-style">Style</MenuBarItem>
+      <MenuBarItem name="menu-mademo">MaDemonstrator</MenuBarItem>
+    </MenuBar>
+    <SubMenu>
+      <MenuBox belongsTo="menu-presentation">
+        <MenuBoxItem onOpen="MADEMO\Controller::start">Start</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::resume">Resume</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::openFile">Open/Create</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::saveFile">Save (as)</MenuBoxItem>
+      </MenuBox>
+      <MenuBox belongsTo="menu-edit">
+        <MenuBoxItem onOpen="MADEMO\Controller::edit">Edit</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::add">Add</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::cloneSlide">Clone</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::delete">Delete</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::restore">Restore</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::sort">Sort</MenuBoxItem>
+      </MenuBox>
+      <MenuBox name="slide-list" belongsTo="menu-slide" jumpToSelected="true">
+      </MenuBox>
+      <MenuBox name="style-list" belongsTo="menu-style" jumpToSelected="true">
+      </MenuBox>
+      <MenuBox belongsTo="menu-mademo">
+        <MenuBoxItem onOpen="MADEMO\Controller::settings">Settings</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::about">About</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\Controller::quit">Exit</MenuBoxItem>
+      </MenuBox>
+    </SubMenu>
+  </Menu>
+
+</Window>
