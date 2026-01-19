@@ -1,0 +1,232 @@
+
+5. Esoteric
+
+Use cases: vision talks, philosophy, storytelling, branding, keynotes
+Design intent
+
+Atmosphere, drama, symbolism.
+Font rules
+
+    Titles: Serif, bold or display-like
+    (LiberationSerif-Bold)
+
+    Body: Sans or serif, sparse
+    (LiberationSans-Regular)
+
+    Quotes: Serif italic, emphasized
+
+Color rules
+
+    Bright: parchment / rose / sand
+
+    Dark: deep purple, crimson, midnight blue
+
+    Accents: gold, violet, blood red
+
+Layout & spacing
+
+    Large title spacing
+
+    Centered text more often
+
+    Strong visual pauses
+
+    Fewer elements per slide
+
+XSS characteristics
+
+    Large margins
+
+    High title-to-body contrast
+
+    Decorative color blocks allowed
+
+
+
+
+
+
+
+
+
+
+1. Academic
+
+Use cases: lectures, papers, conferences, teaching, research
+Design intent
+
+Readable for long sessions, printable, conservative, timeless.
+Font rules
+
+    Titles: Serif, bold
+    (LiberationSerif-Bold)
+
+    Body: Serif, regular
+    (LiberationSerif-Regular)
+
+    Code: Monospace, neutral
+    (LiberationMono-Regular)
+
+    Quotes: Serif italic
+
+Color rules
+
+    Bright: white / ivory background, dark gray text
+
+    Dark: near-black background, warm off-white text
+
+    Accents are low saturation (gray, muted blue, muted green)
+
+Layout & spacing
+
+    Centered main title
+
+    Left-aligned paragraphs
+
+    Moderate margins
+
+    Minimal backgrounds on titles (or very light gray)
+
+XSS characteristics
+
+    Smaller contrast jumps
+
+    No strong accent blocks
+
+    Comfortable font sizes (not aggressive)
+
+
+2. Technical
+
+Use cases: engineering talks, APIs, architecture, code-heavy demos
+Design intent
+
+Clarity, precision, neutrality, zero ornamentation.
+Font rules
+
+    Titles: Neutral sans, bold
+    (NotoSans-Bold)
+
+    Body: Neutral sans
+    (NotoSans-Regular)
+
+    Code: Modern mono
+    (NotoSansMono-Regular)
+
+Color rules
+
+    Bright: light blue / cool gray background
+
+    Dark: blue-black / graphite background
+
+    Accents: blue, cyan, teal
+
+    Code blocks clearly separated
+
+Layout & spacing
+
+    Strict left alignment for text
+
+    Centered main title only
+
+    Tighter margins than academic
+
+    Clear block separation
+
+XSS characteristics
+
+    Strong code contrast
+
+    Consistent block widths
+
+    Minimal decorative padding
+
+
+3. Friendly
+
+Use cases: onboarding, community talks, product intros, workshops
+Design intent
+
+Approachable, warm, human, non-intimidating.
+Font rules
+
+    Titles: Humanist sans, bold
+    (DejaVuSans-Bold)
+
+    Body: Humanist sans
+    (DejaVuSans-Regular)
+
+    Code: Same family mono
+    (DejaVuSansMono-Regular)
+
+Color rules
+
+    Bright: warm off-white, pastel backgrounds
+
+    Dark: deep brown / warm charcoal
+
+    Accents: orange, coral, mint
+
+Layout & spacing
+
+    More vertical breathing room
+
+    Slightly larger fonts
+
+    Rounded-looking blocks (via padding)
+
+    Centered titles, relaxed paragraph margins
+
+XSS characteristics
+
+    Larger padding values
+
+    Softer contrast
+
+    Visually “open” layout
+
+
+4. Technical-Minimal
+
+Use cases: dashboards, system diagrams, status reports
+
+(This is distinct from “Technical”: more minimal, more UI-like)
+Design intent
+
+Functional, compact, distraction-free.
+Font rules
+
+    Titles: Sans, medium-to-bold
+    (LiberationSans-Bold)
+
+    Body: Sans, regular
+    (LiberationSans-Regular)
+
+    Code: Compact mono
+    (LiberationMono-Regular)
+
+Color rules
+
+    Bright: pure white + gray lines
+
+    Dark: near-black + gray text
+
+    Accents: single color only (blue or green)
+
+Layout & spacing
+
+    Tight vertical rhythm
+
+    Small margins
+
+    Mostly left-aligned
+
+    Narrow content widths
+
+XSS characteristics
+
+    Small padding
+
+    Subtle borders
+
+    High information density

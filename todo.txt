@@ -1,0 +1,5 @@
+
+* save/load settings
+* doc.md tuning
+* helper highlight
+* helper window

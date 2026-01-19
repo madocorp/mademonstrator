@@ -1,0 +1,108 @@
+/*
+  Dark
+  Dramatic
+  Mood: bold, energetic, stage-ready
+*/
+
+Slide {
+  font: LiberationSans-Regular;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  x: 0px;
+  y: 0px;
+  backgroundColor: #2b1b0f;
+}
+
+Content {
+  position: absolute;
+  x: 0px;
+  y: middle;
+  width: 100%;
+  padding: 5%h, 6%w;
+  color: #fff7ed;
+  fontSize: 30px;
+  textAlign: center;
+}
+
+MainTitle {
+  font: LiberationSans-Bold;
+  fontSize: 78px;
+  margin: 0px, 0px, 17%h, 0px;
+  textAlign: center;
+  width: 75%;
+  color: #f97316;
+}
+
+Title {
+  font: LiberationSans-Bold;
+  fontSize: 52px;
+  margin: 32px, 0px;
+  padding: 10px, 40px, 4px, 40px;
+  textAlign: center;
+  width: 100%;
+  backgroundColor: #f97316;
+  color: #ffedd5;
+}
+
+SubTitle {
+  font: LiberationSans-Bold;
+  fontSize: 34px;
+  color: #fde68a;
+  margin: 1.5%h, 5%;
+  width: 90%;
+}
+
+Paragraph {
+  textAlign: left;
+  fontSize: 30px;
+  margin: 1.5%h, 5%;
+  width: 90%;
+}
+
+Block1 { width: 49%; fontSize: 30px; margin: 16px, 0px; }
+Block2 { width: 32%; fontSize: 30px; margin: 16px, 0px; }
+Block3 { width: 24%; fontSize: 30px; margin: 16px, 0px; }
+
+List {
+  width: 90%;
+  fontSize: 34px;
+  margin: 1.5%h, 5%, 1.5%h, 5%;
+}
+
+Bullet {
+  fontSize: 50px;
+  font: LiberationSans-Bold;
+  padding: 0px, 34px, 0px, 0px;
+  ascent: 34px;
+}
+
+Code {
+  font: LiberationMono-Regular;
+  width: 82%;
+  margin: 1.5%h, 9%;
+  backgroundColor: #7c2d12;
+  color: #ffedd5;
+  padding: 8px, 8px, 4px, 8px;
+  fontSize: 28px;
+  border: 3px;
+  borderColor: #fde68a;
+}
+
+Quotation {
+  font: LiberationSerif-Italic;
+  width: 82%;
+  margin: 0px, 9%;
+  backgroundColor: #3f1d0b;
+  padding: 18px, 36px, 12px, 36px;
+  fontSize: 34px;
+  borderLeft: 4px;
+  borderColor: #fde68a;
+}
+
+Link { fontSize: 28px; color: #fb923c; }
+LinkId { fontSize: 28px; color: #fde68a; marginRight: 12px; }
+
+.emphasized { font: LiberationSans-Bold; color: #fef08a; }
+.inlinecode { font: LiberationMono-Regular; color: #ffedd5; }
+

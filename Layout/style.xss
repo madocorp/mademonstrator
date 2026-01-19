@@ -1,0 +1,53 @@
+#presentation-window {
+  width: 100%;
+  height: 100%;
+  x: 0px;
+  y: 0px;
+  backgroundColor: #000000;
+  color: #ffffff;
+}
+
+#helper-window {
+  width: 640px;
+  height: 480px;
+  x: -0px;
+  y: -0px;
+  backgroundColor: #000000;
+  color: #00ff00;
+}
+
+#mdeditor {
+  height: 70%h;
+  width: -360px;
+}
+
+#cheatsheet {
+  height: 70%h;
+  width: 350px;
+  marginLeft: 10px;
+}
+
+.license {
+  width: -256px;
+  ascent: 256px;
+}
+
+.license-text {
+  height: 450px;
+}
+
+.version {
+  position: absolute;
+  x: 0px;
+  y: 270px;
+  width: 256px;
+  textAlign: center;
+}
+
+.sx-maintitle { color: #ffffff; }
+.sx-title { color: #ffff00; }
+.sx-emp { color: #ff0000; }
+.sx-code { color: #00ffff; }
+.sx-quote { color: #008800; }
+.sx-list { color: #aa00aa; }
+.sx-link { color: #0000ff; }

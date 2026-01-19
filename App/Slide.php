@@ -1,0 +1,200 @@
+<?php
+
+namespace MADEMO;
+
+class Slide {
+
+  private $slide;
+  public $links = [];
+
+  public function __construct($code) {
+    $this->slide = \SPTK\Element::firstByType('Slide');
+    $this->slide->clear();
+    $this->build($code);
+  }
+
+  private function build($code) {
+    $tokens = \SPTK\Tokenizer::start($code, '\MADEMO\Tokenizer\Md');
+    $content = new \SPTK\Element($this->slide, false, false, 'Content');
+    $block = $content;
+    $paragraph = false;
+    foreach ($tokens as $line) {
+      if (empty($line['tokens'])) {
+        $paragraph = false;
+      }
+      foreach ($line['tokens'] as $token) {
+        switch ($token['type']) {
+          case 'T1':
+            $paragraph = false;
+            $this->createMainTitle($token, $content);
+            break;
+          case 'T2':
+            $paragraph = false;
+            $this->createTitle($token, $this->slide);
+            break;
+          case 'T3':
+            $block = $this->createBlock('Block1', $content);
+            $paragraph = false;
+            $this->createSubTitle($token, $block);
+            break;
+          case 'T4':
+            $block = $this->createBlock('Block2', $content);
+            $paragraph = false;
+            $this->createSubTitle($token, $block);
+            break;
+          case 'T5':
+            $block = $this->createBlock('Block3', $content);
+            $paragraph = false;
+            $this->createSubTitle($token, $block);
+            break;
+          case 'T6':
+            $paragraph = false;
+            $this->createSubTitle($token, $block);
+            break;
+          case 'WORD':
+            if ($paragraph === false) {
+              $paragraph = $this->createBlock('Paragraph', $block);
+            }
+            $this->createWord($token['value'], $paragraph);
+            break;
+          case 'EMPHASIZED':
+            if ($token['value'] !== '**') {
+              if ($paragraph === false) {
+                $paragraph = $this->createBlock('Paragraph', $block);
+              }
+              $this->createWord($token['value'], $paragraph, 'emphasized');
+            }
+            break;
+          case 'LIST':
+          case 'ORDERED_LIST':
+            $paragraph = $this->createBlock('List', $block);
+            $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
+            $bullet->setText('*');
+            break;
+          case 'BLOCKQUOTE':
+            if ($paragraph === false || $paragraph->getType() !== 'Quotation') {
+              $paragraph = $this->createBlock('Quotation', $block);
+              $value = ltrim($token['value'], '> ');
+              $paragraph->setText($value);
+            } else {
+              new \SPTK\NL($paragraph);
+              $value = ltrim($token['value'], '> ');
+              $paragraph->addText($value);
+            }
+            break;
+          case 'INLINE_CODE':
+            if ($paragraph === false) {
+              $paragraph = $this->createBlock('Paragraph', $block);
+            }
+            $value = trim($token['value'], '`');
+            $words = explode(' ', $value);
+            foreach ($words as $word) {
+              $this->createWord($word, $paragraph, 'inlinecode');
+            }
+            break;
+          case 'CODE':
+            if ($paragraph === false || $paragraph->getType() !== 'Code') {
+              if ($token['value'] !== '```') {
+                $paragraph = $this->createBlock('Code', $block);
+                $value = trim($token['value'], '`');
+                $paragraph->setText($value);
+              }
+            } else {
+              if ($token['value'] !== '```') {
+                new \SPTK\NL($paragraph);
+                $value = trim($token['value'], '`');
+                $paragraph->addText($value);
+              } else {
+                $paragraph = false;
+              }
+            }
+            break;
+          case 'LINK':
+            if ($paragraph === false) {
+              $paragraph = $this->createBlock('Paragraph', $block);
+            }
+            $this->createLink($token, $paragraph);
+            break;
+          case 'IMAGE':
+            if ($paragraph === false) {
+              $paragraph = $this->createBlock('Paragraph', $block);
+            }
+            $this->createImage($token, $paragraph);
+            break;
+          case 'HLINE':
+            break;
+        }
+      }
+    }
+  }
+
+  private function createMainTitle($token, $element) {
+    $value = ltrim($token['value'], '# ');
+    if (!empty($value)) {
+      $title = new \SPTK\Element($element, false, false, 'MainTitle');
+      $title->setText($value);
+      $this->createHelpTitle($value);
+    }
+  }
+
+  private function createTitle($token, $element) {
+    $value = ltrim($token['value'], '# ');
+    if (!empty($value)) {
+      $title = new \SPTK\Element($element, false, false, 'Title');
+      $title->setText($value);
+      $this->createHelpTitle($value);
+    }
+  }
+
+  private function createSubTitle($token, $element) {
+    $value = ltrim($token['value'], '# ');
+    if (!empty($value)) {
+      $title = new \SPTK\Element($element, false, false, 'SubTitle');
+      $title->setText($value);
+    }
+  }
+
+  private function createBlock($type, $element) {
+    return new \SPTK\Element($element, false, false, $type);
+  }
+
+  private function createWord($text, $block, $class = false) {
+    $word = new \SPTK\Word($block, false, $class);
+    $word->setValue($text);
+  }
+
+  private function createLink($token, $element) {
+    if (mb_strpos($token['value'], '<') === 0) {
+      $text = trim($token['value'], ' <>');
+      $this->links[] = $text;
+    } else {
+      preg_match('/\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
+      $text = $match[1];
+      $this->links[] = $match[2];
+    }
+    $id = count($this->links) - 1;
+    $link = new \SPTK\Element($element, false, false, 'Link');
+    $ide = new \SPTK\Element($link, false, false, 'LinkId');
+    $ide->setText("[{$id}]");
+    $link->addText($text);
+  }
+
+  private function createImage($token, $element) {
+    preg_match('/!\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
+    $path = $match[2];
+    $img = new \SPTK\Image($element);
+    $img->setValue($path);
+  }
+
+  private function createHelpTitle($title) {
+    $helperWin = \SPTK\Element::byName('helper-window');
+    if ($helperWin !== false) {
+      $promtBox = \SPTK\Element::firstByType('PromptBox', $helperWin);
+      $promtBox->setText($title);
+    }
+  }
+
+  private function createHelpText($text) {
+  }
+
+}

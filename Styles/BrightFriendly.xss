@@ -1,0 +1,137 @@
+Slide {
+  font: DejaVuSans-Regular;
+  fontSize: 32px;
+  backgroundColor: #fffaf3;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  x: 0px;
+  y: 0px;
+}
+
+Content {
+  font: DejaVuSans-Regular;
+  fontSize: 32px;
+  textAlign: center;
+  padding: 6%h, 6%w;
+  color: #3f2a1d;
+  position: absolute;
+  x: 0px;
+  y: middle;
+  width: 100%;
+}
+
+MainTitle {
+  font: DejaVuSans-Bold;
+  fontSize: 74px;
+  textAlign: center;
+  color: #7c2d12;
+  margin: 0px, 0px, 15%h, 0px;
+}
+
+Title {
+  font: DejaVuSans-Bold;
+  fontSize: 50px;
+  textAlign: center;
+  padding: 1%h, 2%w;
+  margin: 4%h, 2%w;
+  backgroundColor: #fed7aa;
+  color: #7c2d12;
+  width: -4%w;
+}
+
+SubTitle {
+  font: DejaVuSans-Bold;
+  fontSize: 36px;
+  textAlign: center;
+  padding: 1%h, 6%;
+  color: #dc8d72;
+  width: 90%;
+}
+
+Paragraph {
+  font: DejaVuSans-Regular;
+  fontSize: 34px;
+  textAlign: left;
+  margin: 1%h, 6%;
+  width: 90%;
+}
+
+Block1 {
+  width: 49%;
+  fontSize: 32px;
+  margin: 1%h, 0px;
+}
+
+Block2 {
+  width: 32%;
+  fontSize: 32px;
+  margin: 1%h, 0px;
+}
+
+Block3 {
+  width: 24%;
+  fontSize: 32px;
+  margin: 1%h, 0px;
+}
+
+List {
+  width: 90%;
+  fontSize: 34px;
+  margin: 1%h, 5%;
+}
+
+Bullet {
+  font: DejaVuSans-Bold;
+  fontSize: 48px;
+  padding: 0px, 32px, 0px, 0px;
+  ascent: 34px;
+}
+
+Code {
+  font: DejaVuSansMono;
+  fontSize: 28px;
+  textAlign: left;
+  margin: 3%h, 10%;
+  padding: 2%h, 2%w;
+  backgroundColor: #ffedd5;
+  color: #7c2d12;
+  border: 1px;
+  borderColor: #fdba74;
+  width: 80%;
+}
+
+Quotation {
+  font: DejaVuSans-Italic;
+  fontSize: 34px;
+  textAlign: left;
+  backgroundColor: #fff7ed;
+  margin: 3%h, 0px;
+  padding: 3%h, 2%w;
+  borderLeft: 3px;
+  borderColor: #fdba74;
+  width: 80%;
+}
+
+Link {
+  font: DejaVuSans-Regular;
+  fontSize: 30px;
+  color: #ea580c;
+}
+
+LinkId {
+  font: DejaVuSans-Regular;
+  fontSize: 28px;
+  color: #c2410c;
+  marginRight: 10px;
+}
+
+.emphasized {
+  font: DejaVuSans-Bold;
+  color: #b45309;
+}
+
+.inlinecode {
+  font: DejaVuSansMono;
+  color: #9a3412;
+}
