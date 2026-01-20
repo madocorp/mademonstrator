@@ -19,7 +19,8 @@ class Md extends \SPTK\Tokenizer {
     'LIST' => 'list',
     'ORDERED_LIST' => 'list',
     'LINK' => 'link',
-    'IMAGE' => 'link'
+    'IMAGE' => 'link',
+    'COMMENT' => 'comment'
   ];
   protected $contextSwitchers = [
     [
@@ -48,6 +49,12 @@ class Md extends \SPTK\Tokenizer {
       'tokenizer' => '\MADEMO\Tokenizer\MdList',
       'type' => 'LIST'
     ],
+    [
+      'start' => '<!--',
+      'end' => '-->',
+      'tokenizer' => '\MADEMO\Tokenizer\MdComment',
+      'type' => 'COMMENT'
+    ],
   ];
   protected $charRules = [
   ];
@@ -63,9 +70,9 @@ class Md extends \SPTK\Tokenizer {
     ['type' => 'HLINE', 'regexp' => '/^---$/'],
     ['type' => 'IMAGE', 'regexp' => '/^!\[[^\]]*\]\([^\)]*\)/'],
     ['type' => 'LINK', 'regexp' => '/^\[[^\]]*\]\([^\)]*\)/'],
-    ['type' => 'LINK', 'regexp' => '/^<[^>]+>/'],
-    ['type' => 'WORD', 'regexp' => '/^[^\s\*`!\[]+/'],
-    ['type' => 'WORD', 'regexp' => '/^[\*`!\[]/'],
+    ['type' => 'LINK', 'regexp' => '/^<[^!][^>]+>/'],
+    ['type' => 'WORD', 'regexp' => '/^[^\s\*`!\[<]+/'],
+    ['type' => 'WORD', 'regexp' => '/^[\*`!\[<]/'],
     ['type' => 'WHITESPACE', 'regexp' => '/^\s+/']
   ];
 
