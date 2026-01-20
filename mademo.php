@@ -11,6 +11,7 @@ require_once 'App/Tokenizer/Md.php';
 require_once 'App/Tokenizer/MdEmp.php';
 require_once 'App/Tokenizer/MdCode.php';
 require_once 'App/Tokenizer/MdList.php';
+require_once 'App/Tokenizer/MdComment.php';
 
 new SPTK\App(
   'Layout/mademo.xml',

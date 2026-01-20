@@ -169,7 +169,7 @@ class Controller {
   public static function leavePresentationMode() {
     $presWin = \SPTK\Element::byName('presentation-window');
     $presWin->fullscreenOff();
-    $helperwin = \SPTK\Element::byName('helper-window');
+    $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin !== false) {
       $helperWin->remove();
     }
@@ -195,7 +195,8 @@ class Controller {
       $helperWin->setTitle('PromptBox');
       // set size
       // set display !
-      new \SPTK\Element($helperWin, false, false, 'PromptBox');
+      new \SPTK\Element($helperWin, false, false, 'PromptBoxTitle');
+      new \SPTK\Element($helperWin, false, false, 'PromptBoxContent');
     }
   }
 

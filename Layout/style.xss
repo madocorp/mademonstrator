@@ -13,7 +13,6 @@
   x: -0px;
   y: -0px;
   backgroundColor: #000000;
-  color: #00ff00;
 }
 
 #mdeditor {
@@ -25,6 +24,20 @@
   height: 70%h;
   width: 350px;
   marginLeft: 10px;
+}
+
+PromptBoxTitle {
+  color: #00ff00;
+  width: 100%;
+  padding: 10px, 10px, 5px, 10px;
+  fontSize: 26px;
+
+}
+
+PromptBoxContent {
+  color: #ffffff;
+  padding: 5px, 10px;
+  fontSize: 26px;
 }
 
 .license {
@@ -51,3 +64,4 @@
 .sx-quote { color: #008800; }
 .sx-list { color: #aa00aa; }
 .sx-link { color: #0000ff; }
+.sx-comment { color: #888888; }

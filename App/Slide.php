@@ -18,6 +18,7 @@ class Slide {
     $content = new \SPTK\Element($this->slide, false, false, 'Content');
     $block = $content;
     $paragraph = false;
+    $this->clearHelpText(true);
     foreach ($tokens as $line) {
       if (empty($line['tokens'])) {
         $paragraph = false;
@@ -121,6 +122,9 @@ class Slide {
             }
             $this->createImage($token, $paragraph);
             break;
+          case 'COMMENT':
+            $this->createHelpText($token['value']);
+            break;
           case 'HLINE':
             break;
         }
@@ -188,13 +192,37 @@ class Slide {
 
   private function createHelpTitle($title) {
     $helperWin = \SPTK\Element::byName('helper-window');
-    if ($helperWin !== false) {
-      $promtBox = \SPTK\Element::firstByType('PromptBox', $helperWin);
-      $promtBox->setText($title);
+    if ($helperWin === false) {
+      return;
     }
+    $promptBoxTitle = \SPTK\Element::firstByType('PromptBoxTitle', $helperWin);
+    $promptBoxTitle->setText($title);
+  }
+
+  private function clearHelpText() {
+    $helperWin = \SPTK\Element::byName('helper-window');
+    if ($helperWin === false) {
+      return;
+    }
+    $promptBoxContent = \SPTK\Element::firstByType('PromptBoxContent', $helperWin);
+    $promptBoxContent->clear();
   }
 
   private function createHelpText($text) {
+    $helperWin = \SPTK\Element::byName('helper-window');
+    if ($helperWin === false) {
+      return;
+    }
+    $promptBoxContent = \SPTK\Element::firstByType('PromptBoxContent', $helperWin);
+    $nl = ($text === "\n");
+    $text = trim($text, "<!- >");
+    if (!empty($text)) {
+      $promptBoxContent->addText($text);
+      $nl = true;
+    }
+    if ($nl) {
+      new \SPTK\NL($promptBoxContent);
+    }
   }
 
 }
