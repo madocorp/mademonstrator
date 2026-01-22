@@ -24,6 +24,7 @@ class Slide {
         $paragraph = false;
       }
       foreach ($line['tokens'] as $token) {
+echo $token['type'], ' ', $token['value'], "\n";
         switch ($token['type']) {
           case 'T1':
             $paragraph = false;
@@ -56,7 +57,7 @@ class Slide {
             if ($paragraph === false) {
               $paragraph = $this->createBlock('Paragraph', $block);
             }
-            $this->createWord($token['value'], $paragraph);
+            $this->createWord($token['value'], $paragraph, false);
             break;
           case 'EMPHASIZED':
             if ($token['value'] !== '**') {
@@ -69,8 +70,13 @@ class Slide {
           case 'LIST':
           case 'ORDERED_LIST':
             $paragraph = $this->createBlock('List', $block);
-            $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
-            $bullet->setText('*');
+            if ($token['type'] === 'LIST') {
+              $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
+              $bullet->setText('*');
+            } else {
+              $numbering = new \SPTK\Element($paragraph, false, false, 'Numbering');
+              $numbering->setText(trim($token['value']));
+            }
             break;
           case 'BLOCKQUOTE':
             if ($paragraph === false || $paragraph->getType() !== 'Quotation') {
@@ -89,8 +95,8 @@ class Slide {
             }
             $value = trim($token['value'], '`');
             $words = explode(' ', $value);
-            foreach ($words as $word) {
-              $this->createWord($word, $paragraph, 'inlinecode');
+            foreach ($words as $codeword) {
+              $this->createWord($codeword, $paragraph, 'inlinecode');
             }
             break;
           case 'CODE':
@@ -124,6 +130,9 @@ class Slide {
             break;
           case 'COMMENT':
             $this->createHelpText($token['value']);
+            break;
+          case 'WHITESPACE':
+            new \SPTK\Space($paragraph);
             break;
           case 'HLINE':
             break;
@@ -162,7 +171,7 @@ class Slide {
     return new \SPTK\Element($element, false, false, $type);
   }
 
-  private function createWord($text, $block, $class = false) {
+  private function createWord($text, $block, $class) {
     $word = new \SPTK\Word($block, false, $class);
     $word->setValue($text);
   }

@@ -86,6 +86,12 @@ Bullet {
   ascent: 32px;
 }
 
+Numbering {
+  font: LiberationSans-Bold;
+  fontSize: 32px;
+  padding: 0px, 22px, 0px, 0px;
+}
+
 Code {
   font: LiberationMono-Regular;
   fontSize: 28px;

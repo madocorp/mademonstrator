@@ -87,6 +87,12 @@ Bullet {
   ascent: 32px;
 }
 
+Numbering {
+  font: NotoSans-Bold;
+  fontSize: 32px;
+  padding: 0px, 22px, 0px, 0px;
+}
+
 Code {
   font: NotoMono-Regular;
   fontSize: 28px;

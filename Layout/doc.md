@@ -3,7 +3,7 @@
 > "The secret of getting ahead is getting started."
 > Mark Twain
 
-<!-- helper text 1 -->
+---
 
 ## MaDemonstrator
 
@@ -13,14 +13,6 @@ It demonstrates:
 * How the program works
 * What technologies it uses
 * Which markdown elements it supports
-
-<!--
-helper text 2
-A
-
-B
-C
--->
 
 ---
 
@@ -33,8 +25,8 @@ This application converts a **Markdown file into a live presentation**.
 It opens a native window and renders slides dynamically.
 
 ###### Key Idea
-> Write once in Markdown
-> Present everywhere with a fast native renderer
+* Write slides in Markdown
+* Present with a fast native renderer
 
 ---
 
@@ -55,14 +47,14 @@ It opens a native window and renders slides dynamically.
 ## Slide Structure Rules
 
 ### Slide titles
-* **Title 1** (`#`) → Opening slide or big chapter
-* **Title 2** (`##`) → Normal slide title
+* **Title 1** (`#`) -> Opening slide or big chapter
+* **Title 2** (`##`) -> Normal slide title
 
 ### Layout Boxes with title
-* **Title 3** (`###`) → Half-width box
-* **Title 4** (`####`) → Third-width box
-* **Title 5** (`#####`) → Quarter-width box
-* **Title 6** (`######`) → Subtitle inside a box
+* **Title 3** (`###`) -> Half-width box
+* **Title 4** (`####`) -> Third-width box
+* **Title 5** (`#####`) -> Quarter-width box
+* **Title 6** (`######`) -> Subtitle inside a box
 
 ---
 
@@ -100,35 +92,35 @@ And this one is **one quarter wide**.
 
 ## Paragraphs & Emphasis
 
-This is a normal paragraph.  
+This is a normal paragraph.
 Paragraphs are used for explanations and descriptions.
+The text is wrapped automatically. Separate the paragraphs with an empty line.
 
 You can **emphasize text** using two asterisks.
 
-Inline code is written like this: `SDL_Init(SDL_INIT_VIDEO);`
+Inline code is written like this: `SDL_Init(SDL_INIT_VIDEO);` Put backticks around the code.
 
 ---
 
 ## Lists
 
 ### Unsorted List
-* PHP application
-* Markdown driven
-* Native window
-* Fast rendering
+* Use an asterix and a scpace to mark list items
+* The bullet will appear as an asterix
+* Best when items are equal in importance and don’t depend on sequence.
 
 ### Sorted List
-1. Read markdown
-2. Parse structure
-3. Create slides
-4. Render via SDL3
+1. List items are marked with a number, a dot and a space
+2. The numbers will be the bullet points
+3. It won't be reordered or renumbered
+4. Best when items follow a sequence, priority, or progression.
 
 ---
 
 ## Block Quotation
 
 > “The best documentation is a running program.”
-> — This presentation engine
+> This presentation engine
 
 Block quotes are great for highlighting ideas.
 
@@ -136,7 +128,7 @@ Block quotes are great for highlighting ideas.
 
 ## Code Block Example
 
-```php
+```
 <?php
 $window = SDL_CreateWindow(
     "Markdown Presentation",
@@ -156,8 +148,11 @@ You can include links:
 
 * [PHP Official Website](https://www.php.net)
 * [SDL Library](https://libsdl.org)
+* <https://github.com/madocorp/sptk>
 
 Links are accessible by pressing the proper number key (0-9).
+
+Use `[text](url)` syntax to show a text instead of the url, and `<url>` syntax to show the url.
 
 ---
 
@@ -185,15 +180,6 @@ Images are useful for diagrams, logos, and screenshots.
 
 ---
 
-## Final Thoughts
-
-This program proves that:
-* Markdown is powerful
-* PHP can do native graphics
-* Presentations don’t need browsers
-* Creating a presentation doesn't take hours
+# Now It’s Your Turn...
 
 ---
-
-# Thank you!
-
