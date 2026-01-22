@@ -88,6 +88,12 @@ Bullet {
   ascent: 34px;
 }
 
+Numbering {
+  font: DejaVuSans-Bold;
+  fontSize: 34px;
+  padding: 0px, 22px, 0px, 0px;
+}
+
 Code {
   font: DejaVuSansMono;
   fontSize: 28px;
