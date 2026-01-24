@@ -13,6 +13,15 @@ class Controller {
 
   public static function init() {
     self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.xml'));
+    if (!isset(self::$config['config'])) {
+      self::$config['config'] = [
+        'defaultStyle' => 'DarkTechnical',
+        'defaultDir' => \SPTK\Config::getHome(),
+        'presentationWindow' => 'full',
+        'promptBox' => 'none',
+        'browserCmd' => 'firefox --new-tab %url%'
+      ];
+    }
     self::$configDir = \SPTK\Config::getPath();
     self::$styleDir = \SPTK\Config::getFilePath('Styles');
     if (!is_dir(self::$styleDir)) {
@@ -34,9 +43,10 @@ class Controller {
       $name = basename($styleFile, '.xss');
       $menuItem = new \SPTK\MenuBoxItem($menuBox);
       $menuItem->setSelectable('styles');
+      $menuItem->setFilterable(true);
       $menuItem->setValue($name);
       $menuItem->setText($name);
-      if ($name === 'DarkTechnical') {
+      if ($name === self::$config['config']['defaultStyle']) {
         $menuItem->setSelected('true');
         self::changeStyle($name);
       }
@@ -108,18 +118,20 @@ class Controller {
     if ($link === false) {
       return;
     }
-    exec("firefox --new-tab {$link}");
+    $cmd = self::$config['config']['browserCmd'];
+    $cmd = str_replace('%url%', $link, $cmd);
+    exec($cmd);
   }
 
   public static function openFile() {
-    self::selectFile('\MADEMO\Controller::open');
+    self::selectFile('\MADEMO\Controller::open', self::$config['config']['defaultDir']);
   }
 
-  public static function selectFile($callback) {
+  public static function selectFile($callback, $path) {
     $window = \SPTK\Element::firstByType('Window');
     $panel = new \SPTK\FilePanel($window);
     $panel->setFileFilter(['.md']);
-    $panel->setPath('/home/mado/Web/mad/mademonstrator/');
+    $panel->setPath($path);
     $panel->setCreate(true);
     $panel->setOnSelect($callback);
     $panel->show();
@@ -149,6 +161,7 @@ class Controller {
     foreach ($slides as $index => $title) {
       $menuItem = new \SPTK\MenuBoxItem($menuBox);
       $menuItem->setSelectable('slides');
+      $menuItem->setFilterable(true);
       $menuItem->setValue($index);
       $menuItem->setText($title);
       if ($index === self::$currentSlide) {
@@ -169,6 +182,8 @@ class Controller {
   public static function leavePresentationMode() {
     $presWin = \SPTK\Element::byName('presentation-window');
     $presWin->fullscreenOff();
+    $presWin->recalculateStyle();
+    $presWin->configure();
     $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin !== false) {
       $helperWin->remove();
@@ -185,15 +200,15 @@ class Controller {
     if (mb_strpos(self::$config['config']['presentationWindow'], 'full') !== false) {
       $presWin->fullscreenOn();
     } else {
-      // set size
+      self::configureWindow($presWin, self::$config['config']['presentationWindow']);
     }
     // set display !
     // screen saver off ?
-    if (mb_strpos(self::$config['config']['presentationWindow'], 'none') === false) {
+    if (mb_strpos(self::$config['config']['promptBox'], 'none') === false) {
       $helperWin = new \SPTK\Window(\SPTK\Element::$root, 'helper-window');
       $helperWin->addEvent('KeyPress', '\MADEMO\Controller::keyPressHandler');
       $helperWin->setTitle('PromptBox');
-      // set size
+      self::configureWindow($helperWin, self::$config['config']['promptBox']);
       // set display !
       new \SPTK\Element($helperWin, false, false, 'PromptBoxTitle');
       new \SPTK\Element($helperWin, false, false, 'PromptBoxContent');
@@ -214,7 +229,8 @@ class Controller {
   }
 
   public static function saveFile() {
-    self::selectFile('\MADEMO\Controller::save');
+    $path = self::$presentation->getFile();
+    self::selectFile('\MADEMO\Controller::save', $path);
   }
 
   public static function save($path) {
@@ -335,5 +351,30 @@ class Controller {
     \SPTK\App::$instance->quit();
   }
 
+  public static function configureWindow($window, $geometryString) {
+    $geometry = self::parseGeometryString($geometryString);
+    $style = $window->getStyle();
+    $style->set('width', $geometry['w']);
+    $style->set('height', $geometry['h']);
+    $style->set('x', $geometry['x']);
+    $style->set('y', $geometry['y']);
+    $window->configure();
+  }
+
+  public static function parseGeometryString($string) {
+    if (mb_strpos($string, 'max') !== false) {
+      return ['w' => '100%', 'h' => '100%', 'x' => '0px', 'y' => '0px', 'd' => 0];
+    }
+    $string = mb_strtolower($string);
+    if (preg_match("/([0-9]+%?)x([0-9]+%?)([+-][0-9]+%?)([+-][0-9]+%?)(:[0-9]+)?/", $string, $m)) {
+      for ($i = 1; $i < 5; $i++) {
+        if (strpos($m[$i], '%') === false) {
+          $m[$i] .= 'px';
+        }
+      }
+      return ['w' => $m[1], 'h' => $m[2], 'x' => $m[3], 'y' => $m[4], 'd' => $m[5] ?? 0];
+    }
+    return false;
+  }
 
 }

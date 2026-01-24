@@ -10,7 +10,7 @@
       <TextEditor name="mdeditor" tokenizer="\MADEMO\Tokenizer\Md"></TextEditor>
       <TextBox name="cheatsheet" file="Layout/cheatsheet.txt"></TextBox>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
         <Button hotKey="F2" onPress="MADEMO\Controller::saveSlide">Save</Button>
       </ButtonBox>
     </PanelContent>
@@ -21,7 +21,7 @@
     <PanelContent>
       <Label>Slides:<ListBox name="order" valueType="order" movable="true"></ListBox></Label>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
         <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSort">Save</Button>
       </ButtonBox>
     </PanelContent>
@@ -36,7 +36,7 @@
       <Label>Helper window: (none, max or WxH+X+Y:display)<Input name="promptBox" /></Label>
       <Label>Browser command: (%url%)<Input name="browserCmd" /></Label>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
         <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSettings">Save</Button>
       </ButtonBox>
     </PanelContent>
@@ -76,9 +76,9 @@
         <MenuBoxItem onOpen="MADEMO\Controller::restore">Restore</MenuBoxItem>
         <MenuBoxItem onOpen="MADEMO\Controller::sort">Sort</MenuBoxItem>
       </MenuBox>
-      <MenuBox name="slide-list" belongsTo="menu-slide" jumpToSelected="true">
+      <MenuBox name="slide-list" belongsTo="menu-slide" jumpToSelected="true" typing="search">
       </MenuBox>
-      <MenuBox name="style-list" belongsTo="menu-style" jumpToSelected="true">
+      <MenuBox name="style-list" belongsTo="menu-style" jumpToSelected="true" typing="search">
       </MenuBox>
       <MenuBox belongsTo="menu-mademo">
         <MenuBoxItem onOpen="MADEMO\Controller::settings">Settings</MenuBoxItem>

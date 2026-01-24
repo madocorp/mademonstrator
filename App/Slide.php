@@ -24,7 +24,6 @@ class Slide {
         $paragraph = false;
       }
       foreach ($line['tokens'] as $token) {
-echo $token['type'], ' ', $token['value'], "\n";
         switch ($token['type']) {
           case 'T1':
             $paragraph = false;

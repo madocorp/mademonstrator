@@ -31,13 +31,13 @@ PromptBoxTitle {
   width: 100%;
   padding: 10px, 10px, 5px, 10px;
   fontSize: 26px;
-
 }
 
 PromptBoxContent {
   color: #ffffff;
   padding: 5px, 10px;
   fontSize: 26px;
+  width: 100%;
 }
 
 .license {

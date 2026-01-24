@@ -11,7 +11,7 @@ class Presentation {
   protected $slide = false;
 
   public function __construct($file) {
-    $this->file = $file;
+    $this->file = realpath($file);
     if (file_exists($this->file)) {
       $this->load();
     }
@@ -145,6 +145,10 @@ class Presentation {
 
   public function getLink($link) {
     return $this->slide->links[$link] ?? false;
+  }
+
+  public function getFile() {
+    return $this->file;
   }
 
 }

@@ -182,4 +182,10 @@ Images are useful for diagrams, logos, and screenshots.
 
 # Now It’s Your Turn...
 
+<!--
+  If you are pro enough, you can write comments to yourself, that appears in a separated window and helps to remember what to say to the audience.
+
+  Like this one.
+-->
+
 ---
