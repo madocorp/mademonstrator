@@ -1,6 +1,6 @@
 Slide {
   font: LiberationSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   backgroundColor: #111111;
   position: absolute;
   width: 100%;
@@ -11,7 +11,7 @@ Slide {
 
 Content {
   font: LiberationSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   textAlign: center;
   padding: 0px;
   color: #eeeeee;
@@ -23,7 +23,7 @@ Content {
 
 MainTitle {
   font: LiberationSansNarrow-Bold;
-  fontSize: 72px;
+  fontSize: 6.66%h;
   textAlign: center;
   margin: 0px, 0px, 15%h, 0px;
   color: #ffffff;
@@ -31,7 +31,7 @@ MainTitle {
 
 Title {
   font: LiberationSansNarrow-Bold;
-  fontSize: 48px;
+  fontSize: 4.44%h;
   textAlign: left;
   padding: 2%h, 2%w;
   color: #ffffff;
@@ -40,7 +40,7 @@ Title {
 
 SubTitle {
   font: LiberationSansNarrow-Bold;
-  fontSize: 36px;
+  fontSize: 3.33%h;
   textAlign: left;
   padding: 1%h, 3%w;
   color: #ffffff;
@@ -49,7 +49,7 @@ SubTitle {
 
 Paragraph {
   font: LiberationSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   textAlign: left;
   padding: 0.5%h, 3%w;
   width: 90%;
@@ -57,77 +57,77 @@ Paragraph {
 
 Block1 {
   width: 49%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 Block2 {
   width: 32%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 Block3 {
   width: 24%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 List {
   width: 90%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   padding: 0.5%h, 3%w;
 }
 
 Bullet {
   font: LiberationSans-Bold;
-  fontSize: 48px;
-  padding: 0px, 32px, 0px, 0px;
-  ascent: 32px;
+  fontSize: 4.44%h;
+  padding: 0px, 1.66%w, 0px, 0px;
+  ascent: 2.96%h;
 }
 
 Numbering {
   font: LiberationSans-Bold;
-  fontSize: 32px;
-  padding: 0px, 22px, 0px, 0px;
+  fontSize: 2.96%h;
+  padding: 0px, 1.14%w, 0px, 0px;
 }
 
 Code {
   font: LiberationMono-Regular;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   textAlign: left;
   margin: 1%h, 1%w;
   padding: 0.5%h, 0.5%w;
   backgroundColor: #000088;
   color: #00ffff;
-  border: 1px;
+  border: 0.092%h, 0.052%w;
   borderColor: #ffffff;
   width: 85%;
 }
 
 Quotation {
   font: LiberationSans-Italic;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   textAlign: left;
   backgroundColor: #333333;
   color: #ffffff;
   padding: 1%h, 1%w;
-  borderLeft: 1px;
+  border: 0.092%h, 0.052%w;
   borderColor: #ffffff;
   width: 85%;
 }
 
 Link {
   font: LiberationSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   color: #8888ff;
 }
 
 LinkId {
   font: LiberationSans-Regular;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   color: #00ffff;
-  marginRight: 10px;
+  marginRight: 0.52%w;
 }
 
 .emphasized {

@@ -5,6 +5,7 @@ namespace MADEMO;
 class Slide {
 
   private $slide;
+  private $bulletImage = false;
   public $links = [];
 
   public function __construct($code) {
@@ -70,8 +71,13 @@ class Slide {
           case 'ORDERED_LIST':
             $paragraph = $this->createBlock('List', $block);
             if ($token['type'] === 'LIST') {
-              $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
-              $bullet->setText('*');
+              if ($this->bulletImage === false) {
+                $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
+                $bullet->setText('*');
+              } else {
+                $bullet = new \SPTK\Image($paragraph, false, 'bullet');
+                $bullet->setValue($this->bulletImage);
+              }
             } else {
               $numbering = new \SPTK\Element($paragraph, false, false, 'Numbering');
               $numbering->setText(trim($token['value']));
@@ -122,20 +128,27 @@ class Slide {
             $this->createLink($token, $paragraph);
             break;
           case 'IMAGE':
-            if ($paragraph === false) {
-              $paragraph = $this->createBlock('Paragraph', $block);
+            if (!$this->specialImage($token, $paragraph)) {
+              if ($paragraph === false) {
+                $paragraph = $this->createBlock('Paragraph', $block);
+              }
+              $this->createImage($token, $paragraph);
             }
-            $this->createImage($token, $paragraph);
             break;
           case 'COMMENT':
             $this->createHelpText($token['value']);
             break;
           case 'WHITESPACE':
-            new \SPTK\Space($paragraph);
+            if ($paragraph !== false) {
+              new \SPTK\Space($paragraph);
+            }
             break;
           case 'HLINE':
             break;
         }
+      }
+      if ($paragraph !== false) {
+        new \SPTK\Space($paragraph);
       }
     }
   }
@@ -196,6 +209,38 @@ class Slide {
     $path = $match[2];
     $img = new \SPTK\Image($element);
     $img->setValue($path);
+  }
+
+  private function specialImage($token, $paragraph) {
+    preg_match('/!\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
+    $config = $match[1];
+    $path = $match[2];
+    if ($config === ':bullet') {
+      $this->bulletImage = $path;
+      return true;
+    } else if (mb_strpos($config, ':absolute:') === 0) {
+      $img = new \SPTK\Image($this->slide);
+      $config = str_replace(':absolute:', '', $config);
+      $geometry = Controller::parseGeometryString($config);
+      $style = $img->getStyle();
+      $style->set('position', 'absolute');
+      $style->set('width', $geometry['w']);
+      $style->set('height', $geometry['h']);
+      $style->set('x', $geometry['x']);
+      $style->set('y', $geometry['y']);
+      $img->setValue($path);
+      return true;
+    } else if (mb_strpos($config, ':inline:') === 0) {
+      $img = new \SPTK\Image($paragraph);
+      $config = str_replace(':inline:', '', $config);
+      $geometry = Controller::parseGeometryString($config);
+      $style = $img->getStyle();
+      $style->set('width', $geometry['w']);
+      $style->set('height', $geometry['h']);
+      $img->setValue($path);
+      return true;
+    }
+    return false;
   }
 
   private function createHelpTitle($title) {
