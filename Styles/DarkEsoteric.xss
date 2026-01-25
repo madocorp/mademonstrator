@@ -1,6 +1,6 @@
 Slide {
   font: LiberationSerif-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   backgroundColor: #0b0e14;
   position: absolute;
   width: 100%;
@@ -11,7 +11,7 @@ Slide {
 
 Content {
   font: LiberationSerif-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   textAlign: center;
   padding: 5%h, 5%w;
   color: #e6e6eb;
@@ -23,16 +23,16 @@ Content {
 
 MainTitle {
   font: NotoSerifDisplay-BoldItalic;
-  fontSize: 78px;
+  fontSize: 7.22%h;
   textAlign: center;
   margin: 0px, 0px, 15%h, 0px;
   color: #c77dff;
-  height: 150px;
+  height: 13.88%h;
 }
 
 Title {
   font: NotoSerifDisplay-BoldItalic;
-  fontSize: 52px;
+  fontSize: 4.81%h;
   textAlign: center;
   padding: 3%h, 5%w;
   margin: 5%h, 0px;
@@ -43,7 +43,7 @@ Title {
 
 SubTitle {
   font: NotoSerifDisplay-BoldItalic;
-  fontSize: 36px;
+  fontSize: 3.33%h;
   textAlign: center;
   padding: 1%h, 5%;
   color: #c77dff;
@@ -52,7 +52,7 @@ SubTitle {
 
 Paragraph {
   font: NotoSansDisplay-Italic;
-  fontSize: 34px;
+  fontSize: 3.14%h;
   textAlign: center;
   margin: 2%h, 5%;
   width: 90%;
@@ -60,77 +60,77 @@ Paragraph {
 
 Block1 {
   width: 49%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 2%h, 0px;
 }
 
 Block2 {
   width: 32%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 2%h, 0px;
 }
 
 Block3 {
   width: 24%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 2%h, 0px;
 }
 
 List {
   width: 90%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 2%h, 5%;
 }
 
 Bullet {
   font: NotoSansDisplay-Italic;
-  fontSize: 48px;
-  padding: 0px, 32px, 0px, 0px;
-  ascent: 32px;
+  fontSize: 4.44%h;
+  padding: 0px, 1.66%w, 0px, 0px;
+  ascent: 2.96%h;
 }
 
 Numbering {
   font: NotoSansDisplay-Italic;
-  fontSize: 32px;
-  padding: 0px, 22px, 0px, 0px;
+  fontSize: 2.96%h;
+  padding: 0px, 1.14%w, 0px, 0px;
 }
 
 Code {
   font: NotoSansMono-Regular;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   textAlign: left;
   margin: 1%h, 10%;
   padding: 1%h, 1%w;
   backgroundColor: #1f1147;
   color: #ffffff;
-  border: 1px;
+  border: 0.092%h, 0.052%w;
   borderColor: #c77dff;
   width: 80%;
 }
 
 Quotation {
   font: NotoSerifDisplay-Italic;
-  fontSize: 36px;
+  fontSize: 3.33%h;
   textAlign: right;
   backgroundColor: #c77dff;
   color: #3a1c71;
   padding: 2%h, 2%w;
-  border: 0px, 10px;
+  border: 0px, 0.52%w;
   borderColor: #3a1c71;
   width: 80%;
 }
 
 Link {
   font: NotoSansDisplay-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   color: #9d4edd;
 }
 
 LinkId {
   font: NotoSansDisplay-Regular;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   color: #c77dff;
-  marginRight: 10px;
+  marginRight: 0.52%w;
 }
 
 .emphasized {

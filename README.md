@@ -8,6 +8,7 @@ It can display a Markdown file as slides.
 ### PHP (CLI)
 
 PHP 8 must be installed and available in your PATH.
+Use your system's package manager to install it.
 
 Check with:
 
@@ -50,8 +51,9 @@ You can put it anywhere, but here are some common locations:
 /usr/local/opt/mademonstrator (macOS, system-wide)
 ```
 
-Use sudo for system-wide installations.
 The chosen one will be referred to as INSTALL_DIR below.
+
+Use sudo for system-wide installations.
 
 ### 3. Move Files to the Installation Directory
 

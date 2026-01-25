@@ -1,6 +1,6 @@
 Slide {
   font: DejaVuSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   backgroundColor: #2c0d00;
   position: absolute;
   width: 100%;
@@ -11,7 +11,7 @@ Slide {
 
 Content {
   font: DejaVuSans-Regular;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   textAlign: center;
   padding: 6%h, 6%w;
   color: #ffeeee;
@@ -23,7 +23,7 @@ Content {
 
 MainTitle {
   font: DejaVuSans-Bold;
-  fontSize: 74px;
+  fontSize: 6.85%h;
   textAlign: center;
   color: #ffeeee;
   margin: 0px, 0px, 15%h, 0px;
@@ -31,7 +31,7 @@ MainTitle {
 
 Title {
   font: DejaVuSans-Bold;
-  fontSize: 50px;
+  fontSize: 4.62%h;
   textAlign: center;
   padding: 1%h, 2%w;
   margin: 4%h, 2%w;
@@ -42,7 +42,7 @@ Title {
 
 SubTitle {
   font: DejaVuSans-Bold;
-  fontSize: 36px;
+  fontSize: 3.33%h;
   textAlign: center;
   padding: 1%h, 6%;
   color: #dc8d72;
@@ -51,7 +51,7 @@ SubTitle {
 
 Paragraph {
   font: DejaVuSans-Regular;
-  fontSize: 34px;
+  fontSize: 3.14%h;
   textAlign: left;
   margin: 1%h, 6%;
   width: 90%;
@@ -59,77 +59,77 @@ Paragraph {
 
 Block1 {
   width: 49%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 Block2 {
   width: 32%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 Block3 {
   width: 24%;
-  fontSize: 32px;
+  fontSize: 2.96%h;
   margin: 1%h, 0px;
 }
 
 List {
   width: 90%;
-  fontSize: 34px;
+  fontSize: 3.14%h;
   margin: 1%h, 5%;
 }
 
 Bullet {
   font: DejaVuSans-Bold;
-  fontSize: 48px;
-  padding: 0px, 32px, 0px, 0px;
-  ascent: 34px;
+  fontSize: 4.44%h;
+  padding: 0px, 1.66%w, 0px, 0px;
+  ascent: 3.14%h;
 }
 
 Numbering {
   font: DejaVuSans-Bold;
-  fontSize: 34px;
-  padding: 0px, 22px, 0px, 0px;
+  fontSize: 3.14%h;
+  padding: 0px, 1.14%w, 0px, 0px;
 }
 
 Code {
   font: DejaVuSansMono;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   textAlign: left;
   margin: 3%h, 10%;
   padding: 2%h, 2%w;
   backgroundColor: #6c1d02;
   color: #ffffaa;
-  border: 1px;
+  border: 0.092%h, 0.052%w;
   borderColor: #ffeeee;
   width: 80%;
 }
 
 Quotation {
   font: DejaVuSans-Italic;
-  fontSize: 34px;
+  fontSize: 3.14%h;
   textAlign: left;
   backgroundColor: #6c1d02;
   margin: 3%h, 0px;
   padding: 3%h, 2%w;
-  borderLeft: 3px;
+  borderLeft: 0.27%h, 0.15%w;
   borderColor: #ffeeee;
   width: 80%;
 }
 
 Link {
   font: DejaVuSans-Regular;
-  fontSize: 30px;
+  fontSize: 2.77%h;
   color: #ef4444;
 }
 
 LinkId {
   font: DejaVuSans-Regular;
-  fontSize: 28px;
+  fontSize: 2.59%h;
   color: #fca5a5;
-  marginRight: 10px;
+  marginRight: 0.52%w;
 }
 
 .emphasized {

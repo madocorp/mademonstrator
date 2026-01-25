@@ -73,11 +73,9 @@ class Controller {
         return true;
       case \SPTK\Action::SELECT_ITEM:
         self::setCurrentSlide(self::$currentSlide + 1);
-        \SPTK\Element::refresh();
         return true;
       case \SPTK\Action::DELETE_BACK:
         self::setCurrentSlide(self::$currentSlide - 1);
-        \SPTK\Element::refresh();
         return true;
       case \SPTK\KeyCode::NUM_0:
         self::gotoLink(0);
@@ -188,8 +186,10 @@ class Controller {
     if ($helperWin !== false) {
       $helperWin->remove();
     }
+    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
     $menu = \SPTK\Element::firstByType('Menu');
     $menu->show();
+    \SPTK\Element::$root->screenSaver(true);
     \SPTK\Element::refresh();
   }
 
@@ -203,7 +203,6 @@ class Controller {
       self::configureWindow($presWin, self::$config['config']['presentationWindow']);
     }
     // set display !
-    // screen saver off ?
     if (mb_strpos(self::$config['config']['promptBox'], 'none') === false) {
       $helperWin = new \SPTK\Window(\SPTK\Element::$root, 'helper-window');
       $helperWin->addEvent('KeyPress', '\MADEMO\Controller::keyPressHandler');
@@ -213,6 +212,7 @@ class Controller {
       new \SPTK\Element($helperWin, false, false, 'PromptBoxTitle');
       new \SPTK\Element($helperWin, false, false, 'PromptBoxContent');
     }
+    \SPTK\Element::$root->screenSaver(false);
   }
 
   public static function start() {
@@ -366,9 +366,14 @@ class Controller {
       return ['w' => '100%', 'h' => '100%', 'x' => '0px', 'y' => '0px', 'd' => 0];
     }
     $string = mb_strtolower($string);
-    if (preg_match("/([0-9]+%?)x([0-9]+%?)([+-][0-9]+%?)([+-][0-9]+%?)(:[0-9]+)?/", $string, $m)) {
+    if (preg_match("/([0-9@]+%?)x([0-9@]+%?)([+-][0-9]+%?)?([+-][0-9]+%?)?(:[0-9]+)?/", $string, $m)) {
       for ($i = 1; $i < 5; $i++) {
-        if (strpos($m[$i], '%') === false) {
+        if (!isset($m[$i])) {
+          $m[$i] = 0;
+        }
+        if (strpos($m[$i], '@') !== false) {
+          $m[$i] = 'calculated';
+        } else if (strpos($m[$i], '%') === false) {
           $m[$i] .= 'px';
         }
       }
