@@ -1,6 +1,6 @@
 <?php
 
-namespace MADEMO;
+namespace MADEMO\App;
 
 class Presentation {
 

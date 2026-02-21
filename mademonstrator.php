@@ -3,21 +3,14 @@
 
 define('SPTK\DEBUG', true);
 define('APP_PATH', __FILE__);
+define('APP_NAMESPACE', 'MADEMO');
 
-require_once 'SPTK/App.php';
-require_once 'App/Controller.php';
-require_once 'App/Presentation.php';
-require_once 'App/Slide.php';
-require_once 'App/Tokenizer/Md.php';
-require_once 'App/Tokenizer/MdEmp.php';
-require_once 'App/Tokenizer/MdCode.php';
-require_once 'App/Tokenizer/MdList.php';
-require_once 'App/Tokenizer/MdComment.php';
+require_once 'SPTK/Autoload.php';
 
 new SPTK\App(
   'Layout/mademo.xml',
   'Layout/style.xss',
-  ['\MADEMO\Controller', 'init'],
+  ['\MADEMO\App\Controller', 'init'],
   false,
   false,
   false

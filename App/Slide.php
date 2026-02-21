@@ -1,6 +1,6 @@
 <?php
 
-namespace MADEMO;
+namespace MADEMO\App;
 
 class Slide {
 
@@ -75,7 +75,7 @@ class Slide {
                 $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
                 $bullet->setText('*');
               } else {
-                $bullet = new \SPTK\Image($paragraph, false, 'bullet');
+                $bullet = new \SPTK\Elements\Image($paragraph, false, 'bullet');
                 $bullet->setValue($this->bulletImage);
               }
             } else {
@@ -89,7 +89,7 @@ class Slide {
               $value = ltrim($token['value'], '> ');
               $paragraph->setText($value);
             } else {
-              new \SPTK\NL($paragraph);
+              new \SPTK\Elements\NL($paragraph);
               $value = ltrim($token['value'], '> ');
               $paragraph->addText($value);
             }
@@ -113,7 +113,7 @@ class Slide {
               }
             } else {
               if ($token['value'] !== '```') {
-                new \SPTK\NL($paragraph);
+                new \SPTK\Elements\NL($paragraph);
                 $value = trim($token['value'], '`');
                 $paragraph->addText($value);
               } else {
@@ -140,7 +140,7 @@ class Slide {
             break;
           case 'WHITESPACE':
             if ($paragraph !== false) {
-              new \SPTK\Space($paragraph);
+              new \SPTK\Elements\Space($paragraph);
             }
             break;
           case 'HLINE':
@@ -148,7 +148,7 @@ class Slide {
         }
       }
       if ($paragraph !== false) {
-        new \SPTK\Space($paragraph);
+        new \SPTK\Elements\Space($paragraph);
       }
     }
   }
@@ -184,7 +184,7 @@ class Slide {
   }
 
   private function createWord($text, $block, $class) {
-    $word = new \SPTK\Word($block, false, $class);
+    $word = new \SPTK\Elements\Word($block, false, $class);
     $word->setValue($text);
   }
 
@@ -207,7 +207,7 @@ class Slide {
   private function createImage($token, $element) {
     preg_match('/!\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
     $path = $match[2];
-    $img = new \SPTK\Image($element);
+    $img = new \SPTK\Elements\Image($element);
     $img->setValue($path);
   }
 
@@ -219,7 +219,7 @@ class Slide {
       $this->bulletImage = $path;
       return true;
     } else if (mb_strpos($config, ':absolute:') === 0) {
-      $img = new \SPTK\Image($this->slide);
+      $img = new \SPTK\Elements\Image($this->slide);
       $config = str_replace(':absolute:', '', $config);
       $geometry = Controller::parseGeometryString($config);
       $style = $img->getStyle();
@@ -231,7 +231,7 @@ class Slide {
       $img->setValue($path);
       return true;
     } else if (mb_strpos($config, ':inline:') === 0) {
-      $img = new \SPTK\Image($paragraph);
+      $img = new \SPTK\Elements\Image($paragraph);
       $config = str_replace(':inline:', '', $config);
       $geometry = Controller::parseGeometryString($config);
       $style = $img->getStyle();
@@ -274,7 +274,7 @@ class Slide {
       $nl = true;
     }
     if ($nl) {
-      new \SPTK\NL($promptBoxContent);
+      new \SPTK\Elements\NL($promptBoxContent);
     }
   }
 
