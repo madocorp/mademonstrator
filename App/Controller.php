@@ -1,6 +1,10 @@
 <?php
 
-namespace MADEMO;
+namespace MADEMO\App;
+
+use \SPTK\SDLWrapper\KeyCode;
+use \SPTK\SDLWrapper\KeyCombo;
+use \SPTK\SDLWrapper\Action;
 
 class Controller {
 
@@ -12,6 +16,7 @@ class Controller {
   private static $newSlide = false;
 
   public static function init() {
+    cli_set_process_title('MADEMO');
     self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.xml'));
     if (!isset(self::$config['config'])) {
       self::$config['config'] = [
@@ -38,10 +43,10 @@ class Controller {
   public static function loadStyles() {
     $menuBox = \SPTK\Element::byName('style-list');
     $menuBox->clear();
-    $menuBox->setOnSelect('\MADEMO\Controller::changeStyle');
+    $menuBox->setOnSelect('\MADEMO\App\Controller::changeStyle');
     foreach (glob(self::$styleDir . '/*.xss') as $i => $styleFile) {
       $name = basename($styleFile, '.xss');
-      $menuItem = new \SPTK\MenuBoxItem($menuBox);
+      $menuItem = new \SPTK\Elements\MenuBoxItem($menuBox);
       $menuItem->setSelectable('styles');
       $menuItem->setFilterable(true);
       $menuItem->setValue($name);
@@ -67,44 +72,44 @@ class Controller {
   }
 
   public static function keyPressHandler($element, $event) {
-    switch (\SPTK\KeyCombo::resolve($event['mod'], $event['scancode'], $event['key'])) {
-      case \SPTK\Action::CLOSE:
+    switch (KeyCombo::resolve($event['mod'], $event['scancode'], $event['key'])) {
+      case Action::CLOSE:
         self::leavePresentationMode();
         return true;
-      case \SPTK\Action::SELECT_ITEM:
+      case Action::SELECT_ITEM:
         self::setCurrentSlide(self::$currentSlide + 1);
         return true;
-      case \SPTK\Action::DELETE_BACK:
+      case Action::DELETE_BACK:
         self::setCurrentSlide(self::$currentSlide - 1);
         return true;
-      case \SPTK\KeyCode::NUM_0:
+      case KeyCode::NUM_0:
         self::gotoLink(0);
         return true;
-      case \SPTK\KeyCode::NUM_1:
+      case KeyCode::NUM_1:
         self::gotoLink(1);
         return true;
-      case \SPTK\KeyCode::NUM_2:
+      case KeyCode::NUM_2:
         self::gotoLink(2);
         return true;
-      case \SPTK\KeyCode::NUM_3:
+      case KeyCode::NUM_3:
         self::gotoLink(3);
         return true;
-      case \SPTK\KeyCode::NUM_4:
+      case KeyCode::NUM_4:
         self::gotoLink(4);
         return true;
-      case \SPTK\KeyCode::NUM_5:
+      case KeyCode::NUM_5:
         self::gotoLink(5);
         return true;
-      case \SPTK\KeyCode::NUM_6:
+      case KeyCode::NUM_6:
         self::gotoLink(6);
         return true;
-      case \SPTK\KeyCode::NUM_7:
+      case KeyCode::NUM_7:
         self::gotoLink(7);
         return true;
-      case \SPTK\KeyCode::NUM_8:
+      case KeyCode::NUM_8:
         self::gotoLink(8);
         return true;
-      case \SPTK\KeyCode::NUM_9:
+      case KeyCode::NUM_9:
         self::gotoLink(9);
         return true;
     }
@@ -122,12 +127,12 @@ class Controller {
   }
 
   public static function openFile() {
-    self::selectFile('\MADEMO\Controller::open', self::$config['config']['defaultDir']);
+    self::selectFile('\MADEMO\App\Controller::open', self::$config['config']['defaultDir']);
   }
 
   public static function selectFile($callback, $path) {
     $window = \SPTK\Element::firstByType('Window');
-    $panel = new \SPTK\FilePanel($window);
+    $panel = new \SPTK\Elements\FilePanel($window);
     $panel->setFileFilter(['.md']);
     $panel->setPath($path);
     $panel->setCreate(true);
@@ -155,9 +160,9 @@ class Controller {
     $slides = self::$presentation->getSlideList();
     $menuBox = \SPTK\Element::byName('slide-list');
     $menuBox->clear();
-    $menuBox->setOnSelect('\MADEMO\Controller::setCurrentSlide');
+    $menuBox->setOnSelect('\MADEMO\App\Controller::setCurrentSlide');
     foreach ($slides as $index => $title) {
-      $menuItem = new \SPTK\MenuBoxItem($menuBox);
+      $menuItem = new \SPTK\Elements\MenuBoxItem($menuBox);
       $menuItem->setSelectable('slides');
       $menuItem->setFilterable(true);
       $menuItem->setValue($index);
@@ -181,7 +186,7 @@ class Controller {
     $presWin = \SPTK\Element::byName('presentation-window');
     $presWin->fullscreenOff();
     $presWin->recalculateStyle();
-    $presWin->configure();
+    $presWin->setSize();
     $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin !== false) {
       $helperWin->remove();
@@ -202,17 +207,16 @@ class Controller {
     } else {
       self::configureWindow($presWin, self::$config['config']['presentationWindow']);
     }
-    // set display !
     if (mb_strpos(self::$config['config']['promptBox'], 'none') === false) {
       $helperWin = new \SPTK\Window(\SPTK\Element::$root, 'helper-window');
-      $helperWin->addEvent('KeyPress', '\MADEMO\Controller::keyPressHandler');
+      $helperWin->addEvent('KeyPress', '\MADEMO\App\Controller::keyPressHandler');
       $helperWin->setTitle('PromptBox');
       self::configureWindow($helperWin, self::$config['config']['promptBox']);
-      // set display !
       new \SPTK\Element($helperWin, false, false, 'PromptBoxTitle');
       new \SPTK\Element($helperWin, false, false, 'PromptBoxContent');
     }
     \SPTK\Element::$root->screenSaver(false);
+    \SPTK\Element::refresh();
   }
 
   public static function start() {
@@ -230,7 +234,7 @@ class Controller {
 
   public static function saveFile() {
     $path = self::$presentation->getFile();
-    self::selectFile('\MADEMO\Controller::save', $path);
+    self::selectFile('\MADEMO\App\Controller::save', $path);
   }
 
   public static function save($path) {
@@ -302,7 +306,7 @@ class Controller {
     $listBox = \SPTK\Element::byName('order', $panel);
     $listBox->clear();
     foreach ($slides as $index => $title) {
-      $listItem = new \SPTK\ListItem($listBox);
+      $listItem = new \SPTK\Elements\ListItem($listBox);
       $listItem->setValue($index);
       $listItem->setText($title);
     }
@@ -356,17 +360,15 @@ class Controller {
     $style = $window->getStyle();
     $style->set('width', $geometry['w']);
     $style->set('height', $geometry['h']);
-    $style->set('x', $geometry['x']);
-    $style->set('y', $geometry['y']);
-    $window->configure();
+    $window->setSize();
   }
 
   public static function parseGeometryString($string) {
     if (mb_strpos($string, 'max') !== false) {
-      return ['w' => '100%', 'h' => '100%', 'x' => '0px', 'y' => '0px', 'd' => 0];
+      return ['w' => 'max', 'h' => 'max', 'x' => '0px', 'y' => '0px'];
     }
     $string = mb_strtolower($string);
-    if (preg_match("/([0-9@]+%?)x([0-9@]+%?)([+-][0-9]+%?)?([+-][0-9]+%?)?(:[0-9]+)?/", $string, $m)) {
+    if (preg_match("/([0-9@]+%?)x([0-9@]+%?)([+-][0-9]+%?)?([+-][0-9]+%?)?/", $string, $m)) {
       for ($i = 1; $i < 5; $i++) {
         if (!isset($m[$i])) {
           $m[$i] = 0;
@@ -377,7 +379,7 @@ class Controller {
           $m[$i] .= 'px';
         }
       }
-      return ['w' => $m[1], 'h' => $m[2], 'x' => $m[3], 'y' => $m[4], 'd' => $m[5] ?? 0];
+      return ['w' => $m[1], 'h' => $m[2], 'x' => $m[3], 'y' => $m[4]];
     }
     return false;
   }

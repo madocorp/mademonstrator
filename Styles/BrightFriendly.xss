@@ -1,5 +1,5 @@
 Slide {
-  font: DejaVuSans-Regular;
+  font: DejaVuSans;
   fontSize: 2.96%h;
   backgroundColor: #fffaf3;
   position: absolute;
@@ -10,10 +10,11 @@ Slide {
 }
 
 Content {
-  font: DejaVuSans-Regular;
+  font: DejaVuSans;
   fontSize: 2.96%h;
   textAlign: center;
   padding: 6%h, 6%w;
+  marginTop: 8%h;
   color: #3f2a1d;
   position: absolute;
   x: 0px;
@@ -50,7 +51,7 @@ SubTitle {
 }
 
 Paragraph {
-  font: DejaVuSans-Regular;
+  font: DejaVuSans;
   fontSize: 3.14%h;
   textAlign: left;
   margin: 1%h, 6%;
@@ -108,7 +109,7 @@ Code {
 }
 
 Quotation {
-  font: DejaVuSans-Italic;
+  font: DejaVuSans-Oblique;
   fontSize: 3.14%h;
   textAlign: left;
   backgroundColor: #fff7ed;
@@ -120,13 +121,13 @@ Quotation {
 }
 
 Link {
-  font: DejaVuSans-Regular;
+  font: DejaVuSans;
   fontSize: 2.77%h;
   color: #ea580c;
 }
 
 LinkId {
-  font: DejaVuSans-Regular;
+  font: DejaVuSans;
   fontSize: 2.59%h;
   color: #c2410c;
   marginRight: 0.52%w;

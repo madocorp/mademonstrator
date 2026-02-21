@@ -1,6 +1,6 @@
 
 <Window title="MaDemonstrator" name="presentation-window">
-  <Event type="KeyPress">\MADEMO\Controller::keyPressHandler</Event>
+  <Event type="KeyPress">\MADEMO\App\Controller::keyPressHandler</Event>
 
   <Slide></Slide>
 
@@ -10,8 +10,8 @@
       <TextEditor name="mdeditor" tokenizer="\MADEMO\Tokenizer\Md"></TextEditor>
       <TextBox name="cheatsheet" file="Layout/cheatsheet.txt"></TextBox>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
-        <Button hotKey="F2" onPress="MADEMO\Controller::saveSlide">Save</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\App\Controller::closePanel">Cancel</Button><Space />
+        <Button hotKey="F2" onPress="MADEMO\App\Controller::saveSlide">Save</Button>
       </ButtonBox>
     </PanelContent>
   </Panel>
@@ -21,8 +21,8 @@
     <PanelContent>
       <Label>Slides:<ListBox name="order" valueType="order" movable="true"></ListBox></Label>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
-        <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSort">Save</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\App\Controller::closePanel">Cancel</Button><Space />
+        <Button hotKey="RETURN" onPress="MADEMO\App\Controller::saveSort">Save</Button>
       </ButtonBox>
     </PanelContent>
   </Panel>
@@ -32,12 +32,12 @@
     <PanelContent>
       <Label>Default style:<Input name="defaultStyle" /></Label>
       <Label>Default directory:<File name="defaultDir" start="~" file="false" /></Label>
-      <Label>Presentation window: (full, max or WxH+X+Y:display)<Input name="presentationWindow" /></Label>
-      <Label>Helper window: (none, max or WxH+X+Y:display)<Input name="promptBox" /></Label>
+      <Label>Presentation window: (full, max or WxH)<Input name="presentationWindow" /></Label>
+      <Label>Helper window: (none, max or WxH)<Input name="promptBox" /></Label>
       <Label>Browser command: (%url%)<Input name="browserCmd" /></Label>
       <ButtonBox>
-        <Button hotKey="ESCAPE" onPress="MADEMO\Controller::closePanel">Cancel</Button><Space />
-        <Button hotKey="RETURN" onPress="MADEMO\Controller::saveSettings">Save</Button>
+        <Button hotKey="ESCAPE" onPress="MADEMO\App\Controller::closePanel">Cancel</Button><Space />
+        <Button hotKey="RETURN" onPress="MADEMO\App\Controller::saveSettings">Save</Button>
       </ButtonBox>
     </PanelContent>
   </Panel>
@@ -63,27 +63,27 @@
     </MenuBar>
     <SubMenu>
       <MenuBox belongsTo="menu-presentation">
-        <MenuBoxItem onOpen="MADEMO\Controller::start">Start</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::resume">Resume</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::openFile">Open/Create</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::saveFile">Save (as)</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::start">Start</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::resume">Resume</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::openFile">Open/Create</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::saveFile">Save (as)</MenuBoxItem>
       </MenuBox>
       <MenuBox belongsTo="menu-edit">
-        <MenuBoxItem onOpen="MADEMO\Controller::edit">Edit</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::add">Add</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::cloneSlide">Clone</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::delete">Delete</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::restore">Restore</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::sort">Sort</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::edit">Edit</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::add">Add</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::cloneSlide">Clone</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::delete">Delete</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::restore">Restore</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::sort">Sort</MenuBoxItem>
       </MenuBox>
       <MenuBox name="slide-list" belongsTo="menu-slide" jumpToSelected="true" typing="search">
       </MenuBox>
       <MenuBox name="style-list" belongsTo="menu-style" jumpToSelected="true" typing="search">
       </MenuBox>
       <MenuBox belongsTo="menu-mademo">
-        <MenuBoxItem onOpen="MADEMO\Controller::settings">Settings</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::about">About</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\Controller::quit">Exit</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::settings">Settings</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::about">About</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::quit">Exit</MenuBoxItem>
       </MenuBox>
     </SubMenu>
   </Menu>

@@ -15,6 +15,7 @@ Content {
   fontSize: 2.96%h;
   textAlign: center;
   padding: 0px;
+  marginTop: 8%h;
   color: #e5f0ff;
   position: absolute;
   x: 0px;
