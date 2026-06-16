@@ -16,7 +16,7 @@ class Slide {
 
   private function build($code) {
     $tokens = \SPTK\Tokenizer::start($code, '\MADEMO\Tokenizer\Md');
-    $content = new \SPTK\Element($this->slide, false, false, 'Content');
+    $content = new \SPTK\Element($this->slide, null, null, 'Content');
     $block = $content;
     $paragraph = false;
     $this->clearHelpText(true);
@@ -57,7 +57,7 @@ class Slide {
             if ($paragraph === false) {
               $paragraph = $this->createBlock('Paragraph', $block);
             }
-            $this->createWord($token['value'], $paragraph, false);
+            $this->createWord($token['value'], $paragraph, null);
             break;
           case 'EMPHASIZED':
             if ($token['value'] !== '**') {
@@ -72,14 +72,14 @@ class Slide {
             $paragraph = $this->createBlock('List', $block);
             if ($token['type'] === 'LIST') {
               if ($this->bulletImage === false) {
-                $bullet = new \SPTK\Element($paragraph, false, false, 'Bullet');
+                $bullet = new \SPTK\Element($paragraph, null, null, 'Bullet');
                 $bullet->setText('*');
               } else {
-                $bullet = new \SPTK\Elements\Image($paragraph, false, 'bullet');
+                $bullet = new \SPTK\Elements\Image($paragraph, null, 'bullet');
                 $bullet->setValue($this->bulletImage);
               }
             } else {
-              $numbering = new \SPTK\Element($paragraph, false, false, 'Numbering');
+              $numbering = new \SPTK\Element($paragraph, null, null, 'Numbering');
               $numbering->setText(trim($token['value']));
             }
             break;
@@ -156,7 +156,7 @@ class Slide {
   private function createMainTitle($token, $element) {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
-      $title = new \SPTK\Element($element, false, false, 'MainTitle');
+      $title = new \SPTK\Element($element, null, null, 'MainTitle');
       $title->setText($value);
       $this->createHelpTitle($value);
     }
@@ -165,7 +165,7 @@ class Slide {
   private function createTitle($token, $element) {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
-      $title = new \SPTK\Element($element, false, false, 'Title');
+      $title = new \SPTK\Element($element, null, null, 'Title');
       $title->setText($value);
       $this->createHelpTitle($value);
     }
@@ -174,17 +174,17 @@ class Slide {
   private function createSubTitle($token, $element) {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
-      $title = new \SPTK\Element($element, false, false, 'SubTitle');
+      $title = new \SPTK\Element($element, null, null, 'SubTitle');
       $title->setText($value);
     }
   }
 
   private function createBlock($type, $element) {
-    return new \SPTK\Element($element, false, false, $type);
+    return new \SPTK\Element($element, null, null, $type);
   }
 
   private function createWord($text, $block, $class) {
-    $word = new \SPTK\Elements\Word($block, false, $class);
+    $word = new \SPTK\Elements\Word($block, null, $class);
     $word->setValue($text);
   }
 
@@ -198,8 +198,8 @@ class Slide {
       $this->links[] = $match[2];
     }
     $id = count($this->links) - 1;
-    $link = new \SPTK\Element($element, false, false, 'Link');
-    $ide = new \SPTK\Element($link, false, false, 'LinkId');
+    $link = new \SPTK\Element($element, null, null, 'Link');
+    $ide = new \SPTK\Element($link, null, null, 'LinkId');
     $ide->setText("[{$id}]");
     $link->addText($text);
   }

@@ -208,12 +208,12 @@ class Controller {
       self::configureWindow($presWin, self::$config['config']['presentationWindow']);
     }
     if (mb_strpos(self::$config['config']['promptBox'], 'none') === false) {
-      $helperWin = new \SPTK\Window(\SPTK\Element::$root, 'helper-window');
+      $helperWin = new \SPTK\Elements\Window(\SPTK\Element::$root, 'helper-window');
       $helperWin->addEvent('KeyPress', '\MADEMO\App\Controller::keyPressHandler');
       $helperWin->setTitle('PromptBox');
       self::configureWindow($helperWin, self::$config['config']['promptBox']);
-      new \SPTK\Element($helperWin, false, false, 'PromptBoxTitle');
-      new \SPTK\Element($helperWin, false, false, 'PromptBoxContent');
+      new \SPTK\Element($helperWin, null, null, 'PromptBoxTitle');
+      new \SPTK\Element($helperWin, null, null, 'PromptBoxContent');
     }
     \SPTK\Element::$root->screenSaver(false);
     \SPTK\Element::refresh();
