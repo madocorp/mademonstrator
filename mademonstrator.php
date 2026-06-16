@@ -11,7 +11,7 @@ new SPTK\App(
   'Layout/mademo.xml',
   'Layout/style.xss',
   ['\MADEMO\App\Controller', 'init'],
-  false,
-  false,
-  false
+  null,
+  null,
+  null
 );

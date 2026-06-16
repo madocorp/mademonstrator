@@ -17,7 +17,7 @@ class Controller {
 
   public static function init() {
     cli_set_process_title('MADEMO');
-    self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.xml'));
+    self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.json'));
     if (!isset(self::$config['config'])) {
       self::$config['config'] = [
         'defaultStyle' => 'DarkTechnical',
@@ -334,7 +334,7 @@ class Controller {
 
   public static function saveSettings($panel) {
     self::$config['config'] = $panel->getValue();
-    $file = \SPTK\Config::getFilePath('config.xml');
+    $file = \SPTK\Config::getFilePath('config.json');
     \SPTK\Config::save($file, self::$config['config'], 'config');
     $panel->hide();
     \SPTK\Element::refresh();
