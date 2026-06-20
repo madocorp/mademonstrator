@@ -10,14 +10,14 @@ class Presentation {
   protected $trash = [];
   protected $slide = false;
 
-  public function __construct($file) {
+  public function __construct(string $file) {
     $this->file = realpath($file);
     if (file_exists($this->file)) {
       $this->load();
     }
   }
 
-  protected function load() {
+  protected function load(): void {
     $md = file($this->file, FILE_IGNORE_NEW_LINES);
     $slide = false;
     $i = 0;
@@ -46,11 +46,11 @@ class Presentation {
     }
   }
 
-  public function setTarget($file) {
+  public function setTarget(string $file): void {
     $this->file = $file;
   }
 
-  public function changeSlide($i, $code, $new = false) {
+  public function changeSlide(int $i, string $code, bool $new = false): void {
     if ($new) {
       $i++;
       array_splice($this->slides, $i, 0, [['title' => 'new', 'code' => '']]);
@@ -71,7 +71,7 @@ class Presentation {
     $this->changed = true;
   }
 
-  public function save($path) {
+  public function save(string $path): void {
     $content = [];
     foreach ($this->slides as $slide) {
       foreach ($slide['code'] as $line) {
@@ -89,7 +89,7 @@ class Presentation {
     file_put_contents($path, $content);
   }
 
-  public function getSlideList() {
+  public function getSlideList(): array {
     $list = [];
     foreach ($this->slides as $slide) {
       $list[] = $slide['title'];
@@ -97,7 +97,7 @@ class Presentation {
     return $list;
   }
 
-  public function showSlide($i) {
+  public function showSlide(int $i): int {
     if ($i < 0) {
       $i = 0;
     }
@@ -110,7 +110,7 @@ class Presentation {
     return $i;
   }
 
-  public function getCode($i) {
+  public function getCode(int $i): string {
     if ($i < 0) {
       $i = 0;
     }
@@ -121,12 +121,12 @@ class Presentation {
     return $this->slides[$i]['code'];
   }
 
-  public function deleteSlide($i) {
+  public function deleteSlide(int $i): void {
     $this->trash[] = [$i, $this->slides[$i]];
     array_splice($this->slides, $i, 1);
   }
 
-  public function restoreSlide() {
+  public function restoreSlide(): array|false {
     if (empty($this->trash)) {
       return false;
     }
@@ -135,7 +135,7 @@ class Presentation {
     return $trash[0];
   }
 
-  public function sort($keys) {
+  public function sort(array $keys): array {
     $ordered = [];
     foreach ($keys as $key) {
       $ordered[] = $this->slides[$key];
@@ -143,11 +143,11 @@ class Presentation {
     $this->slides = $ordered;
   }
 
-  public function getLink($link) {
+  public function getLink(int $link): string|false  {
     return $this->slide->links[$link] ?? false;
   }
 
-  public function getFile() {
+  public function getFile(): string {
     return $this->file;
   }
 

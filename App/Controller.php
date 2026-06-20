@@ -15,7 +15,7 @@ class Controller {
   private static $config;
   private static $newSlide = false;
 
-  public static function init() {
+  public static function init(): void {
     cli_set_process_title('MADEMO');
     self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.json'));
     if (!isset(self::$config['config'])) {
@@ -40,7 +40,7 @@ class Controller {
     self::loadStyles();
   }
 
-  public static function loadStyles() {
+  public static function loadStyles(): void {
     $menuBox = \SPTK\Element::byName('style-list');
     $menuBox->clear();
     $menuBox->setOnSelect('\MADEMO\App\Controller::changeStyle');
@@ -58,7 +58,7 @@ class Controller {
     }
   }
 
-  public static function changeStyle($name) {
+  public static function changeStyle(\SPTK\Element|string $name): void {
     if (!is_string($name)) {
       $name = $name->getValue();
     }
@@ -71,7 +71,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function keyPressHandler($element, $event) {
+  public static function keyPressHandler(\SPTK\Element $element, array $event): bool {
     switch (KeyCombo::resolve($event['mod'], $event['scancode'], $event['key'])) {
       case Action::CLOSE:
         self::leavePresentationMode();
@@ -116,7 +116,7 @@ class Controller {
     return false;
   }
 
-  public static function gotoLink($i) {
+  public static function gotoLink(int $i): void {
     $link = self::$presentation->getLink($i);
     if ($link === false) {
       return;
@@ -126,11 +126,11 @@ class Controller {
     exec($cmd);
   }
 
-  public static function openFile() {
+  public static function openFile(): void {
     self::selectFile('\MADEMO\App\Controller::open', self::$config['config']['defaultDir']);
   }
 
-  public static function selectFile($callback, $path) {
+  public static function selectFile(callable $callback, string $path): void {
     $window = \SPTK\Element::firstByType('Window');
     $panel = new \SPTK\Elements\FilePanel($window);
     $panel->setFileFilter(['.md']);
@@ -141,7 +141,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function setCurrentSlide($parameter) {
+  public static function setCurrentSlide(mixed $parameter): void {
     $menuBox = \SPTK\Element::byName('slide-list');
     if (is_int($parameter)) {
       $menuItem = $menuBox->nthChild(self::$currentSlide);
@@ -156,7 +156,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function buildSlideMenu() {
+  public static function buildSlideMenu(): void {
     $slides = self::$presentation->getSlideList();
     $menuBox = \SPTK\Element::byName('slide-list');
     $menuBox->clear();
@@ -174,7 +174,7 @@ class Controller {
     }
   }
 
-  public static function open($path) {
+  public static function open(string $path): void {
     self::$presentation = new Presentation($path);
     self::$currentSlide = 0;
     self::buildSlideMenu();
@@ -182,7 +182,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function leavePresentationMode() {
+  public static function leavePresentationMode(): void {
     $presWin = \SPTK\Element::byName('presentation-window');
     $presWin->fullscreenOff();
     $presWin->recalculateStyle();
@@ -198,7 +198,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function enterPresentationMode() {
+  public static function enterPresentationMode(): void {
     $menu = \SPTK\Element::firstbyType('Menu');
     $menu->hide();
     $presWin = \SPTK\Element::byName('presentation-window');
@@ -219,29 +219,29 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function start() {
+  public static function start(): void {
     self::enterPresentationMode();
     self::setCurrentSlide(0);
     self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
     \SPTK\Element::refresh();
   }
 
-  public static function resume() {
+  public static function resume(): void {
     self::enterPresentationMode();
     self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
     \SPTK\Element::refresh();
   }
 
-  public static function saveFile() {
+  public static function saveFile(): void {
     $path = self::$presentation->getFile();
     self::selectFile('\MADEMO\App\Controller::save', $path);
   }
 
-  public static function save($path) {
+  public static function save(string $path): void {
     self::$presentation->save($path);
   }
 
-  public static function add() {
+  public static function add(): void {
     self::$newSlide = true;
     $panel = \SPTK\Element::byName('edit');
     $panel->show();
@@ -250,7 +250,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function edit() {
+  public static function edit(): void {
     self::$newSlide = false;
     $panel = \SPTK\Element::byName('edit');
     $panel->show();
@@ -260,7 +260,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function saveSlide($panel) {
+  public static function saveSlide(\SPTK\Elements\Panel $panel): void {
     $value = $panel->getValue();
     $code = $value['mdeditor'];
     if (self::$newSlide) {
@@ -275,7 +275,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function cloneSlide() {
+  public static function cloneSlide(): void {
     $code = self::$presentation->getCode(self::$currentSlide);
     self::$presentation->changeSlide(self::$currentSlide, $code, true);
     self::$currentSlide++;
@@ -284,14 +284,14 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function delete() {
+  public static function delete(): void {
     self::$presentation->deleteSlide(self::$currentSlide);
     self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
     self::buildSlideMenu();
     \SPTK\Element::refresh();
   }
 
-  public static function restore() {
+  public static function restore(): void {
     $i = self::$presentation->restoreSlide();
     if ($i !== false) {
       self::$currentSlide = self::$presentation->showSlide($i);
@@ -300,7 +300,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function sort() {
+  public static function sort(): void {
     $slides = self::$presentation->getSlideList();
     $panel = \SPTK\Element::byName('sort');
     $listBox = \SPTK\Element::byName('order', $panel);
@@ -314,7 +314,7 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function saveSort($panel) {
+  public static function saveSort(\SPTK\Elements\Panel $panel): void {
     $values = $panel->getValue();
     self::$presentation->sort($values['order']);
     self::$currentSlide = 0;
@@ -325,14 +325,14 @@ class Controller {
   }
 
 
-  public static function settings() {
+  public static function settings(): void {
     $panel = \SPTK\Element::byName('settings');
     $panel->setValue(self::$config['config']);
     $panel->show();
     \SPTK\Element::refresh();
   }
 
-  public static function saveSettings($panel) {
+  public static function saveSettings(\SPTK\Elements\Panel $panel): void {
     self::$config['config'] = $panel->getValue();
     $file = \SPTK\Config::getFilePath('config.json');
     \SPTK\Config::save($file, self::$config['config'], 'config');
@@ -340,22 +340,22 @@ class Controller {
     \SPTK\Element::refresh();
   }
 
-  public static function closePanel($panel) {
+  public static function closePanel(\SPTK\Elements\Panel $panel): void {
     $panel->hide();
     \SPTK\Element::refresh();
   }
 
-  public static function about() {
+  public static function about(): void {
     $panel = \SPTK\Element::byName('about');
     $panel->show();
     \SPTK\Element::refresh();
   }
 
-  public static function quit() {
+  public static function quit(): void {
     \SPTK\App::$instance->quit();
   }
 
-  public static function configureWindow($window, $geometryString) {
+  public static function configureWindow(\SPTK\Elements\Window $window, \SPTK\Geometry $geometryString): void {
     $geometry = self::parseGeometryString($geometryString);
     $style = $window->getStyle();
     $style->set('width', $geometry['w']);
@@ -363,7 +363,7 @@ class Controller {
     $window->setSize();
   }
 
-  public static function parseGeometryString($string) {
+  public static function parseGeometryString(string $string): array|false {
     if (mb_strpos($string, 'max') !== false) {
       return ['w' => 'max', 'h' => 'max', 'x' => '0px', 'y' => '0px'];
     }
