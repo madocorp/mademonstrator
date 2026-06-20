@@ -8,13 +8,13 @@ class Slide {
   private $bulletImage = false;
   public $links = [];
 
-  public function __construct($code) {
+  public function __construct(array $code) {
     $this->slide = \SPTK\Element::firstByType('Slide');
     $this->slide->clear();
     $this->build($code);
   }
 
-  private function build($code) {
+  private function build(array $code): void {
     $tokens = \SPTK\Tokenizer::start($code, '\MADEMO\Tokenizer\Md');
     $content = new \SPTK\Element($this->slide, null, null, 'Content');
     $block = $content;
@@ -153,7 +153,7 @@ class Slide {
     }
   }
 
-  private function createMainTitle($token, $element) {
+  private function createMainTitle(array $token, \SPTK\Element $element): void {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
       $title = new \SPTK\Element($element, null, null, 'MainTitle');
@@ -162,7 +162,7 @@ class Slide {
     }
   }
 
-  private function createTitle($token, $element) {
+  private function createTitle(array $token, \SPTK\Element $element): void {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
       $title = new \SPTK\Element($element, null, null, 'Title');
@@ -171,7 +171,7 @@ class Slide {
     }
   }
 
-  private function createSubTitle($token, $element) {
+  private function createSubTitle(array $token, \SPTK\Element $element): void {
     $value = ltrim($token['value'], '# ');
     if (!empty($value)) {
       $title = new \SPTK\Element($element, null, null, 'SubTitle');
@@ -179,16 +179,16 @@ class Slide {
     }
   }
 
-  private function createBlock($type, $element) {
+  private function createBlock(string $type, \SPTK\Element $element): \SPTK\Element {
     return new \SPTK\Element($element, null, null, $type);
   }
 
-  private function createWord($text, $block, $class) {
+  private function createWord(string $text, \SPTK\Element $block, ?string $class): void {
     $word = new \SPTK\Elements\Word($block, null, $class);
     $word->setValue($text);
   }
 
-  private function createLink($token, $element) {
+  private function createLink(array $token, \SPTK\Element $element): void {
     if (mb_strpos($token['value'], '<') === 0) {
       $text = trim($token['value'], ' <>');
       $this->links[] = $text;
@@ -204,14 +204,14 @@ class Slide {
     $link->addText($text);
   }
 
-  private function createImage($token, $element) {
+  private function createImage(array $token, \SPTK\Element $element): void {
     preg_match('/!\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
     $path = $match[2];
     $img = new \SPTK\Elements\Image($element);
     $img->setValue($path);
   }
 
-  private function specialImage($token, $paragraph) {
+  private function specialImage(array $token, \SPTK\Element|false $paragraph): bool {
     preg_match('/!\[([^\]]+)\]\(([^\)]+)\)/', $token['value'], $match);
     $config = $match[1];
     $path = $match[2];
@@ -243,7 +243,7 @@ class Slide {
     return false;
   }
 
-  private function createHelpTitle($title) {
+  private function createHelpTitle(string $title): void {
     $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin === false) {
       return;
@@ -252,7 +252,7 @@ class Slide {
     $promptBoxTitle->setText($title);
   }
 
-  private function clearHelpText() {
+  private function clearHelpText(): void {
     $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin === false) {
       return;
@@ -261,7 +261,7 @@ class Slide {
     $promptBoxContent->clear();
   }
 
-  private function createHelpText($text) {
+  private function createHelpText(string $text): void {
     $helperWin = \SPTK\Element::byName('helper-window');
     if ($helperWin === false) {
       return;
