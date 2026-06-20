@@ -127,15 +127,15 @@ class Controller {
   }
 
   public static function openFile(): void {
-    self::selectFile('\MADEMO\App\Controller::open', self::$config['config']['defaultDir']);
+    self::selectFile('\MADEMO\App\Controller::open', self::$config['config']['defaultDir'], false);
   }
 
-  public static function selectFile(callable $callback, string $path): void {
+  public static function selectFile(callable $callback, string $path, bool $create): void {
     $window = \SPTK\Element::firstByType('Window');
     $panel = new \SPTK\Elements\FilePanel($window);
     $panel->setFileFilter(['.md']);
     $panel->setPath($path);
-    $panel->setCreate(true);
+    $panel->setCreate($create);
     $panel->setOnSelect($callback);
     $panel->show();
     \SPTK\Element::refresh();
@@ -175,7 +175,21 @@ class Controller {
   }
 
   public static function open(string $path): void {
-    self::$presentation = new Presentation($path);
+    try {
+      $presentation = new Presentation($path);
+    } catch (\Exception $e) {
+      \SPTK\Elements\WarningPanel::forge('Failed to open the presentation', $e->getMessage());
+      return;
+    }
+    self::$presentation = $presentation;
+    self::$currentSlide = 0;
+    self::buildSlideMenu();
+    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
+    \SPTK\Element::refresh();
+  }
+
+  public static function create(): void {
+    self::$presentation = new Presentation();
     self::$currentSlide = 0;
     self::buildSlideMenu();
     self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
@@ -234,7 +248,20 @@ class Controller {
 
   public static function saveFile(): void {
     $path = self::$presentation->getFile();
-    self::selectFile('\MADEMO\App\Controller::save', $path);
+    if ($path === null) {
+      $path = \SPTK\Config::getHome();
+      self::selectFile('\MADEMO\App\Controller::save', $path, true);
+    } else {
+      self::save($path);
+    }
+  }
+
+  public static function saveFileAs(): void {
+    $path = self::$presentation->getFile();
+    if ($path === null) {
+      $path = \SPTK\Config::getHome();
+    }
+    self::selectFile('\MADEMO\App\Controller::save', $path, true);
   }
 
   public static function save(string $path): void {
@@ -355,7 +382,7 @@ class Controller {
     \SPTK\App::$instance->quit();
   }
 
-  public static function configureWindow(\SPTK\Elements\Window $window, \SPTK\Geometry $geometryString): void {
+  public static function configureWindow(\SPTK\Elements\Window $window, string $geometryString): void {
     $geometry = self::parseGeometryString($geometryString);
     $style = $window->getStyle();
     $style->set('width', $geometry['w']);
