@@ -65,8 +65,10 @@
       <MenuBox belongsTo="menu-presentation">
         <MenuBoxItem onOpen="MADEMO\App\Controller::start">Start</MenuBoxItem>
         <MenuBoxItem onOpen="MADEMO\App\Controller::resume">Resume</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\App\Controller::openFile">Open/Create</MenuBoxItem>
-        <MenuBoxItem onOpen="MADEMO\App\Controller::saveFile">Save (as)</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::openFile">Open</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::create">Create new</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::saveFile">Save</MenuBoxItem>
+        <MenuBoxItem onOpen="MADEMO\App\Controller::saveFileAs">Save as</MenuBoxItem>
       </MenuBox>
       <MenuBox belongsTo="menu-edit">
         <MenuBoxItem onOpen="MADEMO\App\Controller::edit">Edit</MenuBoxItem>

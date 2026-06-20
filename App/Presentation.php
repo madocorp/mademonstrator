@@ -10,9 +10,15 @@ class Presentation {
   protected $trash = [];
   protected $slide = false;
 
-  public function __construct(string $file) {
-    $this->file = realpath($file);
-    if (file_exists($this->file)) {
+  public function __construct(?string $file = null) {
+    if ($file !== null) {
+      $this->file = realpath($file);
+      if ($this->file === false) {
+        throw new \Exception("File not found ({$file}).");
+      }
+      if (!is_file($this->file)) {
+        throw new \Exception("Not a file. ({$file})");
+      }
       $this->load();
     }
   }
@@ -50,10 +56,10 @@ class Presentation {
     $this->file = $file;
   }
 
-  public function changeSlide(int $i, string $code, bool $new = false): void {
+  public function changeSlide(int $i, array $code, bool $new = false): void {
     if ($new) {
       $i++;
-      array_splice($this->slides, $i, 0, [['title' => 'new', 'code' => '']]);
+      array_splice($this->slides, $i, 0, [['title' => 'new', 'code' => []]]);
     }
     if ($this->slides[$i]['code'] === $code) {
       return;
@@ -105,12 +111,12 @@ class Presentation {
     if ($i >= $n) {
       $i = $n - 1;
     }
-    $code = $this->slides[$i]['code'];
+    $code = $this->slides[$i]['code'] ?? [];
     $this->slide = new Slide($code);
     return $i;
   }
 
-  public function getCode(int $i): string {
+  public function getCode(int $i): array {
     if ($i < 0) {
       $i = 0;
     }
@@ -126,7 +132,7 @@ class Presentation {
     array_splice($this->slides, $i, 1);
   }
 
-  public function restoreSlide(): array|false {
+  public function restoreSlide(): int|false {
     if (empty($this->trash)) {
       return false;
     }
@@ -135,7 +141,7 @@ class Presentation {
     return $trash[0];
   }
 
-  public function sort(array $keys): array {
+  public function sort(array $keys): void {
     $ordered = [];
     foreach ($keys as $key) {
       $ordered[] = $this->slides[$key];
@@ -147,7 +153,7 @@ class Presentation {
     return $this->slide->links[$link] ?? false;
   }
 
-  public function getFile(): string {
+  public function getFile(): string|null {
     return $this->file;
   }
 
