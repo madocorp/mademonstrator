@@ -1,0 +1,86 @@
+body, .slide {
+  font-size: 2.96vh;
+  background-color: #0b0e14;
+  width: 100%;
+}
+
+.slide {
+  font-size: 2.96vh;
+  text-align: center;
+  padding: 5vh  5vw;
+  margin-top: 20vh;
+  color: #e6e6eb;
+  width: 100%;
+}
+
+h1 {
+  font-size: 7.22vh;
+  text-align: center;
+  margin: 0px  0px  15vh  0px;
+  color: #c77dff;
+}
+
+h2 {
+  font-size: 4.81vh;
+  text-align: center;
+  padding: 3vh  5vw;
+  margin: 5vh  0px;
+  color: #e9d5ff;
+  background-color: #3a1c71;
+  width: 100%;
+}
+
+h3 {
+  font-size: 3.33vh;
+  text-align: center;
+  padding: 1vh  5%;
+  color: #c77dff;
+  width: 90%;
+}
+
+p {
+  font-size: 3.14vh;
+  text-align: center;
+  margin: 2vh  5%;
+  width: 90%;
+}
+
+ul, ol {
+  width: 90%;
+  font-size: 2.96vh;
+  margin: 2vh  5%;
+}
+
+pre, pre code {
+  font-size: 2.59vh;
+  text-align: left;
+  margin: 1vh  10%;
+  padding: 1vh  1vw;
+  background-color: #1f1147;
+  color: #ffffff;
+  border-color: #c77dff;
+  width: 80%;
+}
+
+blockquote {
+  font-size: 3.33vh;
+  text-align: right;
+  background-color: #c77dff;
+  color: #3a1c71;
+  padding: 2vh  2vw;
+  border-color: #3a1c71;
+  width: 80%;
+}
+
+a {
+  font-size: 2.96vh;
+  color: #9d4edd;
+}
+
+strong, .emphasized {
+  color: #ffd166;
+}
+
+p code, li code, .inlinecode {
+  color: #ffffff;
+}

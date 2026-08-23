@@ -1,0 +1,83 @@
+body, .slide {
+  font-size: 2.96vh;
+  background-color: #0f1f1a;
+  width: 100%;
+}
+
+.slide {
+  font-size: 2.96vh;
+  text-align: center;
+  padding: 5vh  5vw;
+  margin-top: 10vh;
+  color: #ffffff;
+  width: 100%;
+}
+
+h1 {
+  font-size: 6.66vh;
+  text-align: center;
+  margin: 0px  0px  15vh  0px;
+}
+
+h2 {
+  font-size: 4.44vh;
+  text-align: center;
+  padding: 5vh  5vw;
+  color: #d1faf5;
+  width: 100%;
+}
+
+h3 {
+  font-size: 3.33vh;
+  text-align: center;
+  padding: 1vh  5%;
+  color: #6ee7b7;
+  width: 90%;
+}
+
+p {
+  font-size: 2.96vh;
+  text-align: left;
+  margin: 1vh  5%;
+  width: 90%;
+}
+
+ul, ol {
+  width: 90%;
+  font-size: 2.96vh;
+  margin: 1vh  5%;
+}
+
+pre, pre code {
+  font-size: 2.59vh;
+  text-align: left;
+  margin: 1vh  10%;
+  padding: 1vh  1vw;
+  background-color: #111111;
+  color: #00aaaa;
+  border-color: #ffffff;
+  width: 80%;
+}
+
+blockquote {
+  font-size: 2.96vh;
+  text-align: left;
+  background-color: #102722;
+  padding: 2vh  2vw;
+  border-left-width: 0.15vw;
+  border-color: #ffffff;
+  width: 80%;
+}
+
+a {
+  font-size: 2.96vh;
+  color: #8888ff;
+}
+
+strong, .emphasized {
+  color: #e7b76e;
+}
+
+p code, li code, .inlinecode {
+  color: #00aaaa;
+}

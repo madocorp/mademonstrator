@@ -2,413 +2,398 @@
 
 namespace MADEMO\App;
 
-use \SPTK\SDLWrapper\KeyCode;
-use \SPTK\SDLWrapper\KeyCombo;
-use \SPTK\SDLWrapper\Action;
+use SPTK2\Core\InputAction;
+use SPTK2\Core\InputEvent;
+use SPTK2\Runtime\SdlApp;
+use SPTK2\Runtime\SdlWindow;
+use SPTK2\Widgets\Button;
+use SPTK2\Widgets\DialogLayer;
+use SPTK2\Widgets\DialogPanel;
+use SPTK2\Widgets\Dock;
+use SPTK2\Widgets\FileSelector;
+use SPTK2\Widgets\Flow;
+use SPTK2\Widgets\FlowRow;
+use SPTK2\Widgets\HtmlView;
+use SPTK2\Widgets\ImageView;
+use SPTK2\Widgets\Input;
+use SPTK2\Widgets\Label;
+use SPTK2\Widgets\ListItem;
+use SPTK2\Widgets\ListView;
+use SPTK2\Widgets\MenuBar;
+use SPTK2\Widgets\MenuItem;
+use SPTK2\Widgets\TextBlock;
+use SPTK2\Widgets\TextEditor;
 
-class Controller {
+final class Controller {
 
-  public static $presentation = false;
-  public static $currentSlide = 0;
-  public static $configDir;
-  public static $styleDir;
-  private static $config;
-  private static $newSlide = false;
+  private Presentation $presentation;
+  private int $currentSlide = 0;
+  private bool $newSlide = false;
+  private bool $presentationMode = false;
+  private array $config;
+  private string $styleDir;
+  private MenuBar $menu;
+  private MenuItem $slideMenu;
+  private MenuItem $styleMenu;
+  private HtmlView $slide;
+  private DialogLayer $dialogs;
+  private ?Shell $root = null;
+  private ?SdlWindow $window = null;
 
-  public static function init(): void {
-    cli_set_process_title('MADEMO');
-    self::$config = \SPTK\Config::load(\SPTK\Config::getFilePath('config.json'));
-    if (!isset(self::$config['config'])) {
-      self::$config['config'] = [
-        'defaultStyle' => 'DarkTechnical',
-        'defaultDir' => \SPTK\Config::getHome(),
-        'presentationWindow' => 'full',
-        'promptBox' => 'none',
-        'browserCmd' => 'firefox --new-tab %url%'
-      ];
-    }
-    self::$configDir = \SPTK\Config::getPath();
-    self::$styleDir = \SPTK\Config::getFilePath('Styles');
-    if (!is_dir(self::$styleDir)) {
-      mkdir(self::$styleDir);
-      $appDir = dirname(APP_PATH);
-      foreach (glob($appDir . '/Styles/*.xss') as $styleFile) {
-        copy($styleFile, self::$styleDir . '/' . basename($styleFile));
-      }
-    }
-    self::open('Layout/doc.md');
-    self::loadStyles();
+  public function __construct(private string $appDir, private SdlApp $app) {
+    $loaded = Config::load();
+    $this->config = $loaded['config'];
+    $this->styleDir = Config::ensureStyles($appDir);
   }
 
-  public static function loadStyles(): void {
-    $menuBox = \SPTK\Element::byName('style-list');
-    $menuBox->clear();
-    $menuBox->setOnSelect('\MADEMO\App\Controller::changeStyle');
-    foreach (glob(self::$styleDir . '/*.xss') as $i => $styleFile) {
-      $name = basename($styleFile, '.xss');
-      $menuItem = new \SPTK\Elements\MenuBoxItem($menuBox);
-      $menuItem->setSelectable('styles');
-      $menuItem->setFilterable(true);
-      $menuItem->setValue($name);
-      $menuItem->setText($name);
-      if ($name === self::$config['config']['defaultStyle']) {
-        $menuItem->setSelected('true');
-        self::changeStyle($name);
-      }
+  public function setWindow(SdlWindow $window): void {
+    $this->window = $window;
+  }
+
+  public function build(): Dock {
+    $root = new Shell('mademonstrator-root', fn(InputEvent $event): bool => $this->handleSlideShortcut($event));
+    $this->root = $root;
+    $this->menu = new MenuBar('menu');
+    $this->slide = new HtmlView('slide');
+    $this->dialogs = new DialogLayer('dialogs');
+    $this->buildMenu();
+    $root->dock($this->menu, 'top');
+    $root->fill($this->slide);
+    $root->add($this->dialogs);
+    $this->open($this->appDir . '/Layout/doc.md');
+    return $root;
+  }
+
+  public function open(string $path): void {
+    try {
+      $this->presentation = new Presentation($path);
+      $this->currentSlide = 0;
+      $this->showCurrentSlide();
+    } catch (\Throwable $e) {
+      $this->message('Failed to open the presentation', $e->getMessage(), 'error');
     }
   }
 
-  public static function changeStyle(\SPTK\Element|string $name): void {
-    if (!is_string($name)) {
-      $name = $name->getValue();
-    }
-    $path = self::$configDir . "/Styles/{$name}.xss";
-    \SPTK\StyleSheet::clearCache();
-    \SPTK\StyleSheet::load($path, true);
-    $slide = \SPTK\Element::firstByType('Slide');
-    $slide->recalculateStyle();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
+  private function create(): void {
+    $this->presentation = new Presentation();
+    $this->presentation->changeSlide(0, ['# New presentation']);
+    $this->currentSlide = 0;
+    $this->showCurrentSlide();
   }
 
-  public static function keyPressHandler(\SPTK\Element $element, array $event): bool {
-    switch (KeyCombo::resolve($event['mod'], $event['scancode'], $event['key'])) {
-      case Action::CLOSE:
-        self::leavePresentationMode();
-        return true;
-      case Action::SELECT_ITEM:
-        self::setCurrentSlide(self::$currentSlide + 1);
-        return true;
-      case Action::DELETE_BACK:
-        self::setCurrentSlide(self::$currentSlide - 1);
-        return true;
-      case KeyCode::NUM_0:
-        self::gotoLink(0);
-        return true;
-      case KeyCode::NUM_1:
-        self::gotoLink(1);
-        return true;
-      case KeyCode::NUM_2:
-        self::gotoLink(2);
-        return true;
-      case KeyCode::NUM_3:
-        self::gotoLink(3);
-        return true;
-      case KeyCode::NUM_4:
-        self::gotoLink(4);
-        return true;
-      case KeyCode::NUM_5:
-        self::gotoLink(5);
-        return true;
-      case KeyCode::NUM_6:
-        self::gotoLink(6);
-        return true;
-      case KeyCode::NUM_7:
-        self::gotoLink(7);
-        return true;
-      case KeyCode::NUM_8:
-        self::gotoLink(8);
-        return true;
-      case KeyCode::NUM_9:
-        self::gotoLink(9);
-        return true;
+  private function start(): void {
+    $this->presentationMode = true;
+    $this->setMenuVisible(false);
+    $this->configurePresentationWindow();
+    $this->setCurrentSlide(0);
+    $this->slide->root()->requestFocus();
+  }
+
+  private function resume(): void {
+    $this->presentationMode = true;
+    $this->setMenuVisible(false);
+    $this->configurePresentationWindow();
+    $this->slide->root()->requestFocus();
+  }
+
+  private function leavePresentationMode(): void {
+    $this->presentationMode = false;
+    $this->setMenuVisible(true);
+    $this->window?->setFullscreen(false);
+    $this->menu->requestFocus();
+  }
+
+  public function handleSlideShortcut(InputEvent $event): bool {
+    if (
+      $event->type !== 'key' ||
+      !$this->presentationMode ||
+      $this->dialogs->top() !== null ||
+      !isset($this->presentation) ||
+      $this->slide->root()->context()?->currentFocus() !== $this->slide->root()
+    ) {
+      return false;
+    }
+    if (InputAction::activate($event, 'slide') || InputAction::right($event, 'slide') || InputAction::pageDown($event, 'slide')) {
+      $this->setCurrentSlide($this->currentSlide + 1);
+      return true;
+    }
+    if (InputAction::backspace($event, 'slide') || InputAction::left($event, 'slide') || InputAction::pageUp($event, 'slide')) {
+      $this->setCurrentSlide($this->currentSlide - 1);
+      return true;
+    }
+    if (InputAction::cancel($event, 'slide')) {
+      $this->leavePresentationMode();
+      return true;
+    }
+    $key = InputAction::normalizedKey($event->key);
+    if (preg_match('/^[0-9]$/', $key)) {
+      $this->gotoLink((int)$key);
+      return true;
     }
     return false;
   }
 
-  public static function gotoLink(int $i): void {
-    $link = self::$presentation->getLink($i);
+  private function setCurrentSlide(int $index): void {
+    $this->currentSlide = $this->presentation->show($index, $this->slide, $this->selectedStyleCss());
+    $this->rebuildSlideMenu();
+  }
+
+  private function showCurrentSlide(): void {
+    $this->setCurrentSlide($this->currentSlide);
+  }
+
+  private function gotoLink(int $index): void {
+    $link = $this->presentation->link($index);
     if ($link === false) {
       return;
     }
-    $cmd = self::$config['config']['browserCmd'];
-    $cmd = str_replace('%url%', $link, $cmd);
+    $cmd = str_replace('%url%', escapeshellarg($link), $this->config['browserCmd']);
     exec($cmd);
   }
 
-  public static function openFile(): void {
-    self::selectFile('\MADEMO\App\Controller::open', self::$config['config']['defaultDir'], false);
-  }
-
-  public static function selectFile(callable $callback, string $path, bool $create): void {
-    $window = \SPTK\Element::firstByType('Window');
-    $panel = new \SPTK\Elements\FilePanel($window);
-    $panel->setFileFilter(['.md']);
-    $panel->setPath($path);
-    $panel->setCreate($create);
-    $panel->setOnSelect($callback);
-    $panel->show();
-    \SPTK\Element::refresh();
-  }
-
-  public static function setCurrentSlide(mixed $parameter): void {
-    $menuBox = \SPTK\Element::byName('slide-list');
-    if (is_int($parameter)) {
-      $menuItem = $menuBox->nthChild(self::$currentSlide);
-      $menuItem->deselect();
-      $i = $parameter;
-    } else {
-      $i = $parameter->getValue();
-    }
-    self::$currentSlide = self::$presentation->showSlide($i);
-    $menuItem = $menuBox->nthChild(self::$currentSlide);
-    $menuItem->select();
-    \SPTK\Element::refresh();
-  }
-
-  public static function buildSlideMenu(): void {
-    $slides = self::$presentation->getSlideList();
-    $menuBox = \SPTK\Element::byName('slide-list');
-    $menuBox->clear();
-    $menuBox->setOnSelect('\MADEMO\App\Controller::setCurrentSlide');
-    foreach ($slides as $index => $title) {
-      $menuItem = new \SPTK\Elements\MenuBoxItem($menuBox);
-      $menuItem->setSelectable('slides');
-      $menuItem->setFilterable(true);
-      $menuItem->setValue($index);
-      $menuItem->setText($title);
-      if ($index === self::$currentSlide) {
-        $menuItem->setSelected('true');
-        $menuItem->setSelected('true');
+  private function edit(bool $new): void {
+    $this->newSlide = $new;
+    $panel = new DialogPanel('edit-slide', ['title' => $new ? 'Add slide' : 'Edit slide', 'size' => 'big', 'contentColumns' => 92]);
+    $editor = new TextEditor('mdeditor', $new ? '' : implode("\n", $this->presentation->code($this->currentSlide)));
+    $editor->setTokenizer(MarkdownHighlighter::class);
+    $editor->setPreferredRows(18);
+    $cheatsheet = new TextEditor('cheatsheet');
+    $cheatsheet->setFile($this->appDir . '/Layout/cheatsheet.txt')->setReadOnly(true);
+    $cheatsheet->setPreferredRows(18);
+    $row = new FlowRow('editor-row', 'left', 1);
+    $row->place($editor, 58)
+      ->place($cheatsheet, 33);
+    $panel->addContent($row, 18);
+    $panel->addButton($this->button('Save', function() use ($panel, $editor): void {
+      $code = $editor->getValue();
+      $this->presentation->changeSlide($this->currentSlide, $code, $this->newSlide);
+      if ($this->newSlide) {
+        $this->currentSlide++;
       }
+      $this->dialogs->pop($panel);
+      $this->showCurrentSlide();
+    }));
+    $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
+  }
+
+  private function cloneSlide(): void {
+    $this->presentation->changeSlide($this->currentSlide, $this->presentation->code($this->currentSlide), true);
+    $this->currentSlide++;
+    $this->showCurrentSlide();
+  }
+
+  private function deleteSlide(): void {
+    $this->presentation->deleteSlide($this->currentSlide);
+    $this->showCurrentSlide();
+  }
+
+  private function restoreSlide(): void {
+    $restored = $this->presentation->restoreSlide();
+    if ($restored !== false) {
+      $this->currentSlide = $restored;
+      $this->showCurrentSlide();
     }
   }
 
-  public static function open(string $path): void {
-    try {
-      $presentation = new Presentation($path);
-    } catch (\Exception $e) {
-      \SPTK\Elements\WarningPanel::forge('Failed to open the presentation', $e->getMessage());
+  private function sortSlides(): void {
+    $items = [];
+    foreach ($this->presentation->slideTitles() as $index => $title) {
+      $items[] = new ListItem(['text' => $title, 'value' => $index, 'selectable' => true, 'selected' => true]);
+    }
+    $list = new ListView('order', $items, ['selectionOrder' => true]);
+    $list->setSelectedValues(array_keys($items));
+    $panel = new DialogPanel('sort-slides', ['title' => 'Sort slides', 'size' => 'normal', 'contentColumns' => 56]);
+    $panel->addContent(new TextBlock('', 'Select slides in the desired order with Shift+Space.'), 2);
+    $panel->addContent($list, 12);
+    $panel->addButton($this->button('Save', function() use ($panel, $list): void {
+      $this->presentation->sort($list->selectedValues());
+      $this->currentSlide = 0;
+      $this->dialogs->pop($panel);
+      $this->showCurrentSlide();
+    }));
+    $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
+  }
+
+  private function openFileDialog(bool $save): void {
+    $panel = new DialogPanel($save ? 'save-file' : 'open-file', ['title' => $save ? 'Save presentation' : 'Open presentation', 'size' => 'big']);
+    $selector = new FileSelector('file', $this->config['defaultDir'], $this->presentation->file() ?? '', [
+      'extensions' => ['.md'],
+      'createFile' => $save,
+    ]);
+    $panel->addContent($selector);
+    $panel->addButton($this->button($save ? 'Save' : 'Open', function() use ($panel, $selector, $save): void {
+      $path = (string)$selector->getValue();
+      if ($path === '') {
+        return;
+      }
+      $this->dialogs->pop($panel);
+      $save ? $this->save($path) : $this->open($path);
+    }));
+    $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
+  }
+
+  private function save(?string $path = null): void {
+    $path ??= $this->presentation->file();
+    if ($path === null) {
+      $this->openFileDialog(true);
       return;
     }
-    self::$presentation = $presentation;
-    self::$currentSlide = 0;
-    self::buildSlideMenu();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
+    $this->presentation->save($path);
   }
 
-  public static function create(): void {
-    self::$presentation = new Presentation();
-    self::$currentSlide = 0;
-    self::buildSlideMenu();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
-  }
-
-  public static function leavePresentationMode(): void {
-    $presWin = \SPTK\Element::byName('presentation-window');
-    $presWin->fullscreenOff();
-    $presWin->recalculateStyle();
-    $presWin->setSize();
-    $helperWin = \SPTK\Element::byName('helper-window');
-    if ($helperWin !== false) {
-      $helperWin->remove();
+  private function settings(): void {
+    $panel = new DialogPanel('settings', ['title' => 'Settings', 'size' => 'normal', 'contentColumns' => 70]);
+    $defaultStyle = new Input('defaultStyle', $this->config['defaultStyle']);
+    $defaultDir = new FileSelector('defaultDir', $this->config['defaultDir'], $this->config['defaultDir']);
+    $presentationWindow = new Input('presentationWindow', $this->config['presentationWindow']);
+    $promptBox = new Input('promptBox', $this->config['promptBox']);
+    $browserCmd = new Input('browserCmd', $this->config['browserCmd']);
+    foreach ([
+      'Default style:' => $defaultStyle,
+      'Default directory:' => $defaultDir,
+      'Presentation window:' => $presentationWindow,
+      'Helper window:' => $promptBox,
+      'Browser command:' => $browserCmd,
+    ] as $label => $field) {
+      $panel->addContent(new Label('', $label));
+      $panel->addContent($field);
     }
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    $menu = \SPTK\Element::firstByType('Menu');
-    $menu->show();
-    \SPTK\Element::$root->screenSaver(true);
-    \SPTK\Element::refresh();
+    $panel->addButton($this->button('Save', function() use ($panel, $defaultStyle, $defaultDir, $presentationWindow, $promptBox, $browserCmd): void {
+      $this->config = [
+        'defaultStyle' => $defaultStyle->getValue(),
+        'defaultDir' => $defaultDir->getValue(),
+        'presentationWindow' => $presentationWindow->getValue(),
+        'promptBox' => $promptBox->getValue(),
+        'browserCmd' => $browserCmd->getValue(),
+      ];
+      Config::save($this->config);
+      $this->dialogs->pop($panel);
+    }));
+    $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
   }
 
-  public static function enterPresentationMode(): void {
-    $menu = \SPTK\Element::firstbyType('Menu');
-    $menu->hide();
-    $presWin = \SPTK\Element::byName('presentation-window');
-    if (mb_strpos(self::$config['config']['presentationWindow'], 'full') !== false) {
-      $presWin->fullscreenOn();
+  private function about(): void {
+    $license = is_file($this->appDir . '/UNLICENSE') ? file_get_contents($this->appDir . '/UNLICENSE') : '';
+    $license = preg_replace("/(?<!\n)\n(?!\n)/", ' ', trim((string)$license)) ?? trim((string)$license);
+    $panel = new DialogPanel('about', ['title' => 'MaDemonstrator', 'size' => 'big', 'contentColumns' => 82]);
+    $left = new Flow('about-left');
+    $logo = new ImageView('mademonstrator-logo', $this->appDir . '/Layout/mademo.png');
+    $logo->setCellSize(26, 11)->setFit('contain');
+    $left->place($logo, $logo->preferredRows());
+    $left->place(new TextBlock('', "MaDemonstrator\nSPTK2 migration preview\nVersion:\n0.0.0.0.0.0.1"));
+    $licenseText = new TextBlock('license', "Unlicense:\n\n" . $license);
+    $licenseText->setPreferredRows(22);
+    $row = new FlowRow('about-row', 'left', 3);
+    $row->place($left, 30);
+    $row->place($licenseText, 49);
+    $panel->addContent($row, 24);
+    $panel->addButton($this->button('Close', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
+  }
+
+  private function message(string $title, string $message, string $variant = 'normal'): void {
+    $panel = new DialogPanel('message', ['title' => $title, 'variant' => $variant, 'size' => 'normal']);
+    $panel->addContent(new TextBlock('', $message));
+    $panel->addButton($this->button('OK', fn() => $this->dialogs->pop($panel)));
+    $this->dialogs->push($panel);
+  }
+
+  private function buildMenu(): void {
+    $this->menu->addItem(new MenuItem(['label' => 'Presentation', 'items' => [
+      ['label' => 'Start', 'action' => fn() => $this->start()],
+      ['label' => 'Resume', 'action' => fn() => $this->resume()],
+      ['label' => 'Open', 'action' => fn() => $this->openFileDialog(false)],
+      ['label' => 'Create new', 'action' => fn() => $this->create()],
+      ['label' => 'Save', 'action' => fn() => $this->save()],
+      ['label' => 'Save as', 'action' => fn() => $this->openFileDialog(true)],
+    ]]));
+    $this->menu->addItem(new MenuItem(['label' => 'Edit', 'items' => [
+      ['label' => 'Edit', 'action' => fn() => $this->edit(false)],
+      ['label' => 'Add', 'action' => fn() => $this->edit(true)],
+      ['label' => 'Clone', 'action' => fn() => $this->cloneSlide()],
+      ['label' => 'Delete', 'action' => fn() => $this->deleteSlide()],
+      ['label' => 'Restore', 'action' => fn() => $this->restoreSlide()],
+      ['label' => 'Sort', 'action' => fn() => $this->sortSlides()],
+    ]]));
+    $this->slideMenu = new MenuItem(['label' => 'Slide']);
+    $this->styleMenu = new MenuItem(['label' => 'Style']);
+    $this->menu->addItem($this->slideMenu);
+    $this->menu->addItem($this->styleMenu);
+    $this->menu->addItem(new MenuItem(['label' => 'MaDemonstrator', 'items' => [
+      ['label' => 'Settings', 'action' => fn() => $this->settings()],
+      ['label' => 'About', 'action' => fn() => $this->about()],
+      ['label' => 'Exit', 'action' => fn() => $this->app->quit()],
+    ]]));
+    $this->rebuildStyleMenu();
+  }
+
+  private function rebuildSlideMenu(): void {
+    $items = [];
+    foreach ($this->presentation->slideTitles() as $index => $title) {
+      $items[] = ['label' => $title, 'checked' => $index === $this->currentSlide, 'action' => fn() => $this->setCurrentSlide($index)];
+    }
+    $this->slideMenu->update(['items' => $items]);
+  }
+
+  private function rebuildStyleMenu(): void {
+    $items = [];
+    foreach (glob($this->styleDir . '/*.css') ?: [] as $styleFile) {
+      $name = basename($styleFile, '.css');
+      $items[] = ['label' => $name, 'checked' => $name === $this->config['defaultStyle'], 'action' => function() use ($name): void {
+        $this->config['defaultStyle'] = $name;
+        $this->showCurrentSlide();
+        $this->rebuildStyleMenu();
+      }];
+    }
+    $this->styleMenu->update(['items' => $items]);
+  }
+
+  private function selectedStyleCss(): string {
+    $file = $this->selectedStyleFile();
+    if ($file === null) {
+      return '';
+    }
+    $css = file_get_contents($file);
+    return $css === false ? '' : $css;
+  }
+
+  private function selectedStyleFile(): ?string {
+    $name = basename((string)($this->config['defaultStyle'] ?? ''));
+    if ($name === '') {
+      $name = 'Default';
+    }
+    $file = $this->styleDir . '/' . $name . '.css';
+    if (is_file($file)) {
+      return $file;
+    }
+    $fallback = $this->styleDir . '/Default.css';
+    return is_file($fallback) ? $fallback : null;
+  }
+
+  private function button(string $label, callable $callback): Button {
+    return (new Button('', $label))->setOnPress($callback);
+  }
+
+  private function setMenuVisible(bool $visible): void {
+    $this->root?->setElementVisible($this->menu, $visible);
+  }
+
+  private function configurePresentationWindow(): void {
+    $mode = strtolower((string)($this->config['presentationWindow'] ?? 'full'));
+    if (str_contains($mode, 'full')) {
+      $this->window?->setFullscreen(true);
+      return;
+    }
+    $this->window?->setFullscreen(false);
+    if (str_contains($mode, 'max')) {
+      $this->window?->maximize();
     } else {
-      self::configureWindow($presWin, self::$config['config']['presentationWindow']);
+      $this->window?->restore();
     }
-    if (mb_strpos(self::$config['config']['promptBox'], 'none') === false) {
-      $helperWin = new \SPTK\Elements\Window(\SPTK\Element::$root, 'helper-window');
-      $helperWin->addEvent('KeyPress', '\MADEMO\App\Controller::keyPressHandler');
-      $helperWin->setTitle('PromptBox');
-      self::configureWindow($helperWin, self::$config['config']['promptBox']);
-      new \SPTK\Element($helperWin, null, null, 'PromptBoxTitle');
-      new \SPTK\Element($helperWin, null, null, 'PromptBoxContent');
-    }
-    \SPTK\Element::$root->screenSaver(false);
-    \SPTK\Element::refresh();
-  }
-
-  public static function start(): void {
-    self::enterPresentationMode();
-    self::setCurrentSlide(0);
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
-  }
-
-  public static function resume(): void {
-    self::enterPresentationMode();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
-  }
-
-  public static function saveFile(): void {
-    $path = self::$presentation->getFile();
-    if ($path === null) {
-      $path = \SPTK\Config::getHome();
-      self::selectFile('\MADEMO\App\Controller::save', $path, true);
-    } else {
-      self::save($path);
-    }
-  }
-
-  public static function saveFileAs(): void {
-    $path = self::$presentation->getFile();
-    if ($path === null) {
-      $path = \SPTK\Config::getHome();
-    }
-    self::selectFile('\MADEMO\App\Controller::save', $path, true);
-  }
-
-  public static function save(string $path): void {
-    self::$presentation->save($path);
-  }
-
-  public static function add(): void {
-    self::$newSlide = true;
-    $panel = \SPTK\Element::byName('edit');
-    $panel->show();
-    $editor = \SPTK\Element::byName('mdeditor', $panel);
-    $editor->setValue('');
-    \SPTK\Element::refresh();
-  }
-
-  public static function edit(): void {
-    self::$newSlide = false;
-    $panel = \SPTK\Element::byName('edit');
-    $panel->show();
-    $code = self::$presentation->getCode(self::$currentSlide);
-    $editor = \SPTK\Element::byName('mdeditor', $panel);
-    $editor->setValue(implode("\n", $code));
-    \SPTK\Element::refresh();
-  }
-
-  public static function saveSlide(\SPTK\Elements\Panel $panel): void {
-    $value = $panel->getValue();
-    $code = $value['mdeditor'];
-    if (self::$newSlide) {
-      self::$presentation->changeSlide(self::$currentSlide, $code, true);
-      self::$currentSlide++;
-      self::buildSlideMenu();
-    } else {
-      self::$presentation->changeSlide(self::$currentSlide, $code);
-    }
-    $panel->hide();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
-  }
-
-  public static function cloneSlide(): void {
-    $code = self::$presentation->getCode(self::$currentSlide);
-    self::$presentation->changeSlide(self::$currentSlide, $code, true);
-    self::$currentSlide++;
-    self::buildSlideMenu();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    \SPTK\Element::refresh();
-  }
-
-  public static function delete(): void {
-    self::$presentation->deleteSlide(self::$currentSlide);
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    self::buildSlideMenu();
-    \SPTK\Element::refresh();
-  }
-
-  public static function restore(): void {
-    $i = self::$presentation->restoreSlide();
-    if ($i !== false) {
-      self::$currentSlide = self::$presentation->showSlide($i);
-      self::buildSlideMenu();
-    }
-    \SPTK\Element::refresh();
-  }
-
-  public static function sort(): void {
-    $slides = self::$presentation->getSlideList();
-    $panel = \SPTK\Element::byName('sort');
-    $listBox = \SPTK\Element::byName('order', $panel);
-    $listBox->clear();
-    foreach ($slides as $index => $title) {
-      $listItem = new \SPTK\Elements\ListItem($listBox);
-      $listItem->setValue($index);
-      $listItem->setText($title);
-    }
-    $panel->show();
-    \SPTK\Element::refresh();
-  }
-
-  public static function saveSort(\SPTK\Elements\Panel $panel): void {
-    $values = $panel->getValue();
-    self::$presentation->sort($values['order']);
-    self::$currentSlide = 0;
-    self::buildSlideMenu();
-    self::$currentSlide = self::$presentation->showSlide(self::$currentSlide);
-    $panel->hide();
-    \SPTK\Element::refresh();
-  }
-
-
-  public static function settings(): void {
-    $panel = \SPTK\Element::byName('settings');
-    $panel->setValue(self::$config['config']);
-    $panel->show();
-    \SPTK\Element::refresh();
-  }
-
-  public static function saveSettings(\SPTK\Elements\Panel $panel): void {
-    self::$config['config'] = $panel->getValue();
-    $file = \SPTK\Config::getFilePath('config.json');
-    \SPTK\Config::save($file, self::$config['config'], 'config');
-    $panel->hide();
-    \SPTK\Element::refresh();
-  }
-
-  public static function closePanel(\SPTK\Elements\Panel $panel): void {
-    $panel->hide();
-    \SPTK\Element::refresh();
-  }
-
-  public static function about(): void {
-    $panel = \SPTK\Element::byName('about');
-    $panel->show();
-    \SPTK\Element::refresh();
-  }
-
-  public static function quit(): void {
-    \SPTK\App::$instance->quit();
-  }
-
-  public static function configureWindow(\SPTK\Elements\Window $window, string $geometryString): void {
-    $geometry = self::parseGeometryString($geometryString);
-    $style = $window->getStyle();
-    $style->set('width', $geometry['w']);
-    $style->set('height', $geometry['h']);
-    $window->setSize();
-  }
-
-  public static function parseGeometryString(string $string): array|false {
-    if (mb_strpos($string, 'max') !== false) {
-      return ['w' => 'max', 'h' => 'max', 'x' => '0px', 'y' => '0px'];
-    }
-    $string = mb_strtolower($string);
-    if (preg_match("/([0-9@]+%?)x([0-9@]+%?)([+-][0-9]+%?)?([+-][0-9]+%?)?/", $string, $m)) {
-      for ($i = 1; $i < 5; $i++) {
-        if (!isset($m[$i])) {
-          $m[$i] = 0;
-        }
-        if (strpos($m[$i], '@') !== false) {
-          $m[$i] = 'calculated';
-        } else if (strpos($m[$i], '%') === false) {
-          $m[$i] .= 'px';
-        }
-      }
-      return ['w' => $m[1], 'h' => $m[2], 'x' => $m[3], 'y' => $m[4]];
-    }
-    return false;
   }
 
 }
