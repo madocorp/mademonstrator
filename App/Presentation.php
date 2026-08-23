@@ -10,6 +10,8 @@ final class Presentation {
   private array $slides = [];
   private array $trash = [];
   private array $links = [];
+  private string $promptTitle = '';
+  private string $promptText = '';
 
   public function __construct(?string $file = null) {
     if ($file !== null) {
@@ -47,7 +49,17 @@ final class Presentation {
     $view->setHtml($slide['html']);
     $view->setCss($css);
     $this->links = $slide['links'];
+    $this->promptTitle = $slide['promptTitle'];
+    $this->promptText = $slide['promptText'];
     return $index;
+  }
+
+  public function promptTitle(): string {
+    return $this->promptTitle;
+  }
+
+  public function promptText(): string {
+    return $this->promptText;
   }
 
   public function link(int $index): string|false {

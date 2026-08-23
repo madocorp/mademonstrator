@@ -12,6 +12,10 @@ final class SlideHtml {
     $quote = [];
     $code = [];
     $inCode = false;
+    $inComment = false;
+    $comment = [];
+    $promptTitle = '';
+    $promptLines = [];
 
     $flushParagraph = function() use (&$html, &$paragraph, &$links): void {
       if ($paragraph === []) {
@@ -58,6 +62,30 @@ final class SlideHtml {
         $code[] = $line;
         continue;
       }
+      if ($inComment) {
+        if (($end = strpos($line, '-->')) !== false) {
+          $comment[] = substr($line, 0, $end);
+          self::appendPromptComment($comment, $promptLines);
+          $comment = [];
+          $inComment = false;
+        } else {
+          $comment[] = $line;
+        }
+        continue;
+      }
+      if (($start = strpos($line, '<!--')) !== false) {
+        $flushParagraph();
+        $flushList();
+        $flushQuote();
+        $afterStart = substr($line, $start + 4);
+        if (($end = strpos($afterStart, '-->')) !== false) {
+          self::appendPromptComment([substr($afterStart, 0, $end)], $promptLines);
+        } else {
+          $comment = [$afterStart];
+          $inComment = true;
+        }
+        continue;
+      }
       if ($trimmed === '') {
         $flushParagraph();
         $flushList();
@@ -69,6 +97,9 @@ final class SlideHtml {
         $flushList();
         $flushQuote();
         $level = strlen($match[1]);
+        if ($level <= 2) {
+          $promptTitle = trim($match[2]);
+        }
         $html[] = '<h' . $level . '>' . self::inline($match[2], $links) . '</h' . $level . '>';
         continue;
       }
@@ -103,6 +134,9 @@ final class SlideHtml {
     if ($inCode) {
       $html[] = '<pre><code>' . htmlspecialchars(implode("\n", $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</code></pre>';
     }
+    if ($inComment) {
+      self::appendPromptComment($comment, $promptLines);
+    }
     $flushParagraph();
     $flushList();
     $flushQuote();
@@ -110,7 +144,25 @@ final class SlideHtml {
     return [
       'html' => '<section class="slide">' . implode("\n", $html) . '</section>',
       'links' => $links,
+      'promptTitle' => $promptTitle,
+      'promptText' => implode("\n", $promptLines),
     ];
+  }
+
+  private static function appendPromptComment(array $comment, array &$promptLines): void {
+    $lines = array_map(fn(string $line): string => trim($line), $comment);
+    while ($lines !== [] && $lines[0] === '') {
+      array_shift($lines);
+    }
+    while ($lines !== [] && end($lines) === '') {
+      array_pop($lines);
+    }
+    foreach ($lines as $line) {
+      $promptLines[] = trim((string)$line);
+    }
+    while ($promptLines !== [] && end($promptLines) === '') {
+      array_pop($promptLines);
+    }
   }
 
   private static function inline(string $text, array &$links): string {

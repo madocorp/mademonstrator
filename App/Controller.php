@@ -4,8 +4,10 @@ namespace MADEMO\App;
 
 use SPTK2\Core\InputAction;
 use SPTK2\Core\InputEvent;
+use SPTK2\Core\Theme;
 use SPTK2\Runtime\SdlApp;
 use SPTK2\Runtime\SdlWindow;
+use SPTK2\Runtime\SdlWindowOptions;
 use SPTK2\Widgets\Button;
 use SPTK2\Widgets\DialogLayer;
 use SPTK2\Widgets\DialogPanel;
@@ -21,6 +23,7 @@ use SPTK2\Widgets\ListItem;
 use SPTK2\Widgets\ListView;
 use SPTK2\Widgets\MenuBar;
 use SPTK2\Widgets\MenuItem;
+use SPTK2\Widgets\StatusBar;
 use SPTK2\Widgets\TextBlock;
 use SPTK2\Widgets\TextEditor;
 
@@ -39,6 +42,10 @@ final class Controller {
   private DialogLayer $dialogs;
   private ?Shell $root = null;
   private ?SdlWindow $window = null;
+  private ?SdlWindow $helperWindow = null;
+  private ?Shell $helperRoot = null;
+  private ?StatusBar $helperTitle = null;
+  private ?TextBlock $helperContent = null;
 
   public function __construct(private string $appDir, private SdlApp $app) {
     $loaded = Config::load();
@@ -85,6 +92,7 @@ final class Controller {
     $this->presentationMode = true;
     $this->setMenuVisible(false);
     $this->configurePresentationWindow();
+    $this->openHelperWindow();
     $this->setCurrentSlide(0);
     $this->slide->root()->requestFocus();
   }
@@ -93,12 +101,15 @@ final class Controller {
     $this->presentationMode = true;
     $this->setMenuVisible(false);
     $this->configurePresentationWindow();
+    $this->openHelperWindow();
+    $this->showCurrentSlide();
     $this->slide->root()->requestFocus();
   }
 
   private function leavePresentationMode(): void {
     $this->presentationMode = false;
     $this->setMenuVisible(true);
+    $this->closeHelperWindow();
     $this->window?->setFullscreen(false);
     $this->menu->requestFocus();
   }
@@ -109,7 +120,7 @@ final class Controller {
       !$this->presentationMode ||
       $this->dialogs->top() !== null ||
       !isset($this->presentation) ||
-      $this->slide->root()->context()?->currentFocus() !== $this->slide->root()
+      !$this->presentationFocusActive()
     ) {
       return false;
     }
@@ -135,6 +146,7 @@ final class Controller {
 
   private function setCurrentSlide(int $index): void {
     $this->currentSlide = $this->presentation->show($index, $this->slide, $this->selectedStyleCss());
+    $this->syncHelperWindow();
     $this->rebuildSlideMenu();
   }
 
@@ -382,6 +394,52 @@ final class Controller {
     $this->root?->setElementVisible($this->menu, $visible);
   }
 
+  private function presentationFocusActive(): bool {
+    if ($this->slide->root()->context()?->currentFocus() === $this->slide->root()) {
+      return true;
+    }
+    return $this->helperRoot !== null && $this->helperRoot->context()?->currentFocus() === $this->helperRoot;
+  }
+
+  private function openHelperWindow(): void {
+    $mode = strtolower(trim((string)($this->config['promptBox'] ?? 'none')));
+    if ($mode === '' || str_contains($mode, 'none')) {
+      return;
+    }
+    if ($this->helperWindow !== null && !$this->helperWindow->isClosed()) {
+      $this->syncHelperWindow();
+      return;
+    }
+    $root = new Shell('prompt-root', fn(InputEvent $event): bool => $this->handleSlideShortcut($event));
+    $root->setGridAlignment('top-left');
+    $root->setTheme(new Theme(fg: '#cccccc', bg: '#000000', muted: '#cccccc'));
+    $this->helperTitle = new StatusBar('prompt-title');
+    $this->helperContent = new TextBlock('prompt-text');
+    $root->dock($this->helperTitle, 'top');
+    $root->fill(new PaddedBox('prompt-padding', $this->helperContent, 1));
+    $this->helperRoot = $root;
+    $this->helperWindow = $this->app->addWindow($root, $this->windowOptionsFromGeometry((string)$this->config['promptBox'], 'PromptBox', 72, 18));
+    $this->syncHelperWindow();
+  }
+
+  private function closeHelperWindow(): void {
+    if ($this->helperWindow !== null) {
+      $this->app->closeWindow($this->helperWindow);
+    }
+    $this->helperWindow = null;
+    $this->helperRoot = null;
+    $this->helperTitle = null;
+    $this->helperContent = null;
+  }
+
+  private function syncHelperWindow(): void {
+    if ($this->helperTitle === null || $this->helperContent === null || !isset($this->presentation)) {
+      return;
+    }
+    $this->helperTitle->setText($this->presentation->promptTitle());
+    $this->helperContent->setText($this->presentation->promptText());
+  }
+
   private function configurePresentationWindow(): void {
     $mode = strtolower((string)($this->config['presentationWindow'] ?? 'full'));
     if (str_contains($mode, 'full')) {
@@ -394,6 +452,27 @@ final class Controller {
     } else {
       $this->window?->restore();
     }
+  }
+
+  private function windowOptionsFromGeometry(string $geometry, string $title, int $columns, int $rows): SdlWindowOptions {
+    $options = new SdlWindowOptions(title: $title, columns: $columns, rows: $rows);
+    $mode = strtolower(trim($geometry));
+    if (str_contains($mode, 'max')) {
+      $options->maximized = true;
+      return $options;
+    }
+    if (preg_match('/(\d+)\s*x\s*(\d+)/i', $mode, $match)) {
+      $width = (int)$match[1];
+      $height = (int)$match[2];
+      if ($width > 160 || $height > 80) {
+        $options->columns = max(24, intdiv($width, 10));
+        $options->rows = max(8, intdiv($height, 24));
+      } else {
+        $options->columns = max(24, $width);
+        $options->rows = max(8, $height);
+      }
+    }
+    return $options;
   }
 
 }
