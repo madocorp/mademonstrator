@@ -2,53 +2,22 @@
 
 namespace MADEMO\App;
 
-class Presentation {
+use SPTK2\Widgets\HtmlView;
 
-  protected $file;
-  protected $slides = [];
-  protected $changed = false;
-  protected $trash = [];
-  protected $slide = false;
+final class Presentation {
+
+  private ?string $file = null;
+  private array $slides = [];
+  private array $trash = [];
+  private array $links = [];
 
   public function __construct(?string $file = null) {
     if ($file !== null) {
-      $this->file = realpath($file);
-      if ($this->file === false) {
-        throw new \Exception("File not found ({$file}).");
-      }
-      if (!is_file($this->file)) {
-        throw new \Exception("Not a file. ({$file})");
+      $this->file = realpath($file) ?: null;
+      if ($this->file === null || !is_file($this->file)) {
+        throw new \RuntimeException("File not found ({$file}).");
       }
       $this->load();
-    }
-  }
-
-  protected function load(): void {
-    $md = file($this->file, FILE_IGNORE_NEW_LINES);
-    $slide = false;
-    $i = 0;
-    foreach ($md as $line) {
-      if (strpos($line, '# ') === 0 || strpos($line, '## ') === 0) {
-        if ($slide !== false) {
-          $this->slides[] = $slide;
-        }
-        $title = ltrim($line, '# ');
-        if (empty($title)) {
-          $title = "#{$i}";
-        }
-        $slide = [
-          'title' => $title,
-          'code' => []
-        ];
-        $i++;
-      }
-      if ($slide === false) {
-        continue;
-      }
-      $slide['code'][] = $line;
-    }
-    if ($slide !== false) {
-      $this->slides[] = $slide;
     }
   }
 
@@ -56,105 +25,133 @@ class Presentation {
     $this->file = $file;
   }
 
-  public function changeSlide(int $i, array $code, bool $new = false): void {
-    if ($new) {
-      $i++;
-      array_splice($this->slides, $i, 0, [['title' => 'new', 'code' => []]]);
+  public function file(): ?string {
+    return $this->file;
+  }
+
+  public function count(): int {
+    return count($this->slides);
+  }
+
+  public function slideTitles(): array {
+    return array_map(fn(array $slide): string => $slide['title'], $this->slides);
+  }
+
+  public function code(int $index): array {
+    return $this->slides[$this->clamp($index)]['code'] ?? [];
+  }
+
+  public function show(int $index, HtmlView $view, string $css = ''): int {
+    $index = $this->clamp($index);
+    $slide = SlideHtml::fromMarkdown($this->code($index), $this->basePath());
+    $view->setHtml($slide['html']);
+    $view->setCss($css);
+    $this->links = $slide['links'];
+    return $index;
+  }
+
+  public function link(int $index): string|false {
+    return $this->links[$index] ?? false;
+  }
+
+  public function changeSlide(int $index, array $code, bool $insert = false): void {
+    if ($insert) {
+      $index++;
+      array_splice($this->slides, $index, 0, [['title' => 'new', 'code' => []]]);
     }
-    if ($this->slides[$i]['code'] === $code) {
+    $this->slides[$index] = [
+      'title' => $this->titleFromCode($code, $index),
+      'code' => array_values($code),
+    ];
+  }
+
+  public function deleteSlide(int $index): void {
+    if (count($this->slides) <= 1) {
       return;
     }
-    $title = "#{$i}";
-    foreach ($code as $line) {
-      if (preg_match("/^#{1,2}[^#].*/", $line)) {
-        $title = ltrim($line, "# ");
+    $index = $this->clamp($index);
+    $this->trash[] = [$index, $this->slides[$index]];
+    array_splice($this->slides, $index, 1);
+  }
+
+  public function restoreSlide(): int|false {
+    if ($this->trash === []) {
+      return false;
+    }
+    [$index, $slide] = array_pop($this->trash);
+    array_splice($this->slides, $index, 0, [$slide]);
+    return $index;
+  }
+
+  public function sort(array $keys): void {
+    $ordered = [];
+    foreach ($keys as $key) {
+      if (isset($this->slides[(int)$key])) {
+        $ordered[] = $this->slides[(int)$key];
       }
     }
-    $this->slides[$i] = [
-      'title' => $title,
-      'code' => $code
-    ];
-    $this->changed = true;
+    if ($ordered !== []) {
+      $this->slides = $ordered;
+    }
   }
 
   public function save(string $path): void {
     $content = [];
     foreach ($this->slides as $slide) {
       foreach ($slide['code'] as $line) {
-        if ($line === '---') {
-          continue;
+        if ($line !== '---') {
+          $content[] = $line;
         }
-        $content[] = $line;
       }
       $content[] = '';
       $content[] = '---';
       $content[] = '';
     }
-    $content = implode("\n", $content);
-    $content = preg_replace("/\n\n\n+/", "\n\n", $content);
-    file_put_contents($path, $content);
+    file_put_contents($path, preg_replace("/\n\n\n+/", "\n\n", implode("\n", $content)));
+    $this->file = $path;
   }
 
-  public function getSlideList(): array {
-    $list = [];
-    foreach ($this->slides as $slide) {
-      $list[] = $slide['title'];
+  private function load(): void {
+    $lines = file($this->file, FILE_IGNORE_NEW_LINES);
+    $slide = null;
+    foreach ($lines === false ? [] : $lines as $line) {
+      if (preg_match('/^#{1,2} /', $line)) {
+        if ($slide !== null) {
+          $this->slides[] = $slide;
+        }
+        $slide = ['title' => ltrim($line, '# ') ?: '#' . count($this->slides), 'code' => []];
+      }
+      if ($slide !== null) {
+        $slide['code'][] = $line;
+      }
     }
-    return $list;
-  }
-
-  public function showSlide(int $i): int {
-    if ($i < 0) {
-      $i = 0;
+    if ($slide !== null) {
+      $this->slides[] = $slide;
     }
-    $n = count($this->slides);
-    if ($i >= $n) {
-      $i = $n - 1;
+    if ($this->slides === []) {
+      $this->slides[] = ['title' => 'Untitled', 'code' => ['# Untitled']];
     }
-    $code = $this->slides[$i]['code'] ?? [];
-    $this->slide = new Slide($code);
-    return $i;
   }
 
-  public function getCode(int $i): array {
-    if ($i < 0) {
-      $i = 0;
+  private function basePath(): string {
+    if ($this->file !== null) {
+      return dirname($this->file);
     }
-    $n = count($this->slides);
-    if ($i >= $n) {
-      $i = $n - 1;
+    return getcwd();
+  }
+
+  private function titleFromCode(array $code, int $index): string {
+    foreach ($code as $line) {
+      if (preg_match('/^#{1,2} ([^#].*)$/', $line, $match)) {
+        return trim($match[1]);
+      }
     }
-    return $this->slides[$i]['code'];
+    return '#' . $index;
   }
 
-  public function deleteSlide(int $i): void {
-    $this->trash[] = [$i, $this->slides[$i]];
-    array_splice($this->slides, $i, 1);
-  }
-
-  public function restoreSlide(): int|false {
-    if (empty($this->trash)) {
-      return false;
-    }
-    $trash = array_pop($this->trash);
-    array_splice($this->slides, $trash[0], 0, [$trash[1]]);
-    return $trash[0];
-  }
-
-  public function sort(array $keys): void {
-    $ordered = [];
-    foreach ($keys as $key) {
-      $ordered[] = $this->slides[$key];
-    }
-    $this->slides = $ordered;
-  }
-
-  public function getLink(int $link): string|false  {
-    return $this->slide->links[$link] ?? false;
-  }
-
-  public function getFile(): string|null {
-    return $this->file;
+  private function clamp(int $index): int {
+    $max = max(0, count($this->slides) - 1);
+    return max(0, min($max, $index));
   }
 
 }

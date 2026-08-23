@@ -1,0 +1,87 @@
+body, .slide {
+  font-size: 2.96vh;
+  background-color: #2c0d00;
+  width: 100%;
+}
+
+.slide {
+  font-size: 2.96vh;
+  text-align: center;
+  padding: 6vh  6vw;
+  margin-top: 8vh;
+  color: #ffeeee;
+  width: 100%;
+}
+
+h1 {
+  font-size: 6.85vh;
+  text-align: center;
+  color: #ffeeee;
+  margin: 0px  0px  15vh  0px;
+}
+
+h2 {
+  font-size: 4.62vh;
+  text-align: center;
+  padding: 1vh  2vw;
+  margin: 4vh  2vw;
+  color: #fcad92;
+  background-color: #7c2d12;
+  width: -4vw;
+}
+
+h3 {
+  font-size: 3.33vh;
+  text-align: center;
+  padding: 1vh  6%;
+  color: #dc8d72;
+  width: 90%;
+}
+
+p {
+  font-size: 3.14vh;
+  text-align: left;
+  margin: 1vh  6%;
+  width: 90%;
+}
+
+ul, ol {
+  width: 90%;
+  font-size: 3.14vh;
+  margin: 1vh  5%;
+}
+
+pre, pre code {
+  font-size: 2.59vh;
+  text-align: left;
+  margin: 3vh  10%;
+  padding: 2vh  2vw;
+  background-color: #6c1d02;
+  color: #ffffaa;
+  border-color: #ffeeee;
+  width: 80%;
+}
+
+blockquote {
+  font-size: 3.14vh;
+  text-align: left;
+  background-color: #6c1d02;
+  margin: 3vh  0px;
+  padding: 3vh  2vw;
+  border-left-width: 0.27vh  0.15vw;
+  border-color: #ffeeee;
+  width: 80%;
+}
+
+a {
+  font-size: 2.77vh;
+  color: #ef4444;
+}
+
+strong, .emphasized {
+  color: #ffccaa;
+}
+
+p code, li code, .inlinecode {
+  color: #ffffaa;
+}
