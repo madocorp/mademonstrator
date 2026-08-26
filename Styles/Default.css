@@ -1,16 +1,225 @@
-body { background-color: #000000; color: #dddddd; font-size: 24px; }
-.slide { width: 100vw; min-height: 100vh; padding: 5vh 7vw; background-color: #000000; color: #dddddd; }
-h1 { color: #ffffff; font-size: 56px; text-align: center; margin: 12vh 0 32px 0; }
-h2 { color: #ffff00; font-size: 42px; text-align: center; margin: 0 0 32px 0; }
-h3 { color: #00ff99; font-size: 31px; margin: 24px 0 12px 0; }
-h4, h5, h6 { color: #00ff99; font-size: 26px; margin: 20px 0 10px 0; }
-p { margin: 0 0 18px 0; line-height: 1.25; }
-ul, ol { margin: 0 0 20px 0; padding-left: 42px; }
-li { margin: 0 0 8px 0; }
-strong { color: #ff7777; font-weight: bold; }
-code { color: #00ffff; background-color: #111111; }
-pre { color: #00ffff; background-color: #111111; padding: 16px; margin: 16px 0 20px 0; }
-blockquote { color: #00aa66; border-color: #00aa66; margin: 16px 0 22px 0; padding: 12px 20px; }
-a { color: #55aaff; text-decoration: underline; }
-.image { text-align: center; }
-img { max-width: 80vw; max-height: 60vh; }
+body {
+  margin: 0;
+  background-color: #050505;
+  color: #e8e8e8;
+  font-family: sans-serif;
+  font-size: 26px;
+  text-align: left;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  padding: 6vh 7vw;
+  background-color: #050505;
+  color: #e8e8e8;
+  box-sizing: border-box;
+  border-bottom: solid 1px red;
+}
+
+h1 {
+  color: #ffffff;
+  font-size: 58px;
+  text-align: center;
+  margin: 18vh 0 34px 0;
+}
+
+h2 {
+  color: #fff36a;
+  font-size: 42px;
+  text-align: center;
+  margin: 0 0 30px 0;
+}
+
+h3 {
+  color: #75f0bd;
+  font-size: 32px;
+  margin: 22px 0 12px 0;
+}
+
+h4, h5, h6 {
+  color: #75f0bd;
+  font-size: 27px;
+  margin: 18px 0 10px 0;
+}
+
+p {
+  margin: 0 0 16px 0;
+}
+
+ul, ol {
+  margin: 0 0 18px 0;
+  padding-left: 42px;
+}
+
+li {
+  margin: 0 0 7px 0;
+}
+
+strong {
+  color: #ff8f8f;
+  font-weight: bold;
+}
+
+code {
+  color: #79e9ff;
+  background-color: #161616;
+}
+
+pre {
+  color: #79e9ff;
+  background-color: #161616;
+  padding: 14px;
+  margin: 14px 0 18px 0;
+  border-width: 0 0 0 4px;
+  border-color: #79e9ff;
+  white-space: pre-wrap;
+}
+
+blockquote {
+  color: #77dfa7;
+  background-color: #101010;
+  border-width: 0 0 0 4px;
+  border-color: #77dfa7;
+  margin: 14px 0 20px 0;
+  padding: 12px 18px;
+}
+
+a {
+  color: #6eb6ff;
+  text-decoration: underline;
+}
+
+.image {
+  text-align: center;
+}
+
+img {
+  width: 55vw;
+}
+
+.md-block {
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px 1%;
+  padding: 12px 14px;
+  border-width: 1px;
+  border-color: #2a2a2a;
+  background-color: #0f0f0f;
+}
+
+.md-block-half {
+  width: 44%;
+}
+
+.md-block-third {
+  width: 28%;
+}
+
+.md-block-quarter {
+  width: 20%;
+}
+
+.md-block-title {
+  color: #75f0bd;
+  font-size: 30px;
+  text-align: center;
+  margin: 0 0 10px 0;
+}
+
+.md-block-subtitle {
+  color: #fff36a;
+  font-size: 24px;
+  text-align: left;
+  margin: 10px 0 8px 0;
+}
+
+.slide {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-size: 3vh;
+}
+
+h1 {
+  font-size: 7vh;
+}
+
+h2 {
+  font-size: 4.8vh;
+}
+
+h3 {
+  font-size: 3.4vh;
+}
+
+h4, h5, h6 {
+  font-size: 2.8vh;
+}
+
+pre {
+  font-size: 2.5vh;
+}
+
+.main-body {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  left: 7vw;
+  top: 0;
+  width: 86vw;
+  height: 100vh;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.main-heading {
+  font-size: 7vh;
+  text-align: center;
+  margin: 0 0 4vh 0;
+}
+
+.slide-title {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 7vw;
+  top: 4vh;
+  width: 86vw;
+  height: 15vh;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.slide-body {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: flex-start;
+  left: 7vw;
+  top: 20vh;
+  width: 86vw;
+  height: 74vh;
+  vertical-align: middle;
+}
+
+.slide-heading {
+  font-size: 4.8vh;
+  text-align: center;
+  margin: 0;
+}
+
+.md-block-title {
+  font-size: 3.4vh;
+}
+
+.md-block-subtitle {
+  font-size: 2.7vh;
+}

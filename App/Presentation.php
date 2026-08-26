@@ -2,8 +2,6 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Widgets\HtmlView;
-
 final class Presentation {
 
   private ?string $file = null;
@@ -43,11 +41,10 @@ final class Presentation {
     return $this->slides[$this->clamp($index)]['code'] ?? [];
   }
 
-  public function show(int $index, HtmlView $view, string $css = ''): int {
+  public function show(int $index, SlideView $view, string $styleName = 'Default'): int {
     $index = $this->clamp($index);
-    $slide = SlideHtml::fromMarkdown($this->code($index), $this->basePath());
-    $view->setHtml($slide['html']);
-    $view->setCss($css);
+    $slide = SlideMarkdown::fromMarkdown($this->code($index), $this->basePath());
+    $view->setSlide($slide['slide'], $styleName);
     $this->links = $slide['links'];
     $this->promptTitle = $slide['promptTitle'];
     $this->promptText = $slide['promptText'];

@@ -6,37 +6,54 @@ final class SlideHtml {
 
   public static function fromMarkdown(array $lines, string $basePath): array {
     $html = [];
+    $titleHtml = [];
+    $titleLevel = 0;
     $links = [];
     $paragraph = [];
     $list = null;
     $quote = [];
     $code = [];
+    $block = null;
     $inCode = false;
     $inComment = false;
     $comment = [];
     $promptTitle = '';
     $promptLines = [];
 
-    $flushParagraph = function() use (&$html, &$paragraph, &$links): void {
+    $append = function(string $fragment) use (&$html, &$block): void {
+      if ($block !== null) {
+        $block['html'][] = $fragment;
+        return;
+      }
+      $html[] = $fragment;
+    };
+    $flushBlock = function() use (&$html, &$block): void {
+      if ($block === null) {
+        return;
+      }
+      $html[] = '<div class="md-block ' . $block['class'] . '">' . implode("\n", $block['html']) . '</div>';
+      $block = null;
+    };
+    $flushParagraph = function() use (&$paragraph, &$links, $append): void {
       if ($paragraph === []) {
         return;
       }
-      $html[] = '<p>' . self::inline(implode(' ', $paragraph), $links) . '</p>';
+      $append('<p>' . self::inline(implode(' ', $paragraph), $links) . '</p>');
       $paragraph = [];
     };
-    $flushList = function() use (&$html, &$list): void {
+    $flushList = function() use (&$list, $append): void {
       if ($list === null) {
         return;
       }
-      $html[] = '<' . $list['tag'] . '>' . implode('', $list['items']) . '</' . $list['tag'] . '>';
+      $append('<' . $list['tag'] . '>' . implode('', $list['items']) . '</' . $list['tag'] . '>');
       $list = null;
     };
-    $flushQuote = function() use (&$html, &$quote, &$links): void {
+    $flushQuote = function() use (&$quote, &$links, $append): void {
       if ($quote === []) {
         return;
       }
       $parts = array_map(fn(string $line): string => self::inline($line, $links), $quote);
-      $html[] = '<blockquote>' . implode('<br>', $parts) . '</blockquote>';
+      $append('<blockquote>' . implode('<br>', $parts) . '</blockquote>');
       $quote = [];
     };
 
@@ -47,7 +64,7 @@ final class SlideHtml {
       }
       if (str_starts_with($trimmed, '```')) {
         if ($inCode) {
-          $html[] = '<pre><code>' . htmlspecialchars(implode("\n", $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</code></pre>';
+          $append('<pre><code>' . htmlspecialchars(implode("\n", $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</code></pre>');
           $code = [];
           $inCode = false;
         } else {
@@ -97,10 +114,30 @@ final class SlideHtml {
         $flushList();
         $flushQuote();
         $level = strlen($match[1]);
+        if ($level !== 6) {
+          $flushBlock();
+        }
         if ($level <= 2) {
           $promptTitle = trim($match[2]);
         }
-        $html[] = '<h' . $level . '>' . self::inline($match[2], $links) . '</h' . $level . '>';
+        if ($level >= 3 && $level <= 5) {
+          $classes = [
+            3 => 'md-block-half',
+            4 => 'md-block-third',
+            5 => 'md-block-quarter',
+          ];
+          $block = ['class' => $classes[$level], 'html' => []];
+          $append('<h' . $level . ' class="md-block-title">' . self::inline($match[2], $links) . '</h' . $level . '>');
+          continue;
+        }
+        if ($level === 6) {
+          $class = $block === null ? '' : ' class="md-block-subtitle"';
+          $append('<h6' . $class . '>' . self::inline($match[2], $links) . '</h6>');
+          continue;
+        }
+        $titleLevel = $level;
+        $titleClass = $level === 1 ? 'main-heading' : 'slide-heading';
+        $titleHtml[] = '<h' . $level . ' class="' . $titleClass . '">' . self::inline($match[2], $links) . '</h' . $level . '>';
         continue;
       }
       if (preg_match('/^\s*([*+-]|\d+\.)\s+(.*)$/', $line, $match)) {
@@ -126,13 +163,13 @@ final class SlideHtml {
         $flushQuote();
         $src = self::resolvePath($match[2], $basePath);
         $alt = htmlspecialchars($match[1], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $html[] = '<p class="image"><img src="' . htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" alt="' . $alt . '"></p>';
+        $append('<p class="image"><img src="' . htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" alt="' . $alt . '"></p>');
         continue;
       }
       $paragraph[] = $line;
     }
     if ($inCode) {
-      $html[] = '<pre><code>' . htmlspecialchars(implode("\n", $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</code></pre>';
+      $append('<pre><code>' . htmlspecialchars(implode("\n", $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</code></pre>');
     }
     if ($inComment) {
       self::appendPromptComment($comment, $promptLines);
@@ -140,9 +177,23 @@ final class SlideHtml {
     $flushParagraph();
     $flushList();
     $flushQuote();
+    $flushBlock();
+
+    $parts = [];
+    $sectionClass = 'slide';
+    if ($titleLevel === 1) {
+      $sectionClass .= ' main-slide';
+      $mainContent = array_merge($titleHtml, $html);
+      $parts[] = '<div class="main-body">' . implode("\n", $mainContent) . '</div>';
+    } else {
+      if ($titleHtml !== []) {
+        $parts[] = '<div class="slide-title">' . implode("\n", $titleHtml) . '</div>';
+      }
+      $parts[] = '<div class="slide-body">' . implode("\n", $html) . '</div>';
+    }
 
     return [
-      'html' => '<section class="slide">' . implode("\n", $html) . '</section>',
+      'html' => '<section class="' . $sectionClass . '">' . implode("\n", $parts) . '</section>',
       'links' => $links,
       'promptTitle' => $promptTitle,
       'promptText' => implode("\n", $promptLines),
@@ -167,9 +218,14 @@ final class SlideHtml {
 
   private static function inline(string $text, array &$links): string {
     $escaped = htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-    $escaped = preg_replace_callback('/`([^`]+)`/', fn(array $m): string => '<code>' . $m[1] . '</code>', $escaped) ?? $escaped;
+    $codeSpans = [];
+    $escaped = preg_replace_callback('/`([^`]+)`/', function(array $m) use (&$codeSpans): string {
+      $token = "\x1A" . count($codeSpans) . "\x1A";
+      $codeSpans[$token] = '<code>' . $m[1] . '</code>';
+      return $token;
+    }, $escaped) ?? $escaped;
     $escaped = preg_replace_callback('/\*\*([^*]+)\*\*/', fn(array $m): string => '<strong>' . $m[1] . '</strong>', $escaped) ?? $escaped;
-    $escaped = preg_replace_callback('/\[([^\]]+)\]\(([^\)]+)\)/', function(array $m) use (&$links): string {
+    $escaped = preg_replace_callback('/(?<!!)\[([^\]]+)\]\(([^\)]+)\)/', function(array $m) use (&$links): string {
       $id = count($links);
       if ($id <= 9) {
         $links[$id] = html_entity_decode($m[2], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -183,6 +239,9 @@ final class SlideHtml {
       }
       return '<a href="' . $m[1] . '">[' . $id . '] ' . $m[1] . '</a>';
     }, $escaped) ?? $escaped;
+    if ($codeSpans !== []) {
+      $escaped = strtr($escaped, $codeSpans);
+    }
     return $escaped;
   }
 
@@ -190,7 +249,18 @@ final class SlideHtml {
     if (preg_match('/^[a-z][a-z0-9+.-]*:/i', $path) || str_starts_with($path, '/')) {
       return $path;
     }
-    return rtrim($basePath, '/') . '/' . $path;
+    $basePath = rtrim($basePath, '/');
+    $candidates = [
+      $basePath . '/' . $path,
+      dirname($basePath) . '/' . $path,
+      getcwd() . '/' . $path,
+    ];
+    foreach ($candidates as $candidate) {
+      if (is_file($candidate)) {
+        return $candidate;
+      }
+    }
+    return $candidates[0];
   }
 
 }

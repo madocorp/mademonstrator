@@ -1,84 +1,228 @@
-body, .slide {
-  font-size: 2.96vh;
-  background-color: #0a1016;
-  width: 100%;
+body {
+  margin: 0;
+  background-color: #071019;
+  color: #dbeafe;
+  font-family: monospace;
+  font-size: 24px;
+  text-align: left;
 }
 
 .slide {
-  font-size: 2.96vh;
-  text-align: center;
-  padding: 0px;
-  margin-top: 8vh;
-  color: #e5f0ff;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  padding: 5vh 6vw;
+  background-color: #071019;
+  color: #dbeafe;
+  box-sizing: border-box;
 }
 
 h1 {
-  font-size: 6.66vh;
-  text-align: center;
-  margin: 0px  0px  15vh  0px;
   color: #93c5fd;
+  font-size: 54px;
+  text-align: center;
+  margin: 18vh 0 32px 0;
 }
 
 h2 {
-  font-size: 4.44vh;
+  color: #e0f2fe;
+  background-color: #123762;
+  font-size: 38px;
   text-align: left;
-  padding: 2vh  2vw;
-  background-color: #1e3a8a;
-  color: #dbeafe;
-  width: 100%;
+  margin: 0 0 22px 0;
+  padding: 12px 18px;
+  border-width: 0 0 0 5px;
+  border-color: #38bdf8;
 }
 
 h3 {
-  font-size: 3.33vh;
-  text-align: left;
-  padding: 1vh  3vw;
+  color: #7dd3fc;
+  font-size: 29px;
+  margin: 18px 0 9px 0;
+}
+
+h4, h5, h6 {
   color: #93c5fd;
-  width: 90%;
+  font-size: 24px;
+  margin: 14px 0 7px 0;
 }
 
 p {
-  font-size: 2.96vh;
-  text-align: left;
-  padding: 1vh  3vw;
-  width: 90%;
+  margin: 0 0 12px 0;
 }
 
 ul, ol {
-  width: 90%;
-  font-size: 2.96vh;
-  padding: 1vh  3vw;
+  margin: 0 0 14px 0;
+  padding-left: 36px;
 }
 
-pre, pre code {
-  font-size: 2.59vh;
-  text-align: left;
-  margin: 1vh  1vw;
-  padding: 0.5vh  0.5vw;
-  background-color: #1e3a8a;
+li {
+  margin: 0 0 5px 0;
+}
+
+strong {
+  color: #facc15;
+  font-weight: bold;
+}
+
+code {
   color: #bfdbfe;
-  border-color: #93c5fd;
-  width: 85%;
+  background-color: #10243a;
+}
+
+pre {
+  color: #dbeafe;
+  background-color: #0d2238;
+  padding: 12px;
+  margin: 12px 0 16px 0;
+  border-width: 1px 1px 1px 5px;
+  border-color: #38bdf8;
+  white-space: pre-wrap;
 }
 
 blockquote {
-  font-size: 2.96vh;
-  text-align: left;
-  background-color: #323647;
-  padding: 1vh  1vw;
-  border-color: #93c5fd;
-  width: 85%;
+  color: #c8e4ff;
+  background-color: #0f253c;
+  border-width: 0 0 0 5px;
+  border-color: #38bdf8;
+  margin: 12px 0 16px 0;
+  padding: 10px 16px;
 }
 
 a {
-  font-size: 2.96vh;
   color: #60a5fa;
+  text-decoration: underline;
 }
 
-strong, .emphasized {
+.image {
+  text-align: center;
+}
+
+img {
+  width: 50vw;
+}
+
+.md-block {
+  display: inline-block;
+  vertical-align: top;
+  margin: 9px 1%;
+  padding: 10px 12px;
+  border-width: 1px 1px 1px 4px;
+  border-color: #38bdf8;
+  background-color: #0d2238;
+}
+
+.md-block-half {
+  width: 44%;
+}
+
+.md-block-third {
+  width: 28%;
+}
+
+.md-block-quarter {
+  width: 20%;
+}
+
+.md-block-title {
+  color: #7dd3fc;
+  font-size: 27px;
+  text-align: left;
+  margin: 0 0 8px 0;
+}
+
+.md-block-subtitle {
   color: #facc15;
+  font-size: 22px;
+  text-align: left;
+  margin: 8px 0 6px 0;
 }
 
-p code, li code, .inlinecode {
-  color: #bfdbfe;
+.slide {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-size: 3vh;
+}
+
+h1 {
+  font-size: 7vh;
+}
+
+h2 {
+  font-size: 4.8vh;
+}
+
+h3 {
+  font-size: 3.4vh;
+}
+
+h4, h5, h6 {
+  font-size: 2.8vh;
+}
+
+pre {
+  font-size: 2.5vh;
+}
+
+.main-body {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  left: 7vw;
+  top: 0;
+  width: 86vw;
+  height: 100vh;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.main-heading {
+  font-size: 7vh;
+  text-align: center;
+  margin: 0 0 4vh 0;
+}
+
+.slide-title {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 7vw;
+  top: 4vh;
+  width: 86vw;
+  height: 15vh;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.slide-body {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: flex-start;
+  left: 7vw;
+  top: 20vh;
+  width: 86vw;
+  height: 74vh;
+  vertical-align: middle;
+}
+
+.slide-heading {
+  font-size: 4.8vh;
+  text-align: center;
+  margin: 0;
+}
+
+.md-block-title {
+  font-size: 3.4vh;
+}
+
+.md-block-subtitle {
+  font-size: 2.7vh;
 }
