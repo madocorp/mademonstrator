@@ -48,24 +48,6 @@ final class Config {
     return $json !== false && file_put_contents($file, $json . "\n", LOCK_EX) !== false;
   }
 
-  public static function ensureStyles(string $appDir): string {
-    $styleDir = self::filePath('Styles');
-    if (!is_dir($styleDir)) {
-      mkdir($styleDir, 0700, true);
-      foreach (glob($appDir . '/Styles/*.css') ?: [] as $styleFile) {
-        copy($styleFile, $styleDir . '/' . basename($styleFile));
-      }
-    } else {
-      foreach (glob($appDir . '/Styles/*.css') ?: [] as $styleFile) {
-        $target = $styleDir . '/' . basename($styleFile);
-        if (!is_file($target)) {
-          copy($styleFile, $target);
-        }
-      }
-    }
-    return $styleDir;
-  }
-
   private static function ensurePath(): void {
     if (self::$path !== null && self::$home !== null) {
       return;

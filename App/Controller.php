@@ -4,6 +4,7 @@ namespace MADEMO\App;
 
 use SPTK2\Core\InputAction;
 use SPTK2\Core\InputEvent;
+use SPTK2\Core\Place;
 use SPTK2\Core\Theme;
 use SPTK2\Runtime\SdlApp;
 use SPTK2\Runtime\SdlWindow;
@@ -15,7 +16,6 @@ use SPTK2\Widgets\Dock;
 use SPTK2\Widgets\FileSelector;
 use SPTK2\Widgets\Flow;
 use SPTK2\Widgets\FlowRow;
-use SPTK2\Widgets\HtmlView;
 use SPTK2\Widgets\ImageView;
 use SPTK2\Widgets\Input;
 use SPTK2\Widgets\Label;
@@ -34,11 +34,10 @@ final class Controller {
   private bool $newSlide = false;
   private bool $presentationMode = false;
   private array $config;
-  private string $styleDir;
   private MenuBar $menu;
   private MenuItem $slideMenu;
   private MenuItem $styleMenu;
-  private HtmlView $slide;
+  private SlideView $slide;
   private DialogLayer $dialogs;
   private ?Shell $root = null;
   private ?SdlWindow $window = null;
@@ -50,7 +49,6 @@ final class Controller {
   public function __construct(private string $appDir, private SdlApp $app) {
     $loaded = Config::load();
     $this->config = $loaded['config'];
-    $this->styleDir = Config::ensureStyles($appDir);
   }
 
   public function setWindow(SdlWindow $window): void {
@@ -61,11 +59,11 @@ final class Controller {
     $root = new Shell('mademonstrator-root', fn(InputEvent $event): bool => $this->handleSlideShortcut($event));
     $this->root = $root;
     $this->menu = new MenuBar('menu');
-    $this->slide = new HtmlView('slide');
+    $this->slide = new SlideView('slide');
     $this->dialogs = new DialogLayer('dialogs');
     $this->buildMenu();
-    $root->dock($this->menu, 'top');
-    $root->fill($this->slide);
+    $root->place($this->menu, Place::dock('top'));
+    $root->place($this->slide, Place::fill());
     $root->add($this->dialogs);
     $this->open($this->appDir . '/Layout/doc.md');
     return $root;
@@ -117,10 +115,9 @@ final class Controller {
   public function handleSlideShortcut(InputEvent $event): bool {
     if (
       $event->type !== 'key' ||
-      !$this->presentationMode ||
       $this->dialogs->top() !== null ||
       !isset($this->presentation) ||
-      !$this->presentationFocusActive()
+      !$this->slideNavigationFocusActive()
     ) {
       return false;
     }
@@ -132,12 +129,12 @@ final class Controller {
       $this->setCurrentSlide($this->currentSlide - 1);
       return true;
     }
-    if (InputAction::cancel($event, 'slide')) {
+    if ($this->presentationMode && InputAction::cancel($event, 'slide')) {
       $this->leavePresentationMode();
       return true;
     }
     $key = InputAction::normalizedKey($event->key);
-    if (preg_match('/^[0-9]$/', $key)) {
+    if ($this->presentationMode && preg_match('/^[0-9]$/', $key)) {
       $this->gotoLink((int)$key);
       return true;
     }
@@ -145,7 +142,7 @@ final class Controller {
   }
 
   private function setCurrentSlide(int $index): void {
-    $this->currentSlide = $this->presentation->show($index, $this->slide, $this->selectedStyleCss());
+    $this->currentSlide = $this->presentation->show($index, $this->slide, $this->selectedStyleName());
     $this->syncHelperWindow();
     $this->rebuildSlideMenu();
   }
@@ -283,6 +280,8 @@ final class Controller {
       ];
       Config::save($this->config);
       $this->dialogs->pop($panel);
+      $this->showCurrentSlide();
+      $this->rebuildStyleMenu();
     }));
     $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
     $this->dialogs->push($panel);
@@ -353,9 +352,9 @@ final class Controller {
 
   private function rebuildStyleMenu(): void {
     $items = [];
-    foreach (glob($this->styleDir . '/*.css') ?: [] as $styleFile) {
-      $name = basename($styleFile, '.css');
-      $items[] = ['label' => $name, 'checked' => $name === $this->config['defaultStyle'], 'action' => function() use ($name): void {
+    foreach (SlideTheme::names() as $name) {
+      $label = $name;
+      $items[] = ['label' => $label, 'checked' => $name === $this->config['defaultStyle'], 'action' => function() use ($name): void {
         $this->config['defaultStyle'] = $name;
         $this->showCurrentSlide();
         $this->rebuildStyleMenu();
@@ -364,26 +363,15 @@ final class Controller {
     $this->styleMenu->update(['items' => $items]);
   }
 
-  private function selectedStyleCss(): string {
-    $file = $this->selectedStyleFile();
-    if ($file === null) {
-      return '';
-    }
-    $css = file_get_contents($file);
-    return $css === false ? '' : $css;
-  }
-
-  private function selectedStyleFile(): ?string {
+  private function selectedStyleName(): string {
     $name = basename((string)($this->config['defaultStyle'] ?? ''));
     if ($name === '') {
       $name = 'Default';
     }
-    $file = $this->styleDir . '/' . $name . '.css';
-    if (is_file($file)) {
-      return $file;
+    if (in_array($name, SlideTheme::names(), true)) {
+      return $name;
     }
-    $fallback = $this->styleDir . '/Default.css';
-    return is_file($fallback) ? $fallback : null;
+    return 'Default';
   }
 
   private function button(string $label, callable $callback): Button {
@@ -394,11 +382,11 @@ final class Controller {
     $this->root?->setElementVisible($this->menu, $visible);
   }
 
-  private function presentationFocusActive(): bool {
+  private function slideNavigationFocusActive(): bool {
     if ($this->slide->root()->context()?->currentFocus() === $this->slide->root()) {
       return true;
     }
-    return $this->helperRoot !== null && $this->helperRoot->context()?->currentFocus() === $this->helperRoot;
+    return $this->presentationMode && $this->helperRoot !== null && $this->helperRoot->context()?->currentFocus() === $this->helperRoot;
   }
 
   private function openHelperWindow(): void {
@@ -415,8 +403,8 @@ final class Controller {
     $root->setTheme(new Theme(fg: '#cccccc', bg: '#000000', muted: '#cccccc'));
     $this->helperTitle = new StatusBar('prompt-title');
     $this->helperContent = new TextBlock('prompt-text');
-    $root->dock($this->helperTitle, 'top');
-    $root->fill(new PaddedBox('prompt-padding', $this->helperContent, 1));
+    $root->place($this->helperTitle, Place::dock('top'));
+    $root->place(new PaddedBox('prompt-padding', $this->helperContent, 1), Place::fill());
     $this->helperRoot = $root;
     $this->helperWindow = $this->app->addWindow($root, $this->windowOptionsFromGeometry((string)$this->config['promptBox'], 'PromptBox', 72, 18));
     $this->syncHelperWindow();
