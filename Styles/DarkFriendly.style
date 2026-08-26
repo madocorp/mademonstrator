@@ -1,0 +1,16 @@
+/*
+DarkFriendly is conversational and workshop-like. It should feel like a warm
+room after sunset: coffee surfaces, amber titles, coral accents, and cream text.
+*/
+Slide { backgroundColor: #1b0f0a; }
+Body { color: #fff0df; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 3.15vh; lineGap: 0.8vh; }
+MainTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 7.5vh; fontWeight: bold; textAlign: center; backgroundColor: #2a1710; borderColor: #7a3f22; borderWidth: 1px; padding: 0.9vh 1.6vw; }
+SlideTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 4.7vh; fontWeight: bold; textAlign: center; backgroundColor: #2a1710; borderColor: #7a3f22; borderWidth: 1px; padding: 0.65vh 1.4vw; }
+Block { backgroundColor: #2a1710; borderColor: #f08a4b; borderWidth: 0 0 0 5px; padding: 2.1vh 1.6vw; fontSize: 2.85vh; }
+Quote { color: #ffd0a6; backgroundColor: #2a1710; borderColor: #f08a4b; borderWidth: 1px; padding: 1.8vh; fontSize: 3.1vh; textAlign: center; }
+Code { color: #9ee7ff; backgroundColor: #24120c; borderColor: #7a3f22; borderWidth: 1px; padding: 1.4vh; fontFamily: monospace; fontSize: 2.45vh; }
+Strong { color: #ff9c7a; fontWeight: bold; }
+InlineCode { color: #9ee7ff; backgroundColor: #2a1710; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #9ecbff; }
+BlockTitle { color: #ffb36d; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #ffd166; fontSize: 2.7vh; fontWeight: bold; }

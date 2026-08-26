@@ -19,6 +19,7 @@ final class SlideMarkdown {
     $comment = [];
     $promptTitle = '';
     $promptLines = [];
+    $bulletImage = null;
 
     $append = function(array $element) use (&$elements, &$box): void {
       if ($box !== null) {
@@ -41,19 +42,19 @@ final class SlideMarkdown {
       $append(['type' => 'text', 'role' => 'body', 'runs' => self::inline(implode(' ', $paragraph), $links)]);
       $paragraph = [];
     };
-    $flushList = function() use (&$list, &$links, $append): void {
+    $flushList = function() use (&$list, &$links, &$bulletImage, $append): void {
       if ($list === null) {
         return;
       }
-      $runs = [];
+      $items = [];
       foreach ($list['items'] as $index => $item) {
-        if ($index > 0) {
-          $runs[] = ['type' => 'br'];
-        }
-        $runs[] = ['text' => ($list['ordered'] ? ($index + 1) . '. ' : '* ')];
-        array_push($runs, ...self::inline($item, $links));
+        $items[] = [
+          'runs' => self::inline($item, $links),
+          'marker' => $list['ordered'] ? ($index + 1) . '.' : '*',
+          'bullet' => !$list['ordered'] ? $bulletImage : null,
+        ];
       }
-      $append(['type' => 'text', 'role' => 'body', 'runs' => $runs]);
+      $append(['type' => 'list', 'ordered' => $list['ordered'], 'items' => $items]);
       $list = null;
     };
     $flushQuote = function() use (&$quote, &$links, $append): void {
@@ -172,7 +173,19 @@ final class SlideMarkdown {
         $flushParagraph();
         $flushList();
         $flushQuote();
-        $append(['type' => 'image', 'src' => self::resolvePath($match[2], $basePath), 'alt' => $match[1]]);
+        $imageRole = trim($match[1]);
+        if ($imageRole === ':bullet') {
+          $bulletImage = self::resolvePath($match[2], $basePath);
+          continue;
+        }
+        $image = ['type' => 'image', 'src' => self::resolvePath($match[2], $basePath), 'alt' => $match[1]];
+        if (($absolute = self::absoluteImageSpec($imageRole)) !== null) {
+          $image['position'] = 'absolute';
+          $image['rect'] = $absolute;
+          $elements[] = $image;
+          continue;
+        }
+        $append($image);
         continue;
       }
       $paragraph[] = $line;
@@ -241,6 +254,18 @@ final class SlideMarkdown {
     while ($promptLines !== [] && end($promptLines) === '') {
       array_pop($promptLines);
     }
+  }
+
+  private static function absoluteImageSpec(string $text): ?array {
+    if (!preg_match('/^:absolute:([^x]+)x([^-]+)-([^-]+)-([^-]+)$/', $text, $match)) {
+      return null;
+    }
+    return [
+      'width' => $match[1],
+      'height' => $match[2],
+      'x' => $match[3],
+      'y' => $match[4],
+    ];
   }
 
   private static function resolvePath(string $path, string $basePath): string {

@@ -1,0 +1,17 @@
+/*
+BrightTechnical keeps the technical, left-anchored grid feeling but on a clean
+light surface. It uses blue dividers and compact type for engineering reviews
+or architecture walkthroughs.
+*/
+Slide { backgroundColor: #dff3fb; }
+Body { color: #10242d; fontFamily: Noto Sans Mono, TeX Gyre Cursor, monospace; fontSize: 2.8vh; lineGap: 0.35vh; }
+MainTitle { color: #006b5f; fontFamily: Noto Sans Display, Noto Sans Mono, monospace; fontSize: 7vh; fontWeight: bold; textAlign: left; borderColor: #006f93; borderWidth: 0 0 0 8px; padding: 0.45vh 0 0.45vh 1.4vw; }
+SlideTitle { color: #006b5f; backgroundColor: #c8e8f3; fontFamily: Noto Sans Display, Noto Sans Mono, monospace; fontSize: 4.2vh; fontWeight: bold; textAlign: left; borderColor: #006f93; borderWidth: 0 0 0 6px; padding: 0.45vh 1.1vw; }
+Block { backgroundColor: #cfeaf3; borderColor: #68aabd; borderWidth: 1px 1px 1px 5px; padding: 0.9vh 1vw; fontSize: 2.45vh; }
+Quote { color: #006f93; backgroundColor: #d3eef6; borderColor: #006f93; borderWidth: 1px 1px 1px 5px; padding: 1.1vh; fontFamily: monospace; }
+Code { color: #004f6b; backgroundColor: #c7e0e9; borderColor: #006f93; borderWidth: 1px 1px 1px 6px; padding: 1.1vh; fontFamily: Noto Sans Mono, TeX Gyre Cursor, monospace; fontSize: 2.35vh; }
+Strong { color: #a12f2f; fontWeight: bold; }
+InlineCode { color: #004f6b; backgroundColor: #e2f1f6; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #005fb8; }
+BlockTitle { color: #006f93; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #006b5f; fontSize: 2.7vh; fontWeight: bold; }

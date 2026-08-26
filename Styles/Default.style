@@ -1,0 +1,17 @@
+/*
+Default is the baseline presentation style: dark, readable, balanced, and
+neutral. It should make all supported slide features visible without imposing a
+strong genre.
+*/
+Slide { backgroundColor: #050505; }
+Body { color: #e8e8e8; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 3vh; lineGap: 0.5vh; }
+MainTitle { color: #fff36a; fontSize: 7vh; fontWeight: bold; textAlign: center; }
+SlideTitle { color: #fff36a; fontSize: 4.8vh; fontWeight: bold; textAlign: center; }
+Block { backgroundColor: #101010; borderColor: #2a2a2a; borderWidth: 1; padding: 1.4vh; fontSize: 2.7vh; }
+Quote { color: #75f0bd; backgroundColor: #101010; borderWidth: 0 0 0 4px; padding: 1.4vh; }
+Code { color: #79e9ff; backgroundColor: #101010; borderWidth: 0 0 0 4px; padding: 1.3vh; fontFamily: monospace; fontSize: 2.5vh; }
+Strong { color: #ff8f8f; fontWeight: bold; }
+InlineCode { color: #79e9ff; backgroundColor: #101010; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #6eb6ff; }
+BlockTitle { color: #75f0bd; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #fff36a; fontSize: 2.7vh; fontWeight: bold; }

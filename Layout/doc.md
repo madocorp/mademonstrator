@@ -158,11 +158,31 @@ Use `[text](url)` syntax to show a text instead of the url, and `<url>` syntax t
 
 ## Images
 
-Images can be embedded directly into slides:
+Images can be embedded directly into slides as standalone slide content:
 
 ![Example Image](Layout/mademo.png)
 
+They are centered in their allocated slide area and scaled down to fit.
 Images are useful for diagrams, logos, and screenshots.
+
+Absolute images are drawn behind slide content:
+
+![:absolute:20%x20%-80%-0](Layout/mademo.png)
+
+```
+![:absolute:20%x20%-80%-0](Layout/mademo.png)
+```
+
+---
+
+## Images In Boxes
+
+### Image box
+Images can also live inside a heading box.
+
+![Box Image](Layout/mademo.png)
+
+Text after the image stays in the same box.
 
 ---
 
@@ -174,19 +194,8 @@ You can change the bullet points to an image. It will affect only the bullet poi
 * after the definition
 
 ```
-![:bullet](Layout/mademo.png)
+![:bullet](Layout/green_arrow.png)
 ```
-
-
-Images are displayed in their original size and positioned inline by default. You can ![:inline:32x@](Layout/mademo.png) overwrite this.
-One of the dimension can be @ to keep the aspect ratio.
-
-```
-![:absolute:20%x20%-0-0](Layout/mademo.png)
-![:inline:32x@](Layout/mademo.png)
-```
-
-![:absolute:20%x20%-0-0](Layout/mademo.png)
 
 ---
 
