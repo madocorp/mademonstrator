@@ -1,0 +1,16 @@
+/*
+BrightMinimal is stark and editorial: white space, black type, and thin rules.
+It avoids filled panels unless content needs code-like separation.
+*/
+Slide { backgroundColor: #f2f2ee; }
+Body { color: #202020; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 2.95vh; lineGap: 0.55vh; }
+MainTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 7.4vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.45vh 0; }
+SlideTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 4.4vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.35vh 0; }
+Block { backgroundColor: transparent; borderColor: #d0d0d0; borderWidth: 0 0 1px 0; padding: 0.9vh 0; fontSize: 2.65vh; }
+Quote { color: #555555; backgroundColor: transparent; borderColor: #555555; borderWidth: 0 0 0 2px; padding: 0.8vh 1vw; }
+Code { color: #303030; backgroundColor: #e4e4df; borderColor: #c8c8c0; borderWidth: 1px; padding: 1vh; fontFamily: monospace; fontSize: 2.35vh; }
+Strong { color: #000000; fontWeight: bold; }
+InlineCode { color: #303030; backgroundColor: #e4e4df; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #225fa8; }
+BlockTitle { color: #555555; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #000000; fontSize: 2.7vh; fontWeight: bold; }

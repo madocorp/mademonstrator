@@ -1,0 +1,17 @@
+/*
+DarkMinimal removes almost everything except hierarchy. It uses sparse
+underlines, transparent boxes, and left-aligned titles for a calm editorial
+deck with little ornament.
+*/
+Slide { backgroundColor: #161616; }
+Body { color: #eeeeee; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 2.95vh; lineGap: 0.55vh; }
+MainTitle { color: #ffffff; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 7.4vh; fontWeight: bold; textAlign: left; borderColor: #303030; borderWidth: 0 0 2px 0; padding: 0 0 0.45vh 0; }
+SlideTitle { color: #ffffff; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 4.4vh; fontWeight: bold; textAlign: left; borderColor: #303030; borderWidth: 0 0 2px 0; padding: 0 0 0.35vh 0; }
+Block { backgroundColor: transparent; borderColor: #303030; borderWidth: 0 0 1px 0; padding: 0.9vh 0; fontSize: 2.65vh; }
+Quote { color: #cfcfcf; backgroundColor: transparent; borderColor: #cfcfcf; borderWidth: 0 0 0 2px; padding: 0.8vh 1vw; }
+Code { color: #d8d8d8; backgroundColor: #202020; borderColor: #3a3a3a; borderWidth: 1px; padding: 1vh; fontFamily: monospace; fontSize: 2.35vh; }
+Strong { color: #ffffff; fontWeight: bold; }
+InlineCode { color: #d8d8d8; backgroundColor: #141414; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #a9c7ff; }
+BlockTitle { color: #cfcfcf; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #ffffff; fontSize: 2.7vh; fontWeight: bold; }

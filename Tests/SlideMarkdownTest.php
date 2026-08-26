@@ -52,4 +52,59 @@ return [
     assertSame('link', $runs[5]['role'], 'Markdown links should become link runs.');
     assertSame('https://php.net', $result['links'][0], 'Link target should be indexed for keyboard navigation.');
   },
+
+  'slide markdown applies bullet image definitions to later unordered lists' => function(): void {
+    $result = SlideMarkdown::fromMarkdown([
+      '## Bullets',
+      '![:bullet](Layout/green_arrow.png)',
+      '* First',
+      '* Second',
+    ], dirname(__DIR__));
+    $elements = $result['slide']['elements'];
+    assertSame(1, count($elements), 'Bullet image definition should not render as a standalone image.');
+    assertSame('list', $elements[0]['type'], 'Unordered list after bullet definition should become an image-bullet list.');
+    assertSame(false, $elements[0]['ordered'], 'Bullet image list should stay unordered.');
+    assertSame('First', $elements[0]['items'][0]['runs'][0]['text'], 'List item text should be kept as runs.');
+    assertTrue(str_ends_with($elements[0]['items'][0]['bullet'], 'Layout/green_arrow.png'), 'List item should carry the resolved bullet image.');
+  },
+
+  'slide markdown keeps ordinary lists as structural list elements' => function(): void {
+    $unordered = SlideMarkdown::fromMarkdown(['## List', '* One', '* Two'], getcwd())['slide']['elements'][0];
+    $ordered = SlideMarkdown::fromMarkdown(['## List', '1. One', '2. Two'], getcwd())['slide']['elements'][0];
+    assertSame('list', $unordered['type'], 'Unordered lists should become structural list elements.');
+    assertSame(false, $unordered['ordered'], 'Unordered lists should keep ordered=false.');
+    assertSame('*', $unordered['items'][0]['marker'], 'Unordered lists should keep a text marker when no image bullet is defined.');
+    assertSame('list', $ordered['type'], 'Ordered lists should become structural list elements.');
+    assertSame(true, $ordered['ordered'], 'Ordered lists should keep ordered=true.');
+    assertSame('1.', $ordered['items'][0]['marker'], 'Ordered lists should keep numeric markers.');
+  },
+
+  'slide markdown keeps images inside heading boxes' => function(): void {
+    $result = SlideMarkdown::fromMarkdown([
+      '## Image box',
+      '### Box',
+      'Before',
+      '![Logo](Layout/mademo.png)',
+      'After',
+    ], dirname(__DIR__));
+    $box = $result['slide']['elements'][0];
+    assertSame('box', $box['type'], 'h3 should create a box.');
+    assertSame('body', $box['items'][0]['role'], 'Text before image should stay in the box.');
+    assertSame('image', $box['items'][1]['type'], 'Image after h3 should stay in the box.');
+    assertSame('body', $box['items'][2]['role'], 'Text after image should stay in the box.');
+  },
+
+  'slide markdown parses absolute images as slide level elements' => function(): void {
+    $result = SlideMarkdown::fromMarkdown([
+      '## Absolute',
+      '### Box',
+      '![:absolute:20%x30%-80%-0](Layout/mademo.png)',
+      'Inside box',
+    ], dirname(__DIR__));
+    $elements = $result['slide']['elements'];
+    assertSame('image', $elements[0]['type'], 'Absolute image should be stored as an image element.');
+    assertSame('absolute', $elements[0]['position'], 'Absolute image should carry its positioning mode.');
+    assertSame(['width' => '20%', 'height' => '30%', 'x' => '80%', 'y' => '0'], $elements[0]['rect'], 'Absolute image should keep its rectangle specification.');
+    assertSame('box', $elements[1]['type'], 'Absolute image should not become part of the open heading box.');
+  },
 ];

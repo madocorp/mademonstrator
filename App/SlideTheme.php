@@ -4,65 +4,213 @@ namespace MADEMO\App;
 
 final class SlideTheme {
 
-  private const PALETTES = [
-    'Default' => ['bg' => '#050505', 'fg' => '#e8e8e8', 'title' => '#fff36a', 'accent' => '#75f0bd', 'muted' => '#101010', 'code' => '#79e9ff', 'strong' => '#ff8f8f', 'link' => '#6eb6ff', 'border' => '#2a2a2a'],
-    'DarkAcademic' => ['bg' => '#101010', 'fg' => '#eeeeee', 'title' => '#f5d36b', 'accent' => '#c9a86a', 'muted' => '#191919', 'code' => '#9fd6ff', 'strong' => '#f19999', 'link' => '#80bfff', 'border' => '#3a3328'],
-    'BrightAcademic' => ['bg' => '#f7f4ed', 'fg' => '#202020', 'title' => '#775400', 'accent' => '#856018', 'muted' => '#ebe4d5', 'code' => '#005f88', 'strong' => '#9d2727', 'link' => '#0059b2', 'border' => '#d2c6ab'],
-    'DarkEsoteric' => ['bg' => '#0d0911', 'fg' => '#f2eaf9', 'title' => '#e0b0ff', 'accent' => '#9ee6d8', 'muted' => '#181020', 'code' => '#bcecff', 'strong' => '#ff9ab3', 'link' => '#9cc7ff', 'border' => '#39264c'],
-    'BrightEsoteric' => ['bg' => '#fbf7ff', 'fg' => '#261d2d', 'title' => '#6d368f', 'accent' => '#147a6c', 'muted' => '#eee3f7', 'code' => '#006a8e', 'strong' => '#a12850', 'link' => '#295fb0', 'border' => '#d8c4e5'],
-    'DarkFriendly' => ['bg' => '#101417', 'fg' => '#edf5f4', 'title' => '#ffd166', 'accent' => '#70e0b7', 'muted' => '#182024', 'code' => '#86dfff', 'strong' => '#ff9c8a', 'link' => '#88bdff', 'border' => '#294047'],
-    'BrightFriendly' => ['bg' => '#f4fbf8', 'fg' => '#172421', 'title' => '#8a5a00', 'accent' => '#087d63', 'muted' => '#e4f2ed', 'code' => '#006a95', 'strong' => '#a43b2d', 'link' => '#1d66b3', 'border' => '#b9d7cf'],
-    'DarkMinimal' => ['bg' => '#080808', 'fg' => '#eeeeee', 'title' => '#ffffff', 'accent' => '#cfcfcf', 'muted' => '#141414', 'code' => '#d8d8d8', 'strong' => '#ffffff', 'link' => '#a9c7ff', 'border' => '#303030'],
-    'BrightMinimal' => ['bg' => '#ffffff', 'fg' => '#202020', 'title' => '#000000', 'accent' => '#555555', 'muted' => '#f1f1f1', 'code' => '#303030', 'strong' => '#000000', 'link' => '#225fa8', 'border' => '#d0d0d0'],
-    'DarkTechnical' => ['bg' => '#02070a', 'fg' => '#d8f7ff', 'title' => '#64ffda', 'accent' => '#00d1ff', 'muted' => '#081217', 'code' => '#b7f7ff', 'strong' => '#ff7b72', 'link' => '#58a6ff', 'border' => '#12404c'],
-    'BrightTechnical' => ['bg' => '#f3fbff', 'fg' => '#10242d', 'title' => '#006b5f', 'accent' => '#006f93', 'muted' => '#e2f1f6', 'code' => '#004f6b', 'strong' => '#a12f2f', 'link' => '#005fb8', 'border' => '#b7d5df'],
+  private const DEFAULT_NAME = 'Default';
+
+  private const SELECTORS = [
+    'slide' => 'slide',
+    'body' => 'body',
+    'maintitle' => 'main-title',
+    'main-title' => 'main-title',
+    'slidetitle' => 'slide-title',
+    'slide-title' => 'slide-title',
+    'block' => 'block',
+    'quote' => 'quote',
+    'code' => 'code',
+    'strong' => 'strong',
+    'inlinecode' => 'inline-code',
+    'inline-code' => 'inline-code',
+    'link' => 'link',
+    'blocktitle' => 'block-title',
+    'block-title' => 'block-title',
+    'subtitle' => 'subtitle',
   ];
 
+  private const PROPERTIES = [
+    'background-color' => 'background',
+    'backgroundcolor' => 'background',
+    'background' => 'background',
+    'backgound-color' => 'background',
+    'backgoundcolor' => 'background',
+    'border-color' => 'borderColor',
+    'bordercolor' => 'borderColor',
+    'border-width' => 'borderWidth',
+    'borderwidth' => 'borderWidth',
+    'color' => 'color',
+    'font-family' => 'fontFamily',
+    'fontfamily' => 'fontFamily',
+    'font-size' => 'fontSize',
+    'fontsize' => 'fontSize',
+    'font-style' => 'fontStyle',
+    'fontstyle' => 'fontStyle',
+    'font-weight' => 'fontWeight',
+    'fontweight' => 'fontWeight',
+    'line-gap' => 'lineGap',
+    'linegap' => 'lineGap',
+    'padding' => 'padding',
+    'text-align' => 'textAlign',
+    'textalign' => 'textAlign',
+  ];
+
+  private const FALLBACK = [
+    'slide' => ['background' => '#050505'],
+    'body' => ['color' => '#e8e8e8', 'background' => 'transparent', 'borderWidth' => 0, 'borderColor' => '#2a2a2a', 'padding' => 0, 'fontFamily' => 'sans-serif', 'fontSize' => '3vh', 'textAlign' => 'left', 'lineGap' => '0.5vh'],
+    'main-title' => ['color' => '#fff36a', 'fontSize' => '7vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
+    'slide-title' => ['color' => '#fff36a', 'fontSize' => '4.8vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
+    'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'fontSize' => '2.7vh'],
+    'quote' => ['color' => '#75f0bd', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.4vh'],
+    'code' => ['color' => '#79e9ff', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.3vh', 'fontFamily' => 'monospace', 'fontSize' => '2.5vh'],
+    'strong' => ['bold' => true, 'color' => '#ff8f8f'],
+    'inline-code' => ['fontFamily' => 'monospace', 'color' => '#79e9ff', 'background' => '#101010', 'fontSize' => '2.5vh'],
+    'link' => ['color' => '#6eb6ff'],
+    'block-title' => ['bold' => true, 'color' => '#75f0bd', 'fontSize' => '3.4vh'],
+    'subtitle' => ['bold' => true, 'color' => '#fff36a', 'fontSize' => '2.7vh'],
+  ];
+
+  private static array $themes = [];
+
   public static function names(): array {
-    $names = array_keys(self::PALETTES);
+    $names = [];
+    foreach (glob(self::styleDir() . '/*.style') ?: [] as $file) {
+      $names[] = basename($file, '.style');
+    }
+    if ($names === []) {
+      $names[] = self::DEFAULT_NAME;
+    }
     sort($names, SORT_NATURAL | SORT_FLAG_CASE);
     return $names;
   }
 
   public static function palette(string $name): array {
-    return self::PALETTES[$name] ?? self::PALETTES['Default'];
+    $theme = self::theme($name);
+    return [
+      'bg' => (string)($theme['slide']['background'] ?? '#050505'),
+      'fg' => (string)($theme['body']['color'] ?? '#e8e8e8'),
+    ];
   }
 
   public static function textStyle(string $name, string $role, int $width, int $height): array {
-    $p = self::palette($name);
-    $vh = fn(float $value): int => max(1, (int)round($height * $value / 100));
-    $base = [
-      'color' => $p['fg'],
-      'background' => 'transparent',
-      'borderWidth' => 0,
-      'borderColor' => $p['border'],
-      'padding' => 0,
-      'fontFamily' => str_contains($name, 'Academic') || str_contains($name, 'Esoteric') ? 'serif' : (str_contains($name, 'Technical') ? 'monospace' : 'sans-serif'),
-      'fontSize' => $vh(3),
-      'textAlign' => 'left',
-      'lineGap' => $vh(0.5),
-    ];
-    return match ($role) {
-      'main-title' => array_replace($base, ['color' => $p['title'], 'fontSize' => $vh(7), 'fontWeight' => 'bold', 'textAlign' => 'center']),
-      'slide-title' => array_replace($base, ['color' => $p['title'], 'fontSize' => $vh(4.8), 'fontWeight' => 'bold', 'textAlign' => 'center']),
-      'block' => array_replace($base, ['background' => $p['muted'], 'borderWidth' => 1, 'padding' => $vh(1.4), 'fontSize' => $vh(2.7)]),
-      'quote' => array_replace($base, ['color' => $p['accent'], 'background' => $p['muted'], 'borderWidth' => ['left' => 4], 'padding' => $vh(1.4)]),
-      'code' => array_replace($base, ['color' => $p['code'], 'background' => $p['muted'], 'borderWidth' => ['left' => 4], 'padding' => $vh(1.3), 'fontFamily' => 'monospace', 'fontSize' => $vh(2.5)]),
-      default => $base,
-    };
+    $theme = self::theme($name);
+    $style = array_replace($theme['body'] ?? [], $theme[$role] ?? []);
+    return self::resolveStyle($style, $width, $height);
   }
 
   public static function runStyle(string $name, string $role, int $height): array {
-    $p = self::palette($name);
-    $vh = fn(float $value): int => max(1, (int)round($height * $value / 100));
-    return match ($role) {
-      'strong' => ['bold' => true, 'color' => $p['strong']],
-      'code' => ['fontFamily' => 'monospace', 'color' => $p['code'], 'background' => $p['muted'], 'fontSize' => $vh(2.5)],
-      'link' => ['color' => $p['link']],
-      'block-title' => ['bold' => true, 'color' => $p['accent'], 'fontSize' => $vh(3.4)],
-      'subtitle' => ['bold' => true, 'color' => $p['title'], 'fontSize' => $vh(2.7)],
-      default => [],
+    $role = $role === 'code' ? 'inline-code' : $role;
+    $theme = self::theme($name);
+    return self::resolveStyle($theme[$role] ?? [], 0, $height);
+  }
+
+  public static function parse(string $source): array {
+    $source = preg_replace('/\/\*.*?\*\//s', '', $source) ?? $source;
+    $theme = self::FALLBACK;
+    if (!preg_match_all('/([A-Za-z][A-Za-z0-9_-]*)\s*\{(.*?)\}/s', $source, $blocks, PREG_SET_ORDER)) {
+      return $theme;
+    }
+    foreach ($blocks as $block) {
+      $selector = strtolower($block[1]);
+      $role = self::SELECTORS[$selector] ?? null;
+      if ($role === null) {
+        continue;
+      }
+      foreach (explode(';', $block[2]) as $declaration) {
+        if (!str_contains($declaration, ':')) {
+          continue;
+        }
+        [$property, $value] = array_map('trim', explode(':', $declaration, 2));
+        $property = self::PROPERTIES[strtolower($property)] ?? null;
+        if ($property === null || $value === '') {
+          continue;
+        }
+        $theme[$role][$property] = self::parseValue($property, $value);
+      }
+    }
+    return $theme;
+  }
+
+  private static function theme(string $name): array {
+    $name = basename($name) ?: self::DEFAULT_NAME;
+    if (isset(self::$themes[$name])) {
+      return self::$themes[$name];
+    }
+    $file = self::styleDir() . '/' . $name . '.style';
+    if (!is_file($file)) {
+      $file = self::styleDir() . '/' . self::DEFAULT_NAME . '.style';
+    }
+    $source = is_file($file) ? file_get_contents($file) : false;
+    return self::$themes[$name] = $source === false ? self::FALLBACK : self::parse($source);
+  }
+
+  private static function parseValue(string $property, string $value): mixed {
+    $value = trim($value);
+    if ($property === 'borderWidth' || $property === 'padding') {
+      return self::parseBoxValue($value);
+    }
+    if ($property === 'fontSize' || $property === 'lineGap') {
+      return self::parseSize($value);
+    }
+    if ($property === 'fontFamily' && str_contains($value, ',')) {
+      return array_values(array_filter(array_map('trim', explode(',', $value)), fn(string $family): bool => $family !== ''));
+    }
+    return $value;
+  }
+
+  private static function parseBoxValue(string $value): int|string|array {
+    $parts = preg_split('/\s+/', trim($value)) ?: [];
+    $parts = array_values(array_filter($parts, fn(string $part): bool => $part !== ''));
+    if (count($parts) === 1) {
+      return self::parseSize($parts[0]);
+    }
+    $values = array_map(fn(string $part): int|string => self::parseSize($part), $parts);
+    return match (count($values)) {
+      2 => ['top' => $values[0], 'right' => $values[1], 'bottom' => $values[0], 'left' => $values[1]],
+      3 => ['top' => $values[0], 'right' => $values[1], 'bottom' => $values[2], 'left' => $values[1]],
+      default => ['top' => $values[0] ?? 0, 'right' => $values[1] ?? 0, 'bottom' => $values[2] ?? 0, 'left' => $values[3] ?? 0],
     };
+  }
+
+  private static function parseSize(string $value): int|string {
+    $value = trim($value);
+    if (preg_match('/^-?\d+(?:\.\d+)?(?:vh|vw|px)$/i', $value)) {
+      return strtolower($value);
+    }
+    if (is_numeric($value)) {
+      return (int)round((float)$value);
+    }
+    return $value;
+  }
+
+  private static function resolveStyle(array $style, int $width, int $height): array {
+    foreach (['fontSize', 'lineGap', 'padding', 'borderWidth'] as $property) {
+      if (array_key_exists($property, $style)) {
+        $style[$property] = self::resolveValue($style[$property], $width, $height);
+      }
+    }
+    if (($style['fontWeight'] ?? '') === 'bold') {
+      $style['bold'] = true;
+    }
+    return $style;
+  }
+
+  private static function resolveValue(mixed $value, int $width, int $height): mixed {
+    if (is_array($value)) {
+      return array_map(fn(mixed $item): mixed => self::resolveValue($item, $width, $height), $value);
+    }
+    if (!is_string($value)) {
+      return $value;
+    }
+    if (!preg_match('/^(-?\d+(?:\.\d+)?)(vh|vw|px)$/i', $value, $match)) {
+      return $value;
+    }
+    $number = (float)$match[1];
+    return match (strtolower($match[2])) {
+      'vh' => max(1, (int)round($height * $number / 100)),
+      'vw' => max(1, (int)round($width * $number / 100)),
+      default => (int)round($number),
+    };
+  }
+
+  private static function styleDir(): string {
+    return dirname((string)(defined('APP_PATH') ? APP_PATH : dirname(__DIR__) . '/mademonstrator.php')) . '/Styles';
   }
 
 }

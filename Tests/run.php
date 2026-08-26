@@ -8,6 +8,7 @@ require_once __DIR__ . '/Support.php';
 
 $files = [
   __DIR__ . '/SlideMarkdownTest.php',
+  __DIR__ . '/SlideThemeTest.php',
 ];
 
 $tests = [];
