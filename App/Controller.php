@@ -14,6 +14,7 @@ use SPTK2\Widgets\DialogLayer;
 use SPTK2\Widgets\DialogPanel;
 use SPTK2\Widgets\Dock;
 use SPTK2\Widgets\FileSelector;
+use SPTK2\Widgets\FileSelectorBrowserPanel;
 use SPTK2\Widgets\Flow;
 use SPTK2\Widgets\FlowRow;
 use SPTK2\Widgets\ImageView;
@@ -23,6 +24,7 @@ use SPTK2\Widgets\ListItem;
 use SPTK2\Widgets\ListView;
 use SPTK2\Widgets\MenuBar;
 use SPTK2\Widgets\MenuItem;
+use SPTK2\Widgets\Selector;
 use SPTK2\Widgets\StatusBar;
 use SPTK2\Widgets\TextBlock;
 use SPTK2\Widgets\TextEditor;
@@ -109,7 +111,7 @@ final class Controller {
     $this->setMenuVisible(true);
     $this->closeHelperWindow();
     $this->window?->setFullscreen(false);
-    $this->menu->requestFocus();
+    $this->slide->root()->requestFocus();
   }
 
   public function handleSlideShortcut(InputEvent $event): bool {
@@ -208,15 +210,14 @@ final class Controller {
   private function sortSlides(): void {
     $items = [];
     foreach ($this->presentation->slideTitles() as $index => $title) {
-      $items[] = new ListItem(['text' => $title, 'value' => $index, 'selectable' => true, 'selected' => true]);
+      $items[] = new ListItem(['text' => $title, 'value' => $index]);
     }
-    $list = new ListView('order', $items, ['selectionOrder' => true]);
-    $list->setSelectedValues(array_keys($items));
+    $list = new ListView('order', $items, ['reorderable' => true]);
     $panel = new DialogPanel('sort-slides', ['title' => 'Sort slides', 'size' => 'normal', 'contentColumns' => 56]);
-    $panel->addContent(new TextBlock('', 'Select slides in the desired order with Shift+Space.'), 2);
+    $panel->addContent(new Label('', 'Move slides with Shift+Up/Down.'));
     $panel->addContent($list, 12);
     $panel->addButton($this->button('Save', function() use ($panel, $list): void {
-      $this->presentation->sort($list->selectedValues());
+      $this->presentation->sort($list->values());
       $this->currentSlide = 0;
       $this->dialogs->pop($panel);
       $this->showCurrentSlide();
@@ -226,15 +227,30 @@ final class Controller {
   }
 
   private function openFileDialog(bool $save): void {
-    $panel = new DialogPanel($save ? 'save-file' : 'open-file', ['title' => $save ? 'Save presentation' : 'Open presentation', 'size' => 'big']);
-    $selector = new FileSelector('file', $this->config['defaultDir'], $this->presentation->file() ?? '', [
+    $currentFile = $this->presentation->file();
+    $value = $currentFile === null ? [] : [$currentFile];
+    $browser = new FileSelectorBrowserPanel('presentation-file-browser', $this->fileBrowserPath($currentFile), $value, [
       'extensions' => ['.md'],
-      'createFile' => $save,
     ]);
-    $panel->addContent($selector);
-    $panel->addButton($this->button($save ? 'Save' : 'Open', function() use ($panel, $selector, $save): void {
-      $path = (string)$selector->getValue();
-      if ($path === '') {
+    $browserRows = FileSelectorBrowserPanel::DEFAULT_PANEL_ROWS;
+    $browser->setPreferredRows($browserRows);
+    $panel = new DialogPanel($save ? 'save-file' : 'open-file', [
+      'title' => $save ? 'Save presentation' : 'Open presentation',
+      'size' => 'big',
+      'contentColumns' => FileSelectorBrowserPanel::DEFAULT_PANEL_COLUMNS,
+    ]);
+    $fileName = null;
+    if ($save) {
+      $fileName = new Input('save-file-name', $currentFile === null ? 'presentation.md' : basename($currentFile));
+      $row = new FlowRow('save-file-name-row', 'left', 1);
+      $row->place(new Label('save-file-name-label', 'File:'), 6)
+        ->place($fileName, 64);
+      $panel->addContent($row, 1);
+    }
+    $panel->addContent($browser, $browserRows);
+    $panel->addButton($this->button($save ? 'Save' : 'Open', function() use ($panel, $browser, $save, $fileName): void {
+      $path = $save ? $this->savePathFromDialog($browser, $fileName) : $this->openPathFromDialog($browser);
+      if ($path === null) {
         return;
       }
       $this->dialogs->pop($panel);
@@ -242,6 +258,35 @@ final class Controller {
     }));
     $panel->addButton($this->button('Cancel', fn() => $this->dialogs->pop($panel)));
     $this->dialogs->push($panel);
+  }
+
+  private function openPathFromDialog(FileSelectorBrowserPanel $browser): ?string {
+    $selected = $browser->getValue();
+    $path = (string)($selected[0] ?? '');
+    return $path === '' ? null : $path;
+  }
+
+  private function savePathFromDialog(FileSelectorBrowserPanel $browser, ?Input $fileName): ?string {
+    $name = trim((string)$fileName?->getValue());
+    $selected = $browser->getValue();
+    $selectedPath = (string)($selected[0] ?? '');
+    if ($selectedPath !== '' && ($name === '' || basename($selectedPath) === $name)) {
+      return $selectedPath;
+    }
+    if ($name === '' || $name === '.' || $name === '..' || str_contains($name, '/') || str_contains($name, '\\')) {
+      return null;
+    }
+    return rtrim($browser->path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $name;
+  }
+
+  private function fileBrowserPath(?string $file): string {
+    if ($file !== null) {
+      $directory = dirname($file);
+      if ($directory !== '' && is_dir($directory)) {
+        return $directory;
+      }
+    }
+    return (string)$this->config['defaultDir'];
   }
 
   private function save(?string $path = null): void {
@@ -255,11 +300,17 @@ final class Controller {
 
   private function settings(): void {
     $panel = new DialogPanel('settings', ['title' => 'Settings', 'size' => 'normal', 'contentColumns' => 70]);
-    $defaultStyle = new Input('defaultStyle', $this->config['defaultStyle']);
+    $defaultStyle = new Selector('defaultStyle', SlideTheme::names(), $this->config['defaultStyle'], [
+      'title' => 'Default style',
+      'panelRows' => min(12, count(SlideTheme::names())),
+    ]);
     $defaultDir = new FileSelector('defaultDir', $this->config['defaultDir'], $this->config['defaultDir']);
-    $presentationWindow = new Input('presentationWindow', $this->config['presentationWindow']);
-    $promptBox = new Input('promptBox', $this->config['promptBox']);
-    $browserCmd = new Input('browserCmd', $this->config['browserCmd']);
+    $presentationWindow = (new Input('presentationWindow', $this->config['presentationWindow']))
+      ->setPlaceholder('full, max, or 1280x720');
+    $promptBox = (new Input('promptBox', $this->config['promptBox']))
+      ->setPlaceholder('none or 640x480');
+    $browserCmd = (new Input('browserCmd', $this->config['browserCmd']))
+      ->setPlaceholder('firefox --new-tab %url%');
     foreach ([
       'Default style:' => $defaultStyle,
       'Default directory:' => $defaultDir,
@@ -290,18 +341,21 @@ final class Controller {
   private function about(): void {
     $license = is_file($this->appDir . '/UNLICENSE') ? file_get_contents($this->appDir . '/UNLICENSE') : '';
     $license = preg_replace("/(?<!\n)\n(?!\n)/", ' ', trim((string)$license)) ?? trim((string)$license);
-    $panel = new DialogPanel('about', ['title' => 'MaDemonstrator', 'size' => 'big', 'contentColumns' => 82]);
+    $leftColumns = 30;
+    $gapColumns = 3;
+    $licenseColumns = 76;
+    $panel = new DialogPanel('about', ['title' => 'MaDemonstrator', 'size' => 'big', 'contentColumns' => $leftColumns + $gapColumns + $licenseColumns]);
     $left = new Flow('about-left');
     $logo = new ImageView('mademonstrator-logo', $this->appDir . '/Layout/mademo.png');
     $logo->setCellSize(26, 11)->setFit('contain');
     $left->place($logo, $logo->preferredRows());
     $left->place(new TextBlock('', "MaDemonstrator\nSPTK2 migration preview\nVersion:\n0.0.0.0.0.0.1"));
     $licenseText = new TextBlock('license', "Unlicense:\n\n" . $license);
-    $licenseText->setPreferredRows(22);
-    $row = new FlowRow('about-row', 'left', 3);
-    $row->place($left, 30);
-    $row->place($licenseText, 49);
-    $panel->addContent($row, 24);
+    $aboutRows = $licenseText->preferredRowsForColumns($licenseColumns);
+    $row = new FlowRow('about-row', 'left', $gapColumns);
+    $row->place($left, $leftColumns);
+    $row->place($licenseText, $licenseColumns);
+    $panel->addContent($row, $aboutRows);
     $panel->addButton($this->button('Close', fn() => $this->dialogs->pop($panel)));
     $this->dialogs->push($panel);
   }
@@ -345,7 +399,12 @@ final class Controller {
   private function rebuildSlideMenu(): void {
     $items = [];
     foreach ($this->presentation->slideTitles() as $index => $title) {
-      $items[] = ['label' => $title, 'checked' => $index === $this->currentSlide, 'action' => fn() => $this->setCurrentSlide($index)];
+      $items[] = [
+        'label' => $title,
+        'checked' => $index === $this->currentSlide,
+        'selectable' => 'slide',
+        'action' => fn() => $this->setCurrentSlide($index),
+      ];
     }
     $this->slideMenu->update(['items' => $items]);
   }
@@ -354,11 +413,15 @@ final class Controller {
     $items = [];
     foreach (SlideTheme::names() as $name) {
       $label = $name;
-      $items[] = ['label' => $label, 'checked' => $name === $this->config['defaultStyle'], 'action' => function() use ($name): void {
-        $this->config['defaultStyle'] = $name;
-        $this->showCurrentSlide();
-        $this->rebuildStyleMenu();
-      }];
+      $items[] = [
+        'label' => $label,
+        'checked' => $name === $this->config['defaultStyle'],
+        'selectable' => 'style',
+        'action' => function() use ($name): void {
+          $this->config['defaultStyle'] = $name;
+          $this->showCurrentSlide();
+        },
+      ];
     }
     $this->styleMenu->update(['items' => $items]);
   }
@@ -379,6 +442,7 @@ final class Controller {
   }
 
   private function setMenuVisible(bool $visible): void {
+    $this->menu->closePopup(true);
     $this->root?->setElementVisible($this->menu, $visible);
   }
 
