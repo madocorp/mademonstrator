@@ -3,6 +3,8 @@
 MaDemonstrator is a presentation program written in PHP.
 It can display a Markdown file as slides.
 
+---
+
 ## Requirements
 
 ### PHP (CLI)
@@ -26,6 +28,8 @@ https://github.com/madocorp/sptk
 Follow the installation instructions in that project.
 
 You will need the **SPTK directory path** during installation.
+
+---
 
 ## Installation
 
@@ -111,3 +115,4 @@ mademonstrator
 By default, the program displays a presentation about itself.
 Use the **space** and **backspace** keys to navigate the slides.
 
+---
