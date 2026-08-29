@@ -2,6 +2,7 @@
 
 namespace MADEMO\App;
 
+use SPTK2\Core\AppData;
 use SPTK2\Core\InputAction;
 use SPTK2\Core\InputEvent;
 use SPTK2\Core\Place;
@@ -49,8 +50,7 @@ final class Controller {
   private ?TextBlock $helperContent = null;
 
   public function __construct(private string $appDir, private SdlApp $app) {
-    $loaded = Config::load();
-    $this->config = $loaded['config'];
+    $this->config = $this->loadConfig();
   }
 
   public function setWindow(SdlWindow $window): void {
@@ -329,7 +329,7 @@ final class Controller {
         'promptBox' => $promptBox->getValue(),
         'browserCmd' => $browserCmd->getValue(),
       ];
-      Config::save($this->config);
+      $this->saveConfig();
       $this->dialogs->pop($panel);
       $this->showCurrentSlide();
       $this->rebuildStyleMenu();
@@ -525,6 +525,31 @@ final class Controller {
       }
     }
     return $options;
+  }
+
+  private function defaultConfig(): array {
+    return [
+      'defaultStyle' => 'Default',
+      'defaultDir' => $this->home(),
+      'presentationWindow' => 'full',
+      'promptBox' => 'none',
+      'browserCmd' => 'firefox --new-tab %url%',
+    ];
+  }
+
+  private function loadConfig(): array {
+    $data = AppData::loadJson('config.json', 'mademonstrator');
+    $config = isset($data['config']) && is_array($data['config']) ? $data['config'] : [];
+    return array_replace($this->defaultConfig(), $config);
+  }
+
+  private function saveConfig(): bool {
+    return AppData::saveJson('config.json', ['config' => $this->config], 'mademonstrator');
+  }
+
+  private function home(): string {
+    $home = getenv('HOME') ?: getenv('USERPROFILE') ?: getcwd();
+    return realpath($home) ?: $home;
   }
 
 }
