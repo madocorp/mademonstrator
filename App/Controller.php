@@ -2,33 +2,33 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Core\AppData;
-use SPTK2\Core\InputAction;
-use SPTK2\Core\InputEvent;
-use SPTK2\Core\Place;
-use SPTK2\Core\Theme;
-use SPTK2\Runtime\SdlApp;
-use SPTK2\Runtime\SdlWindow;
-use SPTK2\Runtime\SdlWindowOptions;
-use SPTK2\Widgets\Button;
-use SPTK2\Widgets\DialogLayer;
-use SPTK2\Widgets\DialogPanel;
-use SPTK2\Widgets\Dock;
-use SPTK2\Widgets\FileSelector;
-use SPTK2\Widgets\FileSelectorBrowserPanel;
-use SPTK2\Widgets\Flow;
-use SPTK2\Widgets\FlowRow;
-use SPTK2\Widgets\ImageView;
-use SPTK2\Widgets\Input;
-use SPTK2\Widgets\Label;
-use SPTK2\Widgets\ListItem;
-use SPTK2\Widgets\ListView;
-use SPTK2\Widgets\MenuBar;
-use SPTK2\Widgets\MenuItem;
-use SPTK2\Widgets\Selector;
-use SPTK2\Widgets\StatusBar;
-use SPTK2\Widgets\TextBlock;
-use SPTK2\Widgets\TextEditor;
+use SPTK\Core\AppData;
+use SPTK\Core\InputAction;
+use SPTK\Core\InputEvent;
+use SPTK\Core\Place;
+use SPTK\Core\Theme;
+use SPTK\Runtime\SdlApp;
+use SPTK\Runtime\SdlWindow;
+use SPTK\Runtime\SdlWindowOptions;
+use SPTK\Widgets\Button;
+use SPTK\Widgets\DialogLayer;
+use SPTK\Widgets\DialogPanel;
+use SPTK\Widgets\Dock;
+use SPTK\Widgets\FileSelector;
+use SPTK\Widgets\FileSelectorBrowserPanel;
+use SPTK\Widgets\Flow;
+use SPTK\Widgets\FlowRow;
+use SPTK\Widgets\ImageView;
+use SPTK\Widgets\Input;
+use SPTK\Widgets\Label;
+use SPTK\Widgets\ListItem;
+use SPTK\Widgets\ListView;
+use SPTK\Widgets\MenuBar;
+use SPTK\Widgets\MenuItem;
+use SPTK\Widgets\Selector;
+use SPTK\Widgets\StatusBar;
+use SPTK\Widgets\TextBlock;
+use SPTK\Widgets\TextEditor;
 
 final class Controller {
 
@@ -349,7 +349,7 @@ final class Controller {
     $logo = new ImageView('mademonstrator-logo', $this->appDir . '/Layout/mademo.png');
     $logo->setCellSize(26, 11)->setFit('contain');
     $left->place($logo, $logo->preferredRows());
-    $left->place(new TextBlock('', "MaDemonstrator\nSPTK2 migration preview\nVersion:\n0.0.0.0.0.0.1"));
+    $left->place(new TextBlock('', "MaDemonstrator\nSPTK migration preview\nVersion:\n0.0.0.0.0.0.1"));
     $licenseText = new TextBlock('license', "Unlicense:\n\n" . $license);
     $aboutRows = $licenseText->preferredRowsForColumns($licenseColumns);
     $row = new FlowRow('about-row', 'left', $gapColumns);

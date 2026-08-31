@@ -2,14 +2,14 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Core\Color;
-use SPTK2\Core\Element;
-use SPTK2\Core\ImageRenderTarget;
-use SPTK2\Core\PixelTextRenderTarget;
-use SPTK2\Core\Rect;
-use SPTK2\Core\RenderTarget;
-use SPTK2\Core\SurfaceRenderTarget;
-use SPTK2\Widgets\StyledTextBox;
+use SPTK\Core\Color;
+use SPTK\Core\Element;
+use SPTK\Core\ImageRenderTarget;
+use SPTK\Core\PixelTextRenderTarget;
+use SPTK\Core\Rect;
+use SPTK\Core\RenderTarget;
+use SPTK\Core\SurfaceRenderTarget;
+use SPTK\Widgets\StyledTextBox;
 
 final class SlideView extends Element {
 

@@ -2,9 +2,9 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Core\Element;
-use SPTK2\Core\InputEvent;
-use SPTK2\Widgets\Dock;
+use SPTK\Core\Element;
+use SPTK\Core\InputEvent;
+use SPTK\Widgets\Dock;
 
 final class Shell extends Dock {
 
