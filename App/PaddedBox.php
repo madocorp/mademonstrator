@@ -2,8 +2,8 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Core\Element;
-use SPTK2\Core\RenderTarget;
+use SPTK\Core\Element;
+use SPTK\Core\RenderTarget;
 
 final class PaddedBox extends Element {
 

@@ -2,7 +2,7 @@
 
 namespace MADEMO\App;
 
-use SPTK2\Core\Tokenizer;
+use SPTK\Core\Tokenizer;
 
 final class MarkdownHighlighter extends Tokenizer {
 

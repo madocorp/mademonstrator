@@ -7,8 +7,8 @@ define('APP_NAMESPACE', 'MADEMO');
 require_once __DIR__ . '/SPTK/Autoload.php';
 
 use MADEMO\App\Controller;
-use SPTK2\Runtime\SdlApp;
-use SPTK2\Runtime\SdlWindowOptions;
+use SPTK\Runtime\SdlApp;
+use SPTK\Runtime\SdlWindowOptions;
 
 $app = new SdlApp('MaDemonstrator');
 $controller = new Controller(__DIR__, $app);
