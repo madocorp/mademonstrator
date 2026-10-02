@@ -1,0 +1,17 @@
+/*
+DarkEsoteric is dramatic and ceremonial. It uses serif text, centered body
+copy, oversized script-like titles, and asymmetric right-side borders for talks
+that need atmosphere more than density.
+*/
+Slide { backgroundColor: #2a193b; }
+Body { color: #f2eaf9; fontFamily: TeX Gyre Pagella, Noto Serif Display, serif; fontSize: 3vh; lineGap: 0.7vh; textAlign: center; }
+MainTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 9.2vh; fontWeight: bold; textAlign: center; borderWidth: 0; padding: 0; }
+SlideTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 6.1vh; fontWeight: bold; textAlign: center; borderWidth: 0; padding: 0; }
+Block { backgroundColor: #3b2451; borderColor: #9ee6d8; borderWidth: 0 4px 0 0; padding: 1.2vh 1.9vw; fontSize: 2.7vh; textAlign: center; }
+Quote { color: #9ee6d8; backgroundColor: #321e45; borderColor: #e0b0ff; borderWidth: 1px 5px; padding: 1.8vh; fontSize: 3vh; textAlign: center; }
+Code { color: #bcecff; backgroundColor: #130a1d; borderColor: #39264c; borderWidth: 1px; padding: 1.3vh; fontFamily: monospace; fontSize: 2.35vh; textAlign: left; }
+Strong { color: #ff9ab3; fontWeight: bold; }
+InlineCode { color: #bcecff; backgroundColor: #3b2451; fontFamily: monospace; fontSize: 2.5vh; }
+Link { color: #9cc7ff; }
+BlockTitle { color: #9ee6d8; fontSize: 3.4vh; fontWeight: bold; }
+Subtitle { color: #e0b0ff; fontSize: 2.7vh; fontWeight: bold; }
