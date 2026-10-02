@@ -92,11 +92,11 @@ final class Presenter {
     $screen = $window->screen('presenter');
     $screen->widget('title')->setText(self::title($parsed));
     $screen->widget('notes')->setText(self::notesText($parsed));
-    self::updateTiming();
+    self::updateTiming(false);
     $window->resize();
   }
 
-  private static function updateTiming(): void {
+  private static function updateTiming(bool $render = true): void {
     $window = self::window();
     if ($window === null) {
       return;
@@ -129,7 +129,9 @@ final class Presenter {
       $screen->widget('timing')->setText($label);
     }
     self::$timingLabel = $label;
-    $window->resize();
+    if ($render) {
+      $window->resize();
+    }
   }
 
   /** Format the current slide number and its speaker-facing title. */

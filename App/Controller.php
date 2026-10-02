@@ -15,7 +15,9 @@ final class Controller {
   private static ?Widget $markdown = null;
   private static ?int $pendingSlide = null;
   private static ?int $slideTimer = null;
-  private const SLIDE_SETTLE_MS = 60;
+  private const SLIDE_INITIAL_WAIT_MS = 600;
+  private const SLIDE_SETTLE_MS = 100;
+  private const SLIDE_SEARCH_SETTLE_MS = 60;
 
   /** Bind XML screens and open the requested presentation or bundled example. */
   public static function initialize(EventContext $event): void {
@@ -162,12 +164,28 @@ final class Controller {
       self::cancelPendingSlide();
       return;
     }
+    $firstMove = self::$pendingSlide === null;
     self::$pendingSlide = (int)$value;
+    $delay = $event->widget->filter() !== '' ? self::SLIDE_SEARCH_SETTLE_MS
+      : ($firstMove ? self::SLIDE_INITIAL_WAIT_MS : self::SLIDE_SETTLE_MS);
     if (self::$slideTimer === null) {
-      self::$slideTimer = App::eventLoop()->addTimer(self::class . '::finishSlideSelection', self::SLIDE_SETTLE_MS);
+      self::$slideTimer = App::eventLoop()->addTimer(self::class . '::finishSlideSelection', $delay);
     } else {
-      App::eventLoop()->setTimerPeriod(self::$slideTimer, self::SLIDE_SETTLE_MS);
+      App::eventLoop()->setTimerPeriod(self::$slideTimer, $delay);
     }
+  }
+
+  /** Apply a pending cursor move as soon as the navigation key is released. */
+  public static function slideListKeyUp(EventContext $event): bool {
+    if (self::$pendingSlide === null || self::$screenId !== 'editor'
+      || self::screen('editor')->activeLeaf()?->instance() !== self::widget('editor', 'slides')) {
+      return false;
+    }
+    $key = KeyNormalizer::normalize((int)$event->input->key->key, (int)$event->input->key->mod);
+    if (in_array($key, [\SPTK\SDLWrapper\SDL::KEY_UP, \SPTK\SDLWrapper\SDL::KEY_DOWN, \SPTK\SDLWrapper\SDL::KEY_HOME, \SPTK\SDLWrapper\SDL::KEY_END, \SPTK\SDLWrapper\SDL::KEY_PAGEUP, \SPTK\SDLWrapper\SDL::KEY_PAGEDOWN], true)) {
+      self::applyPendingSlide();
+    }
+    return false;
   }
 
   /** Apply the last list value when its timer expires or the user leaves the list. */

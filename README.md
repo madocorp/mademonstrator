@@ -27,7 +27,7 @@ widget stays with that widget.
 The Markdown editor also accepts Ctrl+Return to finish; Return inserts a newline.
 The slide list selects a slide while active. Shift+Up/Down reorders the selected slide and retains its editor buffer.
 Typing searches slide titles, including spaces; the displayed row numbers are excluded from search.
-The preview and Markdown editor load the selected slide after the list rests for 60 ms, or immediately when you leave the list.
+The preview and Markdown editor wait briefly when list movement starts, then load the latest slide when the arrow key is released or movement settles. Leaving the list also loads the pending slide.
 Add, clone, delete, and restore work on the current slide. The last slide is retained.
 
 | Key | Action |
@@ -79,26 +79,25 @@ inline/fenced code, quotations, lists, local images, custom image bullets, and
 links are supported.
 
 SlideLayout builds nested native SPTK layouts with StyledText and fitted image tiles.
-Presentation and preview share this builder. SPTK positions everything on its cell grid;
-text rasterization stays inside each tile. Dense content can clip at small window sizes.
-Box backgrounds are retained; a border surrounding a whole nested box is not implemented.
+Presentation and preview share this builder. The surrounding app uses SPTK's cell grid;
+the slide subtree measures and renders its tiles in pixels. The preview reflows at its own
+size. Dense content can still clip when the available area is too small.
 Set `padding` in a style file's `Slide` rule to reserve empty space at the slide edges.
 Use percentages in CSS order: top, right, bottom, left. For example,
 `Slide { padding: 4% 6% 8% 10%; }` reserves 4% of slide height at the top,
 6% of slide width at the right, 8% of slide height at the bottom, and 10% of
 slide width at the left. One or two values also follow CSS shorthand rules.
-Each percentage is rounded to a whole grid cell when the slide is measured.
+Each percentage resolves to pixels when the slide is measured.
 H1 title slides use the same separate content tiles and styles as normal slides,
 with balanced flexible empty spacers above and below the title and content.
-On H2 slides, StyledText titles and text content use their measured heights. An
-empty `1*` spacer follows the title and an empty `2*` spacer follows the content;
-these share the remaining height and collapse when the text needs the space.
-Text in custom image-bullet rows is measured at its row width; slide text renders
-within its measured cell tile, while tile backgrounds fill the surrounding gaps.
-Use `margin` and `padding` on text rules such as `MainTitle` and `Quote` to
-control spacing around and inside a text box. These values accept pixels, `vh`,
-or `vw`, in the usual top/right/bottom/left shorthand order. Margin remains
-inside the widget's allocated tile and leaves the slide background visible.
+Text tiles use their measured pixel heights. Flexible spacers share any remaining
+height; list rows and separate content elements have small explicit gaps.
+`Block` margin, border, and padding surround each heading box once. Margins use
+the parent background, borders use `borderColor`, and padding uses the box
+background. Other text rules, such as `MainTitle` and `Quote`, put their margin,
+border, and padding on their layout leaves. Sizes accept pixels, `vh`, or `vw`
+in top/right/bottom/left order. SPTK's reusable pixel layout box model is
+documented in `SPTK/Docs/layout.md`.
 
 Validation:
 
@@ -107,6 +106,7 @@ php mademonstrator/Tests/run.php
 php mademonstrator/Tests/Integration.php
 php mademonstrator/Tests/Settings.php
 php SPTK/Tests/StyledText.php
+php SPTK/Tests/PixelLayout.php
 ```
 
 The integration test uses SDL's dummy video driver. Set `MADEMO_SNAPSHOT_DIR` to an

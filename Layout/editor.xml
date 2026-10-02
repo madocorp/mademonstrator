@@ -1,6 +1,7 @@
 <Screen>
   <Event type="keyDown" action="MADEMO\App\FileActions::key" />
   <Event type="keyDown" action="MADEMO\App\Controller::editorSlideKey" />
+  <Event type="keyUp" action="MADEMO\App\Controller::slideListKeyUp" />
   <Layout>
     <Layout direction="horizontal" height="1">
       <Title id="heading" width="1*" tip="Presentation title; use the Slides list or Markdown editor to change slides." />

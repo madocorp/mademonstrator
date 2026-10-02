@@ -59,7 +59,7 @@ final class SlideTheme {
     'body' => ['color' => '#e8e8e8', 'background' => 'transparent', 'borderWidth' => 0, 'borderColor' => '#2a2a2a', 'padding' => 0, 'fontFamily' => 'sans-serif', 'fontSize' => '3vh', 'textAlign' => 'left', 'lineGap' => '0.5vh'],
     'main-title' => ['color' => '#fff36a', 'fontSize' => '7vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
     'slide-title' => ['color' => '#fff36a', 'fontSize' => '4.8vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
-    'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'fontSize' => '2.7vh'],
+    'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'margin' => ['top' => '0.8vh', 'right' => '0.6vw', 'bottom' => '0.8vh', 'left' => '0.6vw'], 'fontSize' => '2.7vh'],
     'quote' => ['color' => '#75f0bd', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.4vh'],
     'code' => ['color' => '#79e9ff', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.3vh', 'fontFamily' => 'monospace', 'fontSize' => '2.5vh'],
     'strong' => ['bold' => true, 'color' => '#ff8f8f'],
@@ -113,6 +113,12 @@ final class SlideTheme {
     $theme = self::theme($name);
     $style = array_replace($theme['body'] ?? [], $theme[$role] ?? []);
     return self::resolveStyle($style, $width, $height);
+  }
+
+  /** Keep viewport-based layout dimensions unresolved until the pixel slide is measured. */
+  public static function rawStyle(string $name, string $role): array {
+    $theme = self::theme($name);
+    return array_replace($theme['body'] ?? [], $theme[$role] ?? []);
   }
 
   public static function runStyle(string $name, string $role, int $height): array {
