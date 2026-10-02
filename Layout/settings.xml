@@ -1,0 +1,35 @@
+<Screen>
+  <Event type="keyDown" key="escape" action="MADEMO\App\Controller::edit" />
+  <Layout>
+    <Title height="1">MaDemonstrator — settings, about, help and license</Title>
+    <Separator />
+    <Layout direction="horizontal" height="1*">
+      <Layout width="34">
+        <Image src="../Assets/mademo.png" fit="contain" interactive="false" />
+        <Separator />
+        <List id="defaultTheme" title="DEFAULT STYLE" height="1*" filterable="false" />
+        <Input id="directory" height="2" label="DEFAULT DIRECTORY" />
+        <Input id="presentationWindow" height="2" label="PRESENTATION WINDOW" tip="Use full, max, normal, or WIDTHxHEIGHT. Up to 160x80 uses grid cells; larger sizes use pixels." />
+        <Input id="promptBox" height="2" label="HELPER WINDOW" tip="Use none to hide notes, or full, max, normal, or WIDTHxHEIGHT. Up to 160x80 uses cells; larger sizes use pixels." />
+        <Separator />
+        <Button label="Save settings" hotkey="s" action="MADEMO\App\Settings::save" />
+        <Button label="Back to editor" hotkey="ESC" action="MADEMO\App\Controller::edit" />
+        <Button label="Quit" hotkey="q" action="MADEMO\App\FileActions::quit" />
+      </Layout>
+      <Separator />
+      <Layout width="1*">
+        <Text height="4">MaDemonstrator turns Markdown into presentations while keeping your ideas in focus.
+Write and refine slides with a live preview, choose a theme, and prepare speaker notes in one place.
+Present in a dedicated window while your notes stay close at hand.</Text>
+        <Separator />
+        <Layout direction="horizontal" height="1*">
+          <Text id="help" width="1*" />
+          <Separator />
+          <Text id="license" width="1*" />
+        </Layout>
+      </Layout>
+    </Layout>
+    <Separator />
+    <StatusBar id="status" height="1" />
+  </Layout>
+</Screen>

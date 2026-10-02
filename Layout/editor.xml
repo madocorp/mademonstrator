@@ -1,0 +1,62 @@
+<Screen>
+  <Event type="keyDown" action="MADEMO\App\FileActions::key" />
+  <Event type="keyDown" action="MADEMO\App\Controller::editorSlideKey" />
+  <Layout>
+    <Layout direction="horizontal" height="1">
+      <Title id="heading" width="1*" tip="Presentation title; use the Slides list or Markdown editor to change slides." />
+      <Text id="filePath" width="1*" wrap="false" tip="Presentation file path; Save or Save as writes the current document.">Unsaved presentation</Text>
+    </Layout>
+    <Separator />
+    <Layout direction="horizontal" height="1*">
+      <List id="slides" title="SLIDES" width="36" filterable="false" reorderable="true">
+        <Event type="change" action="MADEMO\App\Controller::slideChanged" />
+        <Event type="reorder" action="MADEMO\App\Controller::slidesReordered" />
+        <Event type="deactivate" action="MADEMO\App\Controller::finishSlideSelection" />
+      </List>
+      <Separator />
+      <Layout width="1*">
+        <Layout direction="horizontal" height="3*">
+          <Layout id="previewTile" width="1*" navigateChildren="false" tip="Slide preview; Show notes switches this area to speaker notes.">
+            <Empty id="preview" />
+          </Layout>
+          <Separator />
+          <Layout width="38">
+            <List id="themes" title="SLIDE STYLE" height="1*" filterable="false" activeTip="Up/Down changes the slide style; Esc finishes.">
+              <Event type="change" action="MADEMO\App\Controller::themeChanged" />
+            </List>
+            <Title navigate="false">Menu</Title>
+            <Button label="Start" hotkey="f1" action="MADEMO\App\Controller::start" />
+            <Button label="Resume" hotkey="f2" action="MADEMO\App\Controller::present" />
+            <Button id="previewMode" label="Show notes" hotkey="f3" action="MADEMO\App\EditorPreview::toggle" />
+            <Button label="Settings" hotkey="f4" action="MADEMO\App\Settings::show" />
+          </Layout>
+        </Layout>
+        <Separator />
+        <Layout direction="horizontal" height="2*">
+          <TextEditor id="markdown" width="1*" label="MARKDOWN - Esc finishes editing" textWrap="true" />
+          <Separator />
+          <Layout width="18">
+            <Title navigate="false">Slide</Title>
+            <Button label="Add" hotkey="a" action="MADEMO\App\Controller::add" />
+            <Button label="Clone" hotkey="c" action="MADEMO\App\Controller::cloneSlide" />
+            <Button label="Delete" hotkey="d" action="MADEMO\App\Controller::delete" />
+            <Button label="Restore" hotkey="r" action="MADEMO\App\Controller::restore" />
+            <Button id="previousSlide" hotkey="backspace" label="Previous" action="MADEMO\App\Controller::previous" />
+            <Button id="nextSlide" hotkey="space" label="Next" action="MADEMO\App\Controller::next" />
+            <Empty height="1*" />
+          </Layout>
+          <Layout width="18">
+            <Title navigate="false">Presentation</Title>
+            <Button label="New" hotkey="n" action="MADEMO\App\FileActions::create" />
+            <Button label="Open" hotkey="o" action="MADEMO\App\FileActions::openScreen" />
+            <Button label="Save" hotkey="s" action="MADEMO\App\FileActions::save" />
+            <Button label="Save as" hotkey="w" action="MADEMO\App\FileActions::saveAs" />
+            <Empty height="1*" />
+          </Layout>
+        </Layout>
+      </Layout>
+    </Layout>
+    <Separator />
+    <StatusBar id="status" height="1" />
+  </Layout>
+</Screen>

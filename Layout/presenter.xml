@@ -1,0 +1,10 @@
+<Screen>
+  <Event type="keyDown" action="MADEMO\App\Presenter::key" />
+  <Layout>
+    <Title id="title" height="1">Speaker notes</Title>
+    <Separator />
+    <Text id="notes" height="1*" />
+    <Separator />
+    <Text id="timing" height="1" navigate="false"></Text>
+  </Layout>
+</Screen>
