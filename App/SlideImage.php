@@ -46,6 +46,11 @@ final class SlideImage extends Widget {
     return 2;
   }
 
+  /** Keep a list bullet square at the exact pixel width assigned by its row. */
+  public function preferredPixelHeight(int $width): ?int {
+    return max(1, $width);
+  }
+
   /** Report image pixels for complete tile redraws. */
   public function paintsPixels(): bool {
     return true;

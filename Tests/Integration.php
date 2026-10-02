@@ -122,6 +122,9 @@ $path = tempnam(sys_get_temp_dir(), 'mademo-integration-');
 $event = new EventContext('activate');
 try {
   Controller::initialize(new EventContext('init'));
+  $frameBeforeRefresh = (new ReflectionProperty($window, 'frameTexture'))->getValue($window);
+  $window->resize();
+  assertTrue($frameBeforeRefresh === (new ReflectionProperty($window, 'frameTexture'))->getValue($window), 'Refreshing an unchanged window reuses its framebuffer.');
   assertTrue(Controller::$session->document->count() > 10, 'Bundled slides open at startup.');
   assertSame('editor', Controller::$screenId, 'Startup uses editor mode.');
   assertSame(0, (new ReflectionProperty($window, 'currentScreen'))->getValue($window), 'Native window starts on the first editor screen.');
@@ -130,6 +133,23 @@ try {
   assertSame('Markdown Presentation Engine', Controller::widget('editor', 'heading')->text(), 'Editor heading uses the first H1 instead of the first slide label.');
   assertTrue(Controller::widget('editor', 'status') instanceof \SPTK\Widgets\StatusBar\StatusBar, 'Editor uses the reusable status widget.');
   assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Presentation title'), 'Initial status follows the selected heading tip.');
+  $previewBlank = null;
+  foreach (Controller::screen('editor')->layout->leaves() as $leaf) {
+    if ($leaf->isPixel() && $leaf->instance() instanceof \SPTK\Widgets\Empty\Placeholder && $leaf->pixelContent()->width > 0 && $leaf->pixelContent()->height > 0) {
+      $previewBlank = $leaf;
+      break;
+    }
+  }
+  assertTrue($previewBlank !== null, 'The inactive editor preview has a visible slide background tile.');
+  $blankArea = $previewBlank->pixelContent();
+  $previewFrame = snapshotWindow($window, $sdl);
+  $blankPixel = imagecolorat($previewFrame, $blankArea->x + intdiv($blankArea->width, 2), $blankArea->y + intdiv($blankArea->height, 2)) & 0xffffff;
+  $blankPaddingPixel = imagecolorat($previewFrame, $blankArea->x - 1, $blankArea->y + intdiv($blankArea->height, 2)) & 0xffffff;
+  $blankColor = $previewBlank->instance()->background();
+  $dimmedBlankColor = $blankColor->darkened();
+  assertSame(($dimmedBlankColor->r << 16) | ($dimmedBlankColor->g << 8) | $dimmedBlankColor->b, $blankPixel, 'Inactive preview content darkens with its slide tile.');
+  assertSame($blankPixel, $blankPaddingPixel, 'Inactive preview padding darkens with its content.');
+  imagedestroy($previewFrame);
   WindowPreferences::$presentation = 'normal';
   WindowPreferences::$helper = '78x36';
   Controller::present($event);
@@ -142,9 +162,15 @@ try {
   $window->handleEvent($keys);
   assertSame(1, $slideScreen->navigationDepth(), 'Return enters the slide.');
   assertTrue($slideScreen->selectedLeaf()->instance() instanceof \MADEMO\App\SlideText, 'Slide entry selects a visible element.');
+  $slideEdge = \SPTK\Core\Color::from(\MADEMO\App\SlideTheme::palette(Controller::$session->theme)['bg'])->darkened();
+  $navigatingFrame = snapshotWindow($window, $sdl);
+  assertSame(($slideEdge->r << 16) | ($slideEdge->g << 8) | $slideEdge->b, imagecolorat($navigatingFrame, 0, 0) & 0xffffff, 'Slide edges dim with the content during element navigation.');
+  imagedestroy($navigatingFrame);
+  $firstSlideElement = $slideScreen->selectedLeaf();
   $keys->key->key = SDL::KEY_DOWN;
   $window->handleEvent($keys);
   assertSame(1, $slideScreen->navigationDepth(), 'Arrow movement stays inside the slide.');
+  assertTrue($slideScreen->selectedLeaf() !== $firstSlideElement, 'Down moves between pixel slide elements.');
   $keys->key->key = SDL::KEY_ESCAPE;
   $window->handleEvent($keys);
   assertSame(0, $slideScreen->navigationDepth(), 'Escape leaves the slide.');
@@ -173,6 +199,24 @@ try {
   $window->handleEvent($keys);
   assertSame('previewTile', $editorScreen->selectedLeaf()->instance()->id(), 'Right arrow selects the preview as one tile.');
   assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Slide preview'), 'Preview XML tip reaches the status bar.');
+  $selectedBlank = null;
+  foreach ($editorScreen->layout->leaves() as $leaf) {
+    if ($leaf->isPixel() && $leaf->instance() instanceof \SPTK\Widgets\Empty\Placeholder && $leaf->pixelContent()->width > 0 && $leaf->pixelContent()->height > 0) {
+      $selectedBlank = $leaf;
+      break;
+    }
+  }
+  assertTrue($selectedBlank !== null, 'Selected preview has a visible slide background tile.');
+  $selectedBlankArea = $selectedBlank->pixelContent();
+  $selectedBlankColor = $selectedBlank->instance()->background();
+  $selectedFrame = snapshotWindow($window, $sdl);
+  $selectedBlankPixel = imagecolorat($selectedFrame, $selectedBlankArea->x + intdiv($selectedBlankArea->width, 2), $selectedBlankArea->y + intdiv($selectedBlankArea->height, 2)) & 0xffffff;
+  $selectedPaddingPixel = imagecolorat($selectedFrame, $selectedBlankArea->x - 1, $selectedBlankArea->y + intdiv($selectedBlankArea->height, 2)) & 0xffffff;
+  assertSame(($selectedBlankColor->r << 16) | ($selectedBlankColor->g << 8) | $selectedBlankColor->b, $selectedBlankPixel, 'Selected preview content uses the slide theme color.');
+  assertSame($selectedBlankPixel, $selectedPaddingPixel, 'Selected preview padding matches its content.');
+  imagedestroy($selectedFrame);
+  pressKey($window, $sdl, SDL::KEY_RETURN);
+  assertSame(0, $editorScreen->navigationDepth(), 'Return does not enter the preview tile.');
   $previewFocus = $editorScreen->selectedLeaf();
   $previewLeaves = $editorScreen->layout->focusedLeaves($previewFocus);
   assertTrue(count($previewLeaves) > 1, 'Preview group contains the rendered slide elements.');
@@ -400,6 +444,8 @@ try {
     imagedestroy($image);
   }
   Controller::edit($event);
+  Controller::$session->index = 2;
+  Controller::sync(true);
   $slides = Controller::widget('editor', 'slides');
   $technologyIndex = array_search('Technology Stack', Controller::$session->document->slideTitles(), true);
   assertTrue(is_int($technologyIndex), 'Test presentation has a multiword slide title.');
@@ -414,14 +460,32 @@ try {
   typeText($window, 'Stack');
   assertSame('Technology Stack', $slides->filter(), 'Slide search keeps spaces and survives slide selection.');
   assertSame((string)$technologyIndex, $slides->getValue(), 'Slide search matches the title without its row number.');
-  assertSame(3, Controller::$session->index, 'Searching highlights a slide without immediately loading it.');
+  assertSame(2, Controller::$session->index, 'Searching highlights a slide without immediately loading it.');
+  $slideTimers = array_values(array_filter((new ReflectionProperty($loop, 'timers'))->getValue($loop), fn(array $timer): bool => $timer['action'] === Controller::class . '::finishSlideSelection'));
+  assertSame(60, $slideTimers[0]['period'], 'Search keeps the short settling delay.');
+  Controller::finishSlideSelection(new EventContext('timer'));
+  assertSame($technologyIndex, Controller::$session->index, 'Settled search loads its selected slide.');
+  pressKey($window, $sdl, SDL::KEY_ESCAPE);
+  activateWidget('editor', 'slides', $sdl);
+  assertSame('', $slides->filter(), 'Starting cursor navigation clears the prior search.');
   pressKey($window, $sdl, SDL::KEY_DOWN);
+  assertSame($technologyIndex, Controller::$session->index, 'The first cursor move waits for key repeat or release.');
+  $slideTimers = array_values(array_filter((new ReflectionProperty($loop, 'timers'))->getValue($loop), fn(array $timer): bool => $timer['action'] === Controller::class . '::finishSlideSelection'));
+  assertSame(600, $slideTimers[0]['period'], 'The first cursor move waits longer than a repeated move.');
   pressKey($window, $sdl, SDL::KEY_DOWN);
   $latestSlide = (int)$slides->getValue();
-  assertSame(3, Controller::$session->index, 'Rapid list movement keeps the current slide loaded.');
+  assertSame($technologyIndex, Controller::$session->index, 'Rapid list movement keeps the current slide loaded.');
+  $slideTimers = array_values(array_filter((new ReflectionProperty($loop, 'timers'))->getValue($loop), fn(array $timer): bool => $timer['action'] === Controller::class . '::finishSlideSelection'));
+  assertSame(100, $slideTimers[0]['period'], 'Repeated movement uses the shorter settling delay.');
+  $releasedDown = $sdl->ffi->new('SDL_Event');
+  $releasedDown->type = SDL::SDL_EVENT_KEY_UP;
+  $releasedDown->key->key = SDL::KEY_DOWN;
+  $releasedDown->key->mod = 0;
+  $window->handleEvent($releasedDown);
+  assertSame($latestSlide, Controller::$session->index, 'Releasing the arrow loads only the latest selected slide.');
   Controller::finishSlideSelection(new EventContext('timer'));
-  assertSame($latestSlide, Controller::$session->index, 'The debounce timer loads only the latest selected slide.');
-  assertSame(implode("\n", Controller::$session->document->code($latestSlide)), Controller::widget('editor', 'markdown')->getValue(), 'Deferred loading updates the Markdown editor.');
+  assertSame($latestSlide, Controller::$session->index, 'A stale timer callback leaves the loaded slide alone.');
+  assertSame(implode("\n", Controller::$session->document->code($latestSlide)), Controller::widget('editor', 'markdown')->getValue(), 'Loading after key release updates the Markdown editor.');
   pressKey($window, $sdl, SDL::KEY_DOWN);
   $acceptedSlide = (int)$slides->getValue();
   assertSame($latestSlide, Controller::$session->index, 'Another cursor move is deferred.');

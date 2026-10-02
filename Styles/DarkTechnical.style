@@ -3,13 +3,13 @@ DarkTechnical is for systems, code, and operations talks. It is dense,
 left-biased, terminal-like, and uses strong structural borders so slides feel
 like instrument panels rather than posters.
 */
-Slide { backgroundColor: #102c40; }
+Slide { backgroundColor: #102c40; padding: 3% 4% 4% 4%; }
 Body { color: #d8f7ff; fontFamily: Noto Sans Mono, TeX Gyre Cursor, monospace; fontSize: 2.8vh; lineGap: 0.35vh; }
 MainTitle { color: #64ffda; fontFamily: Noto Sans Display, Noto Sans Mono, monospace; fontSize: 7.2vh; fontWeight: bold; textAlign: left; borderColor: #00d1ff; borderWidth: 0 0 0 8px; padding: 0.45vh 0 0.45vh 1.4vw; }
-SlideTitle { color: #64ffda; backgroundColor: #1b4055; fontFamily: Noto Sans Display, Noto Sans Mono, monospace; fontSize: 4.2vh; fontWeight: bold; textAlign: left; borderColor: #00d1ff; borderWidth: 0 0 0 6px; padding: 0.45vh 1.1vw; }
-Block { backgroundColor: #1b4055; borderColor: #1d6c8c; borderWidth: 1px 1px 1px 5px; padding: 0.9vh 1vw; fontSize: 2.45vh; }
-Quote { color: #00d1ff; backgroundColor: #204b62; borderColor: #00d1ff; borderWidth: 1px 1px 1px 5px; padding: 1.1vh; fontFamily: monospace; }
-Code { color: #b7f7ff; backgroundColor: #03111d; borderColor: #00d1ff; borderWidth: 1px 1px 1px 6px; padding: 1.1vh; fontFamily: Noto Sans Mono, TeX Gyre Cursor, monospace; fontSize: 2.35vh; }
+SlideTitle { color: #64ffda; backgroundColor: #1b4055; fontFamily: Noto Sans Display, Noto Sans Mono, monospace; fontSize: 4.2vh; fontWeight: bold; textAlign: left; borderColor: #00d1ff; borderWidth: 0 0 0 6px; padding: 0.45vh 1.1vw; margin: 0 0 0.5vh; }
+Block { backgroundColor: #1b4055; borderColor: #1d6c8c; borderWidth: 1px 1px 1px 5px; margin: 0.4vh 0.3vw; padding: 0.75vh 0.9vw; fontSize: 2.45vh; }
+Quote { color: #00d1ff; backgroundColor: #204b62; borderColor: #00d1ff; borderWidth: 1px 1px 1px 5px; margin: 0.45vh 0.4vw; padding: 0.9vh 0.9vw; fontFamily: monospace; }
+Code { color: #b7f7ff; backgroundColor: #03111d; borderColor: #00d1ff; borderWidth: 1px 1px 1px 6px; margin: 0.4vh 0.4vw; padding: 0.9vh 0.9vw; fontFamily: Noto Sans Mono, TeX Gyre Cursor, monospace; fontSize: 2.35vh; }
 Strong { color: #ff7b72; fontWeight: bold; }
 InlineCode { color: #b7f7ff; backgroundColor: #081217; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #58a6ff; }

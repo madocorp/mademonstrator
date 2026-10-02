@@ -2,13 +2,13 @@
 BrightAcademic is the printed-handout counterpart: warm paper, serif text,
 centered headings, and subtle horizontal rules instead of heavy panels.
 */
-Slide { backgroundColor: #efe3c9; }
+Slide { backgroundColor: #efe3c9; padding: 7% 9% 6% 9%; }
 Body { color: #202020; fontFamily: TeX Gyre Pagella, Noto Serif Display, Noto Serif, serif; fontSize: 3.05vh; lineGap: 0.75vh; }
 MainTitle { color: #775400; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 6.6vh; fontWeight: bold; textAlign: center; borderColor: #d2c6ab; borderWidth: 1px 0; padding: 0.7vh 0; }
-SlideTitle { color: #775400; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 4.5vh; fontWeight: bold; textAlign: center; borderColor: #d2c6ab; borderWidth: 0 0 1px 0; padding: 0 0 0.45vh 0; }
-Block { backgroundColor: #f7eedb; borderColor: #c9b78f; borderWidth: 1px 0; padding: 1.5vh 1.8vw; fontSize: 2.75vh; }
-Quote { color: #856018; backgroundColor: transparent; borderColor: #856018; borderWidth: 1px 0; padding: 1.6vh 1vw; fontSize: 3vh; }
-Code { color: #005f88; backgroundColor: #e4d7bd; borderColor: #c9b78f; borderWidth: 1px; padding: 1.2vh; fontFamily: monospace; fontSize: 2.35vh; }
+SlideTitle { color: #775400; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 4.5vh; fontWeight: bold; textAlign: center; borderColor: #d2c6ab; borderWidth: 0 0 1px 0; padding: 0 0 0.45vh 0; margin: 0 2vw 1vh; }
+Block { backgroundColor: #f7eedb; borderColor: #c9b78f; borderWidth: 1px 0; margin: 1vh 0.4vw; padding: 1.25vh 1.7vw; fontSize: 2.75vh; }
+Quote { color: #856018; backgroundColor: transparent; borderColor: #856018; borderWidth: 1px 0; margin: 0.9vh 1.3vw; padding: 1.35vh 1.1vw; fontSize: 3vh; }
+Code { color: #005f88; backgroundColor: #e4d7bd; borderColor: #c9b78f; borderWidth: 1px; margin: 0.75vh 0.7vw; padding: 1.1vh 1vw; fontFamily: monospace; fontSize: 2.35vh; }
 Strong { color: #9d2727; fontWeight: bold; }
 InlineCode { color: #005f88; backgroundColor: #f7eedb; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #0059b2; }
