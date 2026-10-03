@@ -5,6 +5,20 @@ namespace MADEMO\Tests;
 use MADEMO\App\SlideMarkdown;
 
 return [
+  'time frame comments set slide seconds without appearing in notes' => function(): void {
+    $minute = SlideMarkdown::fromMarkdown(['## Timed', '<!-- TimeFrame: 2min -->', '<!-- Remember this -->'], getcwd());
+    $second = SlideMarkdown::fromMarkdown(['## Timed', '<!--', 'TimeFrame: 45sec', 'A useful note', '-->'], getcwd());
+    $shortSecond = SlideMarkdown::fromMarkdown(['## Timed', '<!-- TimeFrame: 10s -->'], getcwd());
+    $shortMinute = SlideMarkdown::fromMarkdown(['## Timed', '<!-- TimeFrame: 2m -->'], getcwd());
+    $default = SlideMarkdown::fromMarkdown(['## Untimed', '<!-- Just a note -->'], getcwd());
+    assertSame(120, $minute['timeFrame'], 'Minute time frames should become seconds.');
+    assertSame('Remember this', $minute['promptText'], 'Time frame metadata should not appear in notes.');
+    assertSame(45, $second['timeFrame'], 'Second time frames should become seconds.');
+    assertSame(10, $shortSecond['timeFrame'], 'Short second units should become seconds.');
+    assertSame(120, $shortMinute['timeFrame'], 'Short minute units should become seconds.');
+    assertSame('A useful note', $second['promptText'], 'Notes beside metadata should remain visible.');
+    assertSame(null, $default['timeFrame'], 'Slides without a frame should use the presentation default.');
+  },
   'slide markdown separates main and normal titles' => function(): void {
     $main = SlideMarkdown::fromMarkdown(['# Main', '', '> Quote'], getcwd())['slide'];
     $normal = SlideMarkdown::fromMarkdown(['## Slide', '', 'Text'], getcwd())['slide'];
@@ -56,7 +70,7 @@ return [
   'slide markdown applies bullet image definitions to later unordered lists' => function(): void {
     $result = SlideMarkdown::fromMarkdown([
       '## Bullets',
-      '![:bullet](Layout/green_arrow.png)',
+      '![:bullet](Assets/green_arrow.png)',
       '* First',
       '* Second',
     ], dirname(__DIR__));
@@ -65,7 +79,7 @@ return [
     assertSame('list', $elements[0]['type'], 'Unordered list after bullet definition should become an image-bullet list.');
     assertSame(false, $elements[0]['ordered'], 'Bullet image list should stay unordered.');
     assertSame('First', $elements[0]['items'][0]['runs'][0]['text'], 'List item text should be kept as runs.');
-    assertTrue(str_ends_with($elements[0]['items'][0]['bullet'], 'Layout/green_arrow.png'), 'List item should carry the resolved bullet image.');
+    assertTrue(str_ends_with($elements[0]['items'][0]['bullet'], 'Assets/green_arrow.png'), 'List item should carry the resolved bullet image.');
   },
 
   'slide markdown keeps ordinary lists as structural list elements' => function(): void {
@@ -84,7 +98,7 @@ return [
       '## Image box',
       '### Box',
       'Before',
-      '![Logo](Layout/mademo.png)',
+      '![Logo](Assets/mademo.png)',
       'After',
     ], dirname(__DIR__));
     $box = $result['slide']['elements'][0];
@@ -98,7 +112,7 @@ return [
     $result = SlideMarkdown::fromMarkdown([
       '## Absolute',
       '### Box',
-      '![:absolute:20%x30%-80%-0](Layout/mademo.png)',
+      '![:absolute:20%x30%-80%-0](Assets/mademo.png)',
       'Inside box',
     ], dirname(__DIR__));
     $elements = $result['slide']['elements'];

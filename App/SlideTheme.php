@@ -14,6 +14,12 @@ final class SlideTheme {
     'slidetitle' => 'slide-title',
     'slide-title' => 'slide-title',
     'block' => 'block',
+    'list' => 'list',
+    'listitem' => 'list-item',
+    'list-item' => 'list-item',
+    'listmarker' => 'list-marker',
+    'list-marker' => 'list-marker',
+    'image' => 'image',
     'quote' => 'quote',
     'code' => 'code',
     'strong' => 'strong',
@@ -44,19 +50,29 @@ final class SlideTheme {
     'fontstyle' => 'fontStyle',
     'font-weight' => 'fontWeight',
     'fontweight' => 'fontWeight',
+    'gap' => 'gap',
+    'height' => 'height',
     'line-gap' => 'lineGap',
     'linegap' => 'lineGap',
+    'margin' => 'margin',
     'padding' => 'padding',
     'text-align' => 'textAlign',
     'textalign' => 'textAlign',
+    'vertical-align' => 'verticalAlign',
+    'verticalalign' => 'verticalAlign',
+    'width' => 'width',
   ];
 
   private const FALLBACK = [
-    'slide' => ['background' => '#050505'],
+    'slide' => ['background' => '#050505', 'padding' => '5%'],
     'body' => ['color' => '#e8e8e8', 'background' => 'transparent', 'borderWidth' => 0, 'borderColor' => '#2a2a2a', 'padding' => 0, 'fontFamily' => 'sans-serif', 'fontSize' => '3vh', 'textAlign' => 'left', 'lineGap' => '0.5vh'],
     'main-title' => ['color' => '#fff36a', 'fontSize' => '7vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
     'slide-title' => ['color' => '#fff36a', 'fontSize' => '4.8vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
-    'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'fontSize' => '2.7vh'],
+    'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'margin' => ['top' => '0.8vh', 'right' => '0.6vw', 'bottom' => '0.8vh', 'left' => '0.6vw'], 'fontSize' => '2.7vh'],
+    'list' => ['gap' => '0.4vh'],
+    'list-item' => ['textAlign' => 'left'],
+    'list-marker' => ['textAlign' => 'left', 'width' => '4vh', 'margin' => ['right' => '0.5vw']],
+    'image' => ['height' => '16vh'],
     'quote' => ['color' => '#75f0bd', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.4vh'],
     'code' => ['color' => '#79e9ff', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.3vh', 'fontFamily' => 'monospace', 'fontSize' => '2.5vh'],
     'strong' => ['bold' => true, 'color' => '#ff8f8f'],
@@ -88,10 +104,39 @@ final class SlideTheme {
     ];
   }
 
+  /** Return slide edge sizes as percentages of the slide dimensions. */
+  public static function slidePadding(string $name): array {
+    $value = self::theme($name)['slide']['padding'];
+    $sides = is_array($value) ? $value : array_fill_keys(['top', 'right', 'bottom', 'left'], $value);
+    $padding = [];
+    foreach (['top', 'right', 'bottom', 'left'] as $side) {
+      $size = $sides[$side] ?? null;
+      if (!is_string($size) || !preg_match('/^(?:\d+(?:\.\d+)?|\.\d+)%$/', $size)) {
+        throw new \InvalidArgumentException("Slide padding $side must be a percentage.");
+      }
+      $padding[$side] = (float)substr($size, 0, -1);
+    }
+    if ($padding['left'] + $padding['right'] >= 100 || $padding['top'] + $padding['bottom'] >= 100) {
+      throw new \InvalidArgumentException('Opposite slide padding values must add up to less than 100%.');
+    }
+    return $padding;
+  }
+
   public static function textStyle(string $name, string $role, int $width, int $height): array {
     $theme = self::theme($name);
     $style = array_replace($theme['body'] ?? [], $theme[$role] ?? []);
     return self::resolveStyle($style, $width, $height);
+  }
+
+  /** Keep viewport-based layout dimensions unresolved until the pixel slide is measured. */
+  public static function rawStyle(string $name, string $role): array {
+    $theme = self::theme($name);
+    return array_replace($theme['body'] ?? [], $theme[$role] ?? []);
+  }
+
+  /** Return only declarations belonging to one selector, without Body inheritance. */
+  public static function ruleStyle(string $name, string $role, int $width = 0, int $height = 0): array {
+    return self::resolveStyle(self::theme($name)[$role] ?? [], $width, $height);
   }
 
   public static function runStyle(string $name, string $role, int $height): array {
@@ -142,10 +187,10 @@ final class SlideTheme {
 
   private static function parseValue(string $property, string $value): mixed {
     $value = trim($value);
-    if ($property === 'borderWidth' || $property === 'padding') {
+    if (in_array($property, ['borderWidth', 'margin', 'padding'], true)) {
       return self::parseBoxValue($value);
     }
-    if ($property === 'fontSize' || $property === 'lineGap') {
+    if (in_array($property, ['fontSize', 'lineGap', 'gap', 'width', 'height'], true)) {
       return self::parseSize($value);
     }
     if ($property === 'fontFamily' && str_contains($value, ',')) {
@@ -180,7 +225,7 @@ final class SlideTheme {
   }
 
   private static function resolveStyle(array $style, int $width, int $height): array {
-    foreach (['fontSize', 'lineGap', 'padding', 'borderWidth'] as $property) {
+    foreach (['fontSize', 'lineGap', 'margin', 'padding', 'borderWidth'] as $property) {
       if (array_key_exists($property, $style)) {
         $style[$property] = self::resolveValue($style[$property], $width, $height);
       }

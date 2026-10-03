@@ -8,6 +8,7 @@ final class SlideMarkdown {
     $elements = [];
     $title = [];
     $titleLevel = 2;
+    $firstH1 = null;
     $links = [];
     $paragraph = [];
     $list = null;
@@ -19,6 +20,7 @@ final class SlideMarkdown {
     $comment = [];
     $promptTitle = '';
     $promptLines = [];
+    $timeFrame = null;
     $bulletImage = null;
 
     $append = function(array $element) use (&$elements, &$box): void {
@@ -97,7 +99,7 @@ final class SlideMarkdown {
       if ($inComment) {
         if (($end = strpos($line, '-->')) !== false) {
           $comment[] = substr($line, 0, $end);
-          self::appendPromptComment($comment, $promptLines);
+          self::appendPromptComment($comment, $promptLines, $timeFrame);
           $comment = [];
           $inComment = false;
         } else {
@@ -111,7 +113,7 @@ final class SlideMarkdown {
         $flushQuote();
         $afterStart = substr($line, $start + 4);
         if (($end = strpos($afterStart, '-->')) !== false) {
-          self::appendPromptComment([substr($afterStart, 0, $end)], $promptLines);
+          self::appendPromptComment([substr($afterStart, 0, $end)], $promptLines, $timeFrame);
         } else {
           $comment = [$afterStart];
           $inComment = true;
@@ -133,6 +135,9 @@ final class SlideMarkdown {
           $flushBox();
         }
         if ($level <= 2) {
+          if ($level === 1 && $firstH1 === null && trim($match[2]) !== '') {
+            $firstH1 = trim($match[2]);
+          }
           $promptTitle = trim($match[2]);
           $title = self::inline($match[2], $links);
           $titleLevel = $level;
@@ -194,7 +199,7 @@ final class SlideMarkdown {
       $append(['type' => 'text', 'role' => 'code', 'runs' => [['text' => implode("\n", $code), 'fontFamily' => 'monospace']]]);
     }
     if ($inComment) {
-      self::appendPromptComment($comment, $promptLines);
+      self::appendPromptComment($comment, $promptLines, $timeFrame);
     }
     $flushParagraph();
     $flushList();
@@ -205,7 +210,9 @@ final class SlideMarkdown {
       'slide' => ['type' => $titleLevel === 1 ? 'main' : 'normal', 'title' => $title, 'elements' => $elements],
       'links' => $links,
       'promptTitle' => $promptTitle,
+      'firstH1' => $firstH1,
       'promptText' => implode("\n", $promptLines),
+      'timeFrame' => $timeFrame,
     ];
   }
 
@@ -240,7 +247,7 @@ final class SlideMarkdown {
     return $runs;
   }
 
-  private static function appendPromptComment(array $comment, array &$promptLines): void {
+  private static function appendPromptComment(array $comment, array &$promptLines, ?int &$timeFrame): void {
     $lines = array_map(fn(string $line): string => trim($line), $comment);
     while ($lines !== [] && $lines[0] === '') {
       array_shift($lines);
@@ -249,7 +256,12 @@ final class SlideMarkdown {
       array_pop($lines);
     }
     foreach ($lines as $line) {
-      $promptLines[] = trim((string)$line);
+      $line = trim((string)$line);
+      if (preg_match('/^TimeFrame:\s*([1-9]\d*)\s*(min|m|sec|s)$/iD', $line, $match)) {
+        $timeFrame = (int)$match[1] * (in_array(strtolower($match[2]), ['min', 'm'], true) ? 60 : 1);
+      } else {
+        $promptLines[] = $line;
+      }
     }
     while ($promptLines !== [] && end($promptLines) === '') {
       array_pop($promptLines);
