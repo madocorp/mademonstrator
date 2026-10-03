@@ -4,12 +4,16 @@ neutral. It should make all supported slide features visible without imposing a
 strong genre.
 */
 Slide { backgroundColor: #050505; padding: 5%; }
-Body { color: #e8e8e8; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 3vh; lineGap: 0.5vh; }
+Body { color: #e8e8e8; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 3.1vh; lineGap: 0.6vh; }
+List { gap: 0.5vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #75f0bd; fontWeight: bold; textAlign: left; width: 3.8vh; margin: 0 0.6vw 0 0; }
+Image { height: 17vh; }
 MainTitle { color: #fff36a; fontSize: 7vh; fontWeight: bold; textAlign: center; margin: 0 2vw; padding: 1vh 0; }
-SlideTitle { color: #fff36a; fontSize: 4.8vh; fontWeight: bold; textAlign: center; margin: 0 1vw 0.7vh; padding: 0.45vh 0.4vw; }
-Block { backgroundColor: #101010; borderColor: #2a2a2a; borderWidth: 1; margin: 0.7vh 0.5vw; padding: 1.15vh 1.2vw; fontSize: 2.7vh; }
-Quote { color: #75f0bd; backgroundColor: #101010; borderWidth: 0 0 0 4px; margin: 0.7vh 1.1vw; padding: 1.15vh 1.2vw; }
-Code { color: #79e9ff; backgroundColor: #101010; borderWidth: 0 0 0 4px; margin: 0.65vh 0.6vw; padding: 1vh 1vw; fontFamily: monospace; fontSize: 2.5vh; }
+SlideTitle { color: #fff36a; fontSize: 5vh; fontWeight: bold; textAlign: center; margin: 0 1vw 0.8vh; padding: 0.5vh 0.6vw; }
+Block { backgroundColor: #101010; borderColor: #2a2a2a; borderWidth: 1; margin: 0.8vh 0.6vw; padding: 1.3vh 1.4vw; fontSize: 2.8vh; }
+Quote { color: #75f0bd; backgroundColor: #101010; borderWidth: 0 0 0 4px; margin: 0.9vh 1.2vw; padding: 1.3vh 1.4vw; }
+Code { color: #79e9ff; backgroundColor: #101010; borderWidth: 0 0 0 4px; margin: 0.65vh 0.6vw; padding: 1.1vh 1.1vw; fontFamily: monospace; fontSize: 2.55vh; }
 Strong { color: #ff8f8f; fontWeight: bold; }
 InlineCode { color: #79e9ff; backgroundColor: #101010; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #6eb6ff; }

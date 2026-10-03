@@ -1,7 +1,7 @@
 # MaDemonstrator
 
 Markdown presentations and an integrated slide editor for the current SPTK version.
-Requires PHP 8.2+, FFI, XMLReader, mbstring, GD with FreeType, and SPTK's SDL3/SDL3_ttf libraries.
+Requires PHP 8.2+, FFI, XMLReader, mbstring, GD for images, and SPTK's SDL3/SDL3_ttf libraries.
 The application expects `SPTK` to be linked to the toolkit directory; this workspace
 already includes `SPTK -> ../SPTK`.
 `Layout` holds screen XML files; `Assets` holds the bundled presentation, reference text, and images.
@@ -92,6 +92,11 @@ H1 title slides use the same separate content tiles and styles as normal slides,
 with balanced flexible empty spacers above and below the title and content.
 Text tiles use their measured pixel heights. Flexible spacers share any remaining
 height; list rows and separate content elements have small explicit gaps.
+`List` styles the whole list and its `gap` between rows. `ListItem` styles each
+row and its text; `ListMarker` styles the marker text and its box, with `width`
+setting image bullet width. `Image` styles ordinary image tiles, with `height`
+setting their tile height. These selectors accept the same box and text
+properties as the other rules where applicable.
 `Block` margin, border, and padding surround each heading box once. Margins use
 the parent background, borders use `borderColor`, and padding uses the box
 background. Other text rules, such as `MainTitle` and `Quote`, put their margin,

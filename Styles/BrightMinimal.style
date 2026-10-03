@@ -3,12 +3,16 @@ BrightMinimal is stark and editorial: white space, black type, and thin rules.
 It avoids filled panels unless content needs code-like separation.
 */
 Slide { backgroundColor: #f2f2ee; padding: 4% 6% 8% 10%; }
-Body { color: #202020; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 2.95vh; lineGap: 0.55vh; }
-MainTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 7.4vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.45vh 0; }
-SlideTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 4.4vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.35vh 0; margin: 0 0 0.6vh; }
-Block { backgroundColor: transparent; borderColor: #d0d0d0; borderWidth: 0 0 1px 0; margin: 0.5vh 0; padding: 0.75vh 0.15vw; fontSize: 2.65vh; }
-Quote { color: #555555; backgroundColor: transparent; borderColor: #555555; borderWidth: 0 0 0 2px; margin: 0.7vh 0; padding: 0.8vh 1vw; }
-Code { color: #303030; backgroundColor: #e4e4df; borderColor: #c8c8c0; borderWidth: 1px; margin: 0.65vh 0; padding: 0.9vh 0.8vw; fontFamily: monospace; fontSize: 2.35vh; }
+Body { color: #202020; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 2.8vh; lineGap: 0.7vh; }
+List { gap: 0.45vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #555555; textAlign: left; width: 3.4vh; margin: 0 0.45vw 0 0; }
+Image { height: 15vh; }
+MainTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 8.3vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.7vh 0; }
+SlideTitle { color: #000000; fontFamily: Noto Sans Display, TeX Gyre Heros, sans-serif; fontSize: 4.05vh; fontWeight: bold; textAlign: left; borderColor: #d0d0d0; borderWidth: 0 0 2px 0; padding: 0 0 0.5vh 0; margin: 0 0 1.1vh; }
+Block { backgroundColor: transparent; borderColor: #d0d0d0; borderWidth: 0 0 1px 0; margin: 0.8vh 0; padding: 0.4vh 0.1vw; fontSize: 2.55vh; }
+Quote { color: #555555; backgroundColor: transparent; borderColor: #555555; borderWidth: 0 0 0 2px; margin: 1vh 0; padding: 0.55vh 1.2vw; fontSize: 2.75vh; }
+Code { color: #303030; backgroundColor: #e4e4df; borderColor: #c8c8c0; borderWidth: 1px; margin: 0.6vh 0; padding: 0.65vh 0.7vw; fontFamily: monospace; fontSize: 2.2vh; }
 Strong { color: #000000; fontWeight: bold; }
 InlineCode { color: #303030; backgroundColor: #e4e4df; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #225fa8; }

@@ -116,7 +116,8 @@ final class SlideLayout {
   private function element(LayoutNode $parent, array $element, string $background, bool $insideBox): void {
     $this->gap($parent, $background);
     if (($element['type'] ?? 'text') === 'image') {
-      $parent->addLeaf($this->leaf($this->image($element['src'], $background, $element['alt'] ?? ''), '1*', '16vh'));
+      $style = SlideTheme::ruleStyle($this->theme, 'image');
+      $parent->addLeaf($this->leaf($this->image($element['src'], $background, $element['alt'] ?? ''), '1*', (string)($style['height'] ?? '16vh'), box: $this->styledBox($style, $background)));
     } else if (($element['type'] ?? 'text') === 'list') {
       $this->list($parent, $element, $background, $insideBox);
     } else {
@@ -126,18 +127,23 @@ final class SlideLayout {
 
   /** Put the marker beside each item's text so wrapped lines keep their indent. */
   private function list(LayoutNode $parent, array $element, string $background, bool $insideBox): void {
-    $list = new LayoutNode('vertical', '1*', 'auto');
+    $listStyle = SlideTheme::ruleStyle($this->theme, 'list');
+    $itemStyle = SlideTheme::ruleStyle($this->theme, 'list-item');
+    $markerStyle = SlideTheme::ruleStyle($this->theme, 'list-marker');
+    $listBackground = ($listStyle['background'] ?? 'transparent') === 'transparent' ? $background : $listStyle['background'];
+    $itemBackground = ($itemStyle['background'] ?? 'transparent') === 'transparent' ? $listBackground : $itemStyle['background'];
+    $list = new LayoutNode('vertical', '1*', 'auto', box: $this->styledBox($listStyle, $background));
     foreach ($element['items'] as $item) {
       if ($list->leaves() !== []) {
-        $list->addLeaf($this->blank('1*', '0.4vh', $background));
+        $list->addLeaf($this->blank('1*', (string)($listStyle['gap'] ?? '0.4vh'), $listBackground));
       }
-      $row = new LayoutNode('horizontal', '1*', 'auto', navigateChildren: false);
+      $row = new LayoutNode('horizontal', '1*', 'auto', navigateChildren: false, box: $this->styledBox($itemStyle, $listBackground));
       $markerText = $item['marker'] ?? '*';
       $marker = ($item['bullet'] ?? null) === null
-        ? $this->text([['text' => $markerText]], 'body', $background, $insideBox, true, true)
-        : $this->image($item['bullet'], $background, '*');
-      $row->addLeaf($this->leaf($marker, ($item['bullet'] ?? null) === null ? '' : '4vh', 'auto', box: new PixelBox(margin: ['right' => '0.5vw'], background: $this->color($background))));
-      $row->addLeaf($this->leaf($this->text($item['runs'] ?? [], 'body', $background, $insideBox, false, true), '1*', 'auto'));
+        ? $this->text([['text' => $markerText]], 'list-marker', $itemBackground, $insideBox, true, true)
+        : $this->image($item['bullet'], $itemBackground, '*');
+      $row->addLeaf($this->leaf($marker, ($item['bullet'] ?? null) === null ? '' : (string)($markerStyle['width'] ?? '4vh'), 'auto', box: $this->styledBox($markerStyle, $itemBackground)));
+      $row->addLeaf($this->leaf($this->text($item['runs'] ?? [], 'list-item', $itemBackground, $insideBox, false, true), '1*', 'auto'));
       $list->addNode($row);
     }
     $parent->addNode($list);
@@ -177,6 +183,18 @@ final class SlideLayout {
   private function color(string $value): Color {
     [$r, $g, $b] = Format::color($value);
     return new Color($r, $g, $b);
+  }
+
+  /** Apply a selector's box declarations to a layout node or leaf. */
+  private function styledBox(array $style, string $background): PixelBox {
+    $fill = ($style['background'] ?? 'transparent') === 'transparent' ? $background : $style['background'];
+    return new PixelBox(
+      $style['margin'] ?? 0,
+      $style['borderWidth'] ?? 0,
+      $style['padding'] ?? 0,
+      $this->color($fill),
+      $this->color($style['borderColor'] ?? '#2a2a2a'),
+    );
   }
 
 }

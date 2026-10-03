@@ -4,12 +4,16 @@ copy, oversized script-like titles, and asymmetric right-side borders for talks
 that need atmosphere more than density.
 */
 Slide { backgroundColor: #2a193b; padding: 8% 10%; }
-Body { color: #f2eaf9; fontFamily: TeX Gyre Pagella, Noto Serif Display, serif; fontSize: 3vh; lineGap: 0.7vh; textAlign: center; }
-MainTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 9.2vh; fontWeight: bold; textAlign: center; borderWidth: 0; padding: 0; }
-SlideTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 6.1vh; fontWeight: bold; textAlign: center; borderWidth: 0; padding: 0; margin: 0 3vw 1.2vh; }
-Block { backgroundColor: #3b2451; borderColor: #9ee6d8; borderWidth: 0 4px 0 0; margin: 1.2vh 0.9vw; padding: 1.25vh 1.8vw; fontSize: 2.7vh; textAlign: center; }
-Quote { color: #9ee6d8; backgroundColor: #321e45; borderColor: #e0b0ff; borderWidth: 1px 5px; margin: 1.1vh 2vw; padding: 1.5vh 1.5vw; fontSize: 3vh; textAlign: center; }
-Code { color: #bcecff; backgroundColor: #130a1d; borderColor: #39264c; borderWidth: 1px; margin: 0.8vh 1.1vw; padding: 1.1vh 1.2vw; fontFamily: monospace; fontSize: 2.35vh; textAlign: left; }
+Body { color: #f2eaf9; fontFamily: TeX Gyre Pagella, Noto Serif Display, serif; fontSize: 3.15vh; lineGap: 0.85vh; textAlign: center; }
+List { gap: 0.85vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #9ee6d8; fontWeight: bold; textAlign: left; width: 4.2vh; margin: 0 0.8vw 0 0; }
+Image { height: 18vh; }
+MainTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 10.2vh; fontWeight: bold; textAlign: center; borderWidth: 0; padding: 1.2vh 0; }
+SlideTitle { color: #e0b0ff; backgroundColor: transparent; fontFamily: TeX Gyre Chorus, Noto Serif Display, serif; fontSize: 8vh; fontWeight: bold; textAlign: right; borderColor: #9ee6d8; borderWidth: 0 4px 0 0; padding: 0.35vh 1vw 0.35vh 0; margin: 0 0.5vw 1.9vh 4.2vw; }
+Block { backgroundColor: #3b2451; borderColor: #9ee6d8; borderWidth: 0 4px 0 0; margin: 1.75vh 1.2vw; padding: 1.95vh 2.4vw; fontSize: 2.85vh; textAlign: center; }
+Quote { color: #9ee6d8; backgroundColor: #321e45; borderColor: #e0b0ff; borderWidth: 1px 5px; margin: 1.7vh 2.7vw; padding: 2.2vh 2.1vw; fontSize: 3.2vh; textAlign: center; }
+Code { color: #bcecff; backgroundColor: #130a1d; borderColor: #39264c; borderWidth: 1px; margin: 0.95vh 1.2vw; padding: 1.25vh 1.4vw; fontFamily: monospace; fontSize: 2.25vh; textAlign: left; }
 Strong { color: #ff9ab3; fontWeight: bold; }
 InlineCode { color: #bcecff; backgroundColor: #3b2451; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #9cc7ff; }

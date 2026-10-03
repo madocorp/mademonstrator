@@ -13,11 +13,6 @@ final class Controller {
   public static Window $window;
   public static string $screenId = 'editor';
   private static ?Widget $markdown = null;
-  private static ?int $pendingSlide = null;
-  private static ?int $slideTimer = null;
-  private const SLIDE_INITIAL_WAIT_MS = 600;
-  private const SLIDE_SETTLE_MS = 100;
-  private const SLIDE_SEARCH_SETTLE_MS = 60;
 
   /** Bind XML screens and open the requested presentation or bundled example. */
   public static function initialize(EventContext $event): void {
@@ -71,12 +66,10 @@ final class Controller {
 
   /** Commit the current editor buffer without resetting its cursor or history. */
   public static function commit(): bool {
-    $changed = self::commitEditorBuffer();
-    self::applyPendingSlide(false);
-    return $changed;
+    return self::commitEditorBuffer();
   }
 
-  /** Commit without turning an in-progress list movement into a slide load. */
+  /** Commit the current Markdown editor value. */
   private static function commitEditorBuffer(): bool {
     return self::$session->commit(self::widget('editor', 'markdown')->getValue());
   }
@@ -120,7 +113,7 @@ final class Controller {
       Presenter::close();
       return;
     }
-    if (isset(self::$session) && self::$screenId === 'editor' && self::$pendingSlide === null && self::commitEditorBuffer()) {
+    if (isset(self::$session) && self::$screenId === 'editor' && self::commitEditorBuffer()) {
       self::sync();
     }
   }
@@ -157,66 +150,19 @@ final class Controller {
     return true;
   }
 
-  /** Wait briefly for list movement to stop before loading its selected slide. */
+  /** Load each valid slide list selection as soon as it changes. */
   public static function slideChanged(EventContext $event): void {
     $value = $event->widget->getValue();
     if ($value === null || (int)$value === self::$session->index) {
-      self::cancelPendingSlide();
       return;
     }
-    $firstMove = self::$pendingSlide === null;
-    self::$pendingSlide = (int)$value;
-    $delay = $event->widget->filter() !== '' ? self::SLIDE_SEARCH_SETTLE_MS
-      : ($firstMove ? self::SLIDE_INITIAL_WAIT_MS : self::SLIDE_SETTLE_MS);
-    if (self::$slideTimer === null) {
-      self::$slideTimer = App::eventLoop()->addTimer(self::class . '::finishSlideSelection', $delay);
-    } else {
-      App::eventLoop()->setTimerPeriod(self::$slideTimer, $delay);
-    }
-  }
-
-  /** Apply a pending cursor move as soon as the navigation key is released. */
-  public static function slideListKeyUp(EventContext $event): bool {
-    if (self::$pendingSlide === null || self::$screenId !== 'editor'
-      || self::screen('editor')->activeLeaf()?->instance() !== self::widget('editor', 'slides')) {
-      return false;
-    }
-    $key = KeyNormalizer::normalize((int)$event->input->key->key, (int)$event->input->key->mod);
-    if (in_array($key, [\SPTK\SDLWrapper\SDL::KEY_UP, \SPTK\SDLWrapper\SDL::KEY_DOWN, \SPTK\SDLWrapper\SDL::KEY_HOME, \SPTK\SDLWrapper\SDL::KEY_END, \SPTK\SDLWrapper\SDL::KEY_PAGEUP, \SPTK\SDLWrapper\SDL::KEY_PAGEDOWN], true)) {
-      self::applyPendingSlide();
-    }
-    return false;
-  }
-
-  /** Apply the last list value when its timer expires or the user leaves the list. */
-  public static function finishSlideSelection(EventContext $event): void {
-    self::applyPendingSlide();
-  }
-
-  private static function applyPendingSlide(bool $commit = true): void {
-    $index = self::$pendingSlide;
-    self::cancelPendingSlide();
-    if ($index === null || $index === self::$session->index) {
-      return;
-    }
-    if ($commit) {
-      self::commitEditorBuffer();
-    }
-    self::$session->index = $index;
+    self::commitEditorBuffer();
+    self::$session->index = (int)$value;
     self::sync(true);
-  }
-
-  private static function cancelPendingSlide(): void {
-    if (self::$slideTimer !== null) {
-      App::eventLoop()->removeTimer(self::$slideTimer);
-      self::$slideTimer = null;
-    }
-    self::$pendingSlide = null;
   }
 
   /** Apply list order while retaining the selected slide and its editor buffer. */
   public static function slidesReordered(EventContext $event): void {
-    self::cancelPendingSlide();
     self::commit();
     $order = $event->widget->values();
     $index = array_search($event->widget->getValue(), $order, true);

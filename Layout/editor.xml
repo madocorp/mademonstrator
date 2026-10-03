@@ -1,7 +1,6 @@
 <Screen>
   <Event type="keyDown" action="MADEMO\App\FileActions::key" />
   <Event type="keyDown" action="MADEMO\App\Controller::editorSlideKey" />
-  <Event type="keyUp" action="MADEMO\App\Controller::slideListKeyUp" />
   <Layout>
     <Layout direction="horizontal" height="1">
       <Title id="heading" width="1*" tip="Presentation title; use the Slides list or Markdown editor to change slides." />
@@ -12,7 +11,6 @@
       <List id="slides" title="SLIDES" width="36" filterable="false" reorderable="true">
         <Event type="change" action="MADEMO\App\Controller::slideChanged" />
         <Event type="reorder" action="MADEMO\App\Controller::slidesReordered" />
-        <Event type="deactivate" action="MADEMO\App\Controller::finishSlideSelection" />
       </List>
       <Separator />
       <Layout width="1*">

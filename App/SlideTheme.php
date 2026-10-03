@@ -14,6 +14,12 @@ final class SlideTheme {
     'slidetitle' => 'slide-title',
     'slide-title' => 'slide-title',
     'block' => 'block',
+    'list' => 'list',
+    'listitem' => 'list-item',
+    'list-item' => 'list-item',
+    'listmarker' => 'list-marker',
+    'list-marker' => 'list-marker',
+    'image' => 'image',
     'quote' => 'quote',
     'code' => 'code',
     'strong' => 'strong',
@@ -44,6 +50,8 @@ final class SlideTheme {
     'fontstyle' => 'fontStyle',
     'font-weight' => 'fontWeight',
     'fontweight' => 'fontWeight',
+    'gap' => 'gap',
+    'height' => 'height',
     'line-gap' => 'lineGap',
     'linegap' => 'lineGap',
     'margin' => 'margin',
@@ -52,6 +60,7 @@ final class SlideTheme {
     'textalign' => 'textAlign',
     'vertical-align' => 'verticalAlign',
     'verticalalign' => 'verticalAlign',
+    'width' => 'width',
   ];
 
   private const FALLBACK = [
@@ -60,6 +69,10 @@ final class SlideTheme {
     'main-title' => ['color' => '#fff36a', 'fontSize' => '7vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
     'slide-title' => ['color' => '#fff36a', 'fontSize' => '4.8vh', 'fontWeight' => 'bold', 'textAlign' => 'center'],
     'block' => ['background' => '#101010', 'borderWidth' => 1, 'borderColor' => '#2a2a2a', 'padding' => '1.4vh', 'margin' => ['top' => '0.8vh', 'right' => '0.6vw', 'bottom' => '0.8vh', 'left' => '0.6vw'], 'fontSize' => '2.7vh'],
+    'list' => ['gap' => '0.4vh'],
+    'list-item' => ['textAlign' => 'left'],
+    'list-marker' => ['textAlign' => 'left', 'width' => '4vh', 'margin' => ['right' => '0.5vw']],
+    'image' => ['height' => '16vh'],
     'quote' => ['color' => '#75f0bd', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.4vh'],
     'code' => ['color' => '#79e9ff', 'background' => '#101010', 'borderWidth' => ['left' => 4], 'padding' => '1.3vh', 'fontFamily' => 'monospace', 'fontSize' => '2.5vh'],
     'strong' => ['bold' => true, 'color' => '#ff8f8f'],
@@ -121,6 +134,11 @@ final class SlideTheme {
     return array_replace($theme['body'] ?? [], $theme[$role] ?? []);
   }
 
+  /** Return only declarations belonging to one selector, without Body inheritance. */
+  public static function ruleStyle(string $name, string $role, int $width = 0, int $height = 0): array {
+    return self::resolveStyle(self::theme($name)[$role] ?? [], $width, $height);
+  }
+
   public static function runStyle(string $name, string $role, int $height): array {
     $role = $role === 'code' ? 'inline-code' : $role;
     $theme = self::theme($name);
@@ -172,7 +190,7 @@ final class SlideTheme {
     if (in_array($property, ['borderWidth', 'margin', 'padding'], true)) {
       return self::parseBoxValue($value);
     }
-    if ($property === 'fontSize' || $property === 'lineGap') {
+    if (in_array($property, ['fontSize', 'lineGap', 'gap', 'width', 'height'], true)) {
       return self::parseSize($value);
     }
     if ($property === 'fontFamily' && str_contains($value, ',')) {
