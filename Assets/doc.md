@@ -14,6 +14,8 @@ It demonstrates:
 * What technologies it uses
 * Which markdown elements it supports
 
+<!-- TimeFrame: 10s -->
+
 ---
 
 ## What Is This Program?
@@ -28,6 +30,8 @@ It opens a native window and renders slides dynamically.
 * Write slides in Markdown
 * Present with a fast native renderer
 
+<!-- TimeFrame: 10s -->
+
 ---
 
 ## Technology Stack
@@ -41,6 +45,8 @@ It opens a native window and renders slides dynamically.
 * SPTK uses **SDL3**
 * Accessed through **PHP FFI**
 * Creates a real presentation window (not a browser)
+
+<!-- TimeFrame: 10s -->
 
 ---
 
@@ -72,7 +78,7 @@ This one takes **one third**.
 #### One Third Box2
 This one takes **one third**.
 ###### Subtitle in the box
-The boc continues after title 6.
+The box continues after title 6.
 #### One Third Box3
 This one takes **one third**.
 
@@ -160,18 +166,10 @@ Use `[text](url)` syntax to show a text instead of the url, and `<url>` syntax t
 
 Images can be embedded directly into slides as standalone slide content:
 
-![Example Image](Layout/mademo.png)
+![Example Image](mademo.png)
 
 They are centered in their allocated slide area and scaled down to fit.
 Images are useful for diagrams, logos, and screenshots.
-
-Absolute images are drawn behind slide content:
-
-![:absolute:20%x20%-80%-0](Layout/mademo.png)
-
-```
-![:absolute:20%x20%-80%-0](Layout/mademo.png)
-```
 
 ---
 
@@ -180,7 +178,7 @@ Absolute images are drawn behind slide content:
 ### Image box
 Images can also live inside a heading box.
 
-![Box Image](Layout/mademo.png)
+![Box Image](mademo.png)
 
 Text after the image stays in the same box.
 
@@ -188,13 +186,13 @@ Text after the image stays in the same box.
 
 ## Special Images
 
-![:bullet](Layout/green_arrow.png)
+![:bullet](green_arrow.png)
 You can change the bullet points to an image. It will affect only the bullet points
 * on the current slide
 * after the definition
 
 ```
-![:bullet](Layout/green_arrow.png)
+![:bullet](green_arrow.png)
 ```
 
 ---
@@ -220,5 +218,3 @@ You can change the bullet points to an image. It will affect only the bullet poi
 
   Like this one.
 -->
-
----

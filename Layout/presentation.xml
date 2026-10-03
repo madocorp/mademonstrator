@@ -1,0 +1,4 @@
+<Screen>
+  <Event type="keyDown" action="MADEMO\App\Controller::presentationKey" />
+  <Layout><Empty height="1*" /></Layout>
+</Screen>

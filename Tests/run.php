@@ -1,34 +1,25 @@
 <?php
 
-define('APP_PATH', dirname(__DIR__) . '/mademonstrator.php');
-define('APP_NAMESPACE', 'MADEMO');
-
-require_once dirname(__DIR__) . '/SPTK/Autoload.php';
+define('APP_DIR', dirname(__DIR__));
+define('APP_PATH', APP_DIR . '/mademonstrator.php');
+require_once APP_DIR . '/SPTK/App.php';
+require_once APP_DIR . '/App/Autoload.php';
+spl_autoload_register(['SPTK\\App', 'load']);
+spl_autoload_register(['MADEMO\\App\\Autoload', 'load']);
 require_once __DIR__ . '/Support.php';
-
-$files = [
-  __DIR__ . '/SlideMarkdownTest.php',
-  __DIR__ . '/SlideThemeTest.php',
-];
-
 $tests = [];
-foreach ($files as $file) {
-  $tests += require $file;
+foreach (['SlideMarkdownTest', 'SlideThemeTest', 'PresentationTest', 'PresentationTimingTest', 'WindowPreferencesTest', 'SlideLayoutTest'] as $file) {
+  $tests += require __DIR__ . '/' . $file . '.php';
 }
-
-$passed = 0;
 $failed = 0;
 foreach ($tests as $name => $test) {
   try {
     $test();
-    $passed++;
     echo ". {$name}\n";
-  } catch (\Throwable $e) {
+  } catch (Throwable $error) {
     $failed++;
-    echo "F {$name}\n";
-    echo "  " . str_replace("\n", "\n  ", $e->getMessage()) . "\n";
+    echo "F {$name}: {$error->getMessage()}\n";
   }
 }
-
-echo "\n{$passed} passed, {$failed} failed\n";
+echo count($tests) - $failed . ' passed, ' . $failed . " failed\n";
 exit($failed === 0 ? 0 : 1);

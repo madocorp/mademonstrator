@@ -2,15 +2,19 @@
 DarkFriendly is conversational and workshop-like. It should feel like a warm
 room after sunset: coffee surfaces, amber titles, coral accents, and cream text.
 */
-Slide { backgroundColor: #1b0f0a; }
-Body { color: #fff0df; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 3.15vh; lineGap: 0.8vh; }
-MainTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 7.5vh; fontWeight: bold; textAlign: center; backgroundColor: #2a1710; borderColor: #7a3f22; borderWidth: 1px; padding: 0.9vh 1.6vw; }
-SlideTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 4.7vh; fontWeight: bold; textAlign: center; backgroundColor: #2a1710; borderColor: #7a3f22; borderWidth: 1px; padding: 0.65vh 1.4vw; }
-Block { backgroundColor: #2a1710; borderColor: #f08a4b; borderWidth: 0 0 0 5px; padding: 2.1vh 1.6vw; fontSize: 2.85vh; }
-Quote { color: #ffd0a6; backgroundColor: #2a1710; borderColor: #f08a4b; borderWidth: 1px; padding: 1.8vh; fontSize: 3.1vh; textAlign: center; }
-Code { color: #9ee7ff; backgroundColor: #24120c; borderColor: #7a3f22; borderWidth: 1px; padding: 1.4vh; fontFamily: monospace; fontSize: 2.45vh; }
+Slide { backgroundColor: #301b14; padding: 5% 7% 6% 7%; }
+Body { color: #fff0df; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 3.25vh; lineGap: 0.95vh; }
+List { gap: 0.75vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #ffb36d; fontWeight: bold; textAlign: left; width: 4vh; margin: 0 0.7vw 0 0; }
+Image { height: 17vh; }
+MainTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 8vh; fontWeight: bold; textAlign: center; backgroundColor: #43271c; borderColor: #7a3f22; borderWidth: 1px; padding: 1vh 1.8vw; }
+SlideTitle { color: #ffd166; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 5.1vh; fontWeight: bold; textAlign: center; backgroundColor: #43271c; borderColor: #7a3f22; borderWidth: 1px; padding: 0.7vh 1.6vw; margin: 0 1vw 0.9vh; }
+Block { backgroundColor: #43271c; borderColor: #f08a4b; borderWidth: 0 0 0 5px; margin: 0.9vh 0.7vw; padding: 1.55vh 1.8vw; fontSize: 3vh; }
+Quote { color: #ffd0a6; backgroundColor: #43271c; borderColor: #f08a4b; borderWidth: 1px; margin: 1vh 1vw; padding: 1.5vh 1.6vw; fontSize: 3.2vh; textAlign: center; }
+Code { color: #9ee7ff; backgroundColor: #24120c; borderColor: #7a3f22; borderWidth: 1px; margin: 0.8vh 0.8vw; padding: 1.2vh 1.25vw; fontFamily: monospace; fontSize: 2.4vh; }
 Strong { color: #ff9c7a; fontWeight: bold; }
-InlineCode { color: #9ee7ff; backgroundColor: #2a1710; fontFamily: monospace; fontSize: 2.5vh; }
+InlineCode { color: #9ee7ff; backgroundColor: #43271c; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #9ecbff; }
 BlockTitle { color: #ffb36d; fontSize: 3.4vh; fontWeight: bold; }
 Subtitle { color: #ffd166; fontSize: 2.7vh; fontWeight: bold; }

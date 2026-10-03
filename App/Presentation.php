@@ -2,165 +2,179 @@
 
 namespace MADEMO\App;
 
+/** Owns Markdown slide sources, file persistence, and reversible slide editing operations. */
 final class Presentation {
 
   private ?string $file = null;
-  private array $slides = [];
+  private array $slides = [['title' => 'New presentation', 'code' => ['# New presentation']]];
   private array $trash = [];
-  private array $links = [];
-  private string $promptTitle = '';
-  private string $promptText = '';
 
+  /** Load a Markdown file or create a one-slide untitled presentation. */
   public function __construct(?string $file = null) {
     if ($file !== null) {
-      $this->file = realpath($file) ?: null;
-      if ($this->file === null || !is_file($this->file)) {
-        throw new \RuntimeException("File not found ({$file}).");
+      $source = @file_get_contents($file);
+      if ($source === false) {
+        throw new \RuntimeException('Cannot read presentation: ' . $file);
       }
-      $this->load();
+      $this->file = realpath($file) ?: $file;
+      $this->load($source);
     }
   }
 
-  public function setTarget(string $file): void {
-    $this->file = $file;
-  }
-
+  /** Return the current file path, or null for an unsaved presentation. */
   public function file(): ?string {
     return $this->file;
   }
 
+  /** Return the number of slides. */
   public function count(): int {
     return count($this->slides);
   }
 
+  /** Return slide titles in presentation order. */
   public function slideTitles(): array {
-    return array_map(fn(array $slide): string => $slide['title'], $this->slides);
+    return array_column($this->slides, 'title');
   }
 
+  /** Use the first H1 anywhere in the presentation or the file's basename. */
+  public function displayTitle(): string {
+    foreach (array_keys($this->slides) as $index) {
+      $title = $this->slide($index)['firstH1'];
+      if ($title !== null) {
+        return $title;
+      }
+    }
+    return $this->file === null ? 'Untitled presentation' : basename($this->file);
+  }
+
+  /** Return source lines for a clamped slide index. */
   public function code(int $index): array {
-    return $this->slides[$this->clamp($index)]['code'] ?? [];
+    return $this->slides[$this->clamp($index)]['code'];
   }
 
-  public function show(int $index, SlideView $view, string $styleName = 'Default'): int {
+  /** Parse one slide with image paths relative to its presentation file. */
+  public function slide(int $index): array {
+    return SlideMarkdown::fromMarkdown($this->code($index), $this->file === null ? getcwd() : dirname($this->file));
+  }
+
+  /** Replace one slide's source and refresh its title. */
+  public function changeSlide(int $index, array $code): void {
     $index = $this->clamp($index);
-    $slide = SlideMarkdown::fromMarkdown($this->code($index), $this->basePath());
-    $view->setSlide($slide['slide'], $styleName);
-    $this->links = $slide['links'];
-    $this->promptTitle = $slide['promptTitle'];
-    $this->promptText = $slide['promptText'];
+    $this->slides[$index] = ['title' => $this->title($code, $index), 'code' => array_values($code)];
+  }
+
+  /** Insert a new slide after the current one and return its index. */
+  public function insert(int $index, array $code): int {
+    $index = $this->clamp($index) + 1;
+    array_splice($this->slides, $index, 0, [['title' => $this->title($code, $index), 'code' => array_values($code)]]);
     return $index;
   }
 
-  public function promptTitle(): string {
-    return $this->promptTitle;
-  }
-
-  public function promptText(): string {
-    return $this->promptText;
-  }
-
-  public function link(int $index): string|false {
-    return $this->links[$index] ?? false;
-  }
-
-  public function changeSlide(int $index, array $code, bool $insert = false): void {
-    if ($insert) {
-      $index++;
-      array_splice($this->slides, $index, 0, [['title' => 'new', 'code' => []]]);
-    }
-    $this->slides[$index] = [
-      'title' => $this->titleFromCode($code, $index),
-      'code' => array_values($code),
-    ];
-  }
-
-  public function deleteSlide(int $index): void {
-    if (count($this->slides) <= 1) {
-      return;
+  /** Delete a slide while retaining at least one slide and a restoration record. */
+  public function delete(int $index): bool {
+    if ($this->count() <= 1) {
+      return false;
     }
     $index = $this->clamp($index);
     $this->trash[] = [$index, $this->slides[$index]];
     array_splice($this->slides, $index, 1);
+    return true;
   }
 
-  public function restoreSlide(): int|false {
+  /** Restore the most recently deleted slide at its original position. */
+  public function restore(): ?int {
     if ($this->trash === []) {
-      return false;
+      return null;
     }
     [$index, $slide] = array_pop($this->trash);
+    $index = min($index, $this->count());
     array_splice($this->slides, $index, 0, [$slide]);
     return $index;
   }
 
-  public function sort(array $keys): void {
-    $ordered = [];
-    foreach ($keys as $key) {
-      if (isset($this->slides[(int)$key])) {
-        $ordered[] = $this->slides[(int)$key];
-      }
+  /** Apply a complete permutation of the current slide indices. */
+  public function reorder(array $order): void {
+    $expected = array_map('strval', array_keys($this->slides));
+    $sorted = $order;
+    sort($sorted, SORT_NUMERIC);
+    if ($sorted !== $expected) {
+      throw new \InvalidArgumentException('Slide order must contain every current index exactly once.');
     }
-    if ($ordered !== []) {
-      $this->slides = $ordered;
-    }
+    $this->slides = array_map(fn(string $index): array => $this->slides[(int)$index], $order);
   }
 
-  public function save(string $path): void {
-    $content = [];
+  /** Serialize slides without changing code-block whitespace or internal blank lines. */
+  public function source(): string {
+    $slides = [];
     foreach ($this->slides as $slide) {
-      foreach ($slide['code'] as $line) {
-        if ($line !== '---') {
-          $content[] = $line;
-        }
-      }
-      $content[] = '';
-      $content[] = '---';
-      $content[] = '';
+      $slides[] = rtrim(implode("\n", $slide['code']), "\n");
     }
-    file_put_contents($path, preg_replace("/\n\n\n+/", "\n\n", implode("\n", $content)));
-    $this->file = $path;
+    return implode("\n\n---\n\n", $slides) . "\n";
   }
 
-  private function load(): void {
-    $lines = file($this->file, FILE_IGNORE_NEW_LINES);
-    $slide = null;
-    foreach ($lines === false ? [] : $lines as $line) {
-      if (preg_match('/^#{1,2} /', $line)) {
-        if ($slide !== null) {
-          $this->slides[] = $slide;
-        }
-        $slide = ['title' => ltrim($line, '# ') ?: '#' . count($this->slides), 'code' => []];
+  /** Write a complete presentation and update its file path only after success. */
+  public function save(string $path): void {
+    $source = $this->source();
+    if (@file_put_contents($path, $source, LOCK_EX) !== strlen($source)) {
+      throw new \RuntimeException('Cannot save presentation: ' . $path);
+    }
+    $this->file = realpath($path) ?: $path;
+  }
+
+  /** Keep navigation within the existing slide range. */
+  public function clamp(int $index): int {
+    return max(0, min($this->count() - 1, $index));
+  }
+
+  /** Split on first- and second-level headings outside fenced code blocks. */
+  private function load(string $source): void {
+    $this->slides = [];
+    $code = [];
+    $fenced = false;
+    $inComment = false;
+    foreach (explode("\n", str_replace(["\r\n", "\r"], "\n", $source)) as $line) {
+      $commentLine = $inComment;
+      if (!$fenced && !$inComment && ($start = strpos($line, '<!--')) !== false) {
+        $commentLine = true;
+        $inComment = strpos($line, '-->', $start + 4) === false;
+      } else if ($inComment) {
+        $inComment = !str_contains($line, '-->');
+      } else if (str_starts_with(trim($line), '```')) {
+        $fenced = !$fenced;
       }
-      if ($slide !== null) {
-        $slide['code'][] = $line;
+      $heading = !$fenced && !$commentLine && preg_match('/^#{1,2} /', $line);
+      if ($heading && $code !== []) {
+        $this->append($code);
+        $code = [];
+      }
+      if ($code !== [] || $heading) {
+        $code[] = $line;
       }
     }
-    if ($slide !== null) {
-      $this->slides[] = $slide;
+    if ($code !== []) {
+      $this->append($code);
     }
     if ($this->slides === []) {
-      $this->slides[] = ['title' => 'Untitled', 'code' => ['# Untitled']];
+      $this->slides[] = ['title' => 'Untitled', 'code' => ['## Untitled']];
     }
   }
 
-  private function basePath(): string {
-    if ($this->file !== null) {
-      return dirname($this->file);
+  /** Append a loaded slide after removing only trailing slide separator lines. */
+  private function append(array $code): void {
+    while ($code !== [] && in_array(trim((string)end($code)), ['', '---'], true)) {
+      array_pop($code);
     }
-    return getcwd();
+    $this->slides[] = ['title' => $this->title($code, $this->count()), 'code' => $code];
   }
 
-  private function titleFromCode(array $code, int $index): string {
+  /** Find a slide title using the existing heading convention. */
+  private function title(array $code, int $index): string {
     foreach ($code as $line) {
-      if (preg_match('/^#{1,2} ([^#].*)$/', $line, $match)) {
+      if (preg_match('/^#{1,2} (.*)$/', $line, $match)) {
         return trim($match[1]);
       }
     }
-    return '#' . $index;
-  }
-
-  private function clamp(int $index): int {
-    $max = max(0, count($this->slides) - 1);
-    return max(0, min($max, $index));
+    return 'Slide ' . ($index + 1);
   }
 
 }
