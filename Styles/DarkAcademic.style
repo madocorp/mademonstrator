@@ -4,12 +4,16 @@ leading, and quiet rules. It should feel like a lecture hall or printed paper
 adapted for projection.
 */
 Slide { backgroundColor: #282016; padding: 7% 9% 6% 9%; }
-Body { color: #eeeeee; fontFamily: TeX Gyre Pagella, Noto Serif Display, Noto Serif, serif; fontSize: 3.05vh; lineGap: 0.75vh; }
-MainTitle { color: #f5d36b; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 6.6vh; fontWeight: bold; textAlign: center; borderColor: #3a3328; borderWidth: 1px 0; padding: 0.7vh 0; }
-SlideTitle { color: #f5d36b; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 4.5vh; fontWeight: bold; textAlign: center; borderColor: #3a3328; borderWidth: 0 0 1px 0; padding: 0 0 0.45vh 0; margin: 0 2vw 1vh; }
-Block { backgroundColor: #382b20; borderColor: #4a3d2c; borderWidth: 1px 0; margin: 1vh 0.4vw; padding: 1.25vh 1.7vw; fontSize: 2.75vh; }
-Quote { color: #c9a86a; backgroundColor: transparent; borderColor: #c9a86a; borderWidth: 1px 0; margin: 0.9vh 1.3vw; padding: 1.35vh 1.1vw; fontSize: 3vh; }
-Code { color: #9fd6ff; backgroundColor: #111820; borderColor: #3a3328; borderWidth: 1px; margin: 0.75vh 0.7vw; padding: 1.1vh 1vw; fontFamily: monospace; fontSize: 2.35vh; }
+Body { color: #eeeeee; fontFamily: TeX Gyre Pagella, Noto Serif Display, Noto Serif, serif; fontSize: 3.2vh; lineGap: 0.9vh; }
+List { gap: 0.8vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #c9a86a; fontWeight: bold; textAlign: left; width: 3.8vh; margin: 0 0.7vw 0 0; }
+Image { height: 18vh; }
+MainTitle { color: #f5d36b; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 6.45vh; fontWeight: bold; textAlign: center; borderColor: #3a3328; borderWidth: 1px 0; padding: 0.9vh 0; }
+SlideTitle { color: #f5d36b; fontFamily: Noto Serif Display, TeX Gyre Pagella, serif; fontSize: 4.6vh; fontWeight: bold; textAlign: center; borderColor: #3a3328; borderWidth: 0 0 1px 0; padding: 0 0 0.6vh 0; margin: 0 2.4vw 1.25vh; }
+Block { backgroundColor: #382b20; borderColor: #4a3d2c; borderWidth: 1px 0; margin: 1.25vh 0.65vw; padding: 1.6vh 2vw; fontSize: 2.85vh; }
+Quote { color: #c9a86a; backgroundColor: transparent; borderColor: #c9a86a; borderWidth: 1px 0; margin: 1.2vh 1.7vw; padding: 1.7vh 1.4vw; fontSize: 3.1vh; }
+Code { color: #9fd6ff; backgroundColor: #111820; borderColor: #3a3328; borderWidth: 1px; margin: 0.7vh 0.8vw; padding: 1vh 1vw; fontFamily: monospace; fontSize: 2.25vh; }
 Strong { color: #f19999; fontWeight: bold; }
 InlineCode { color: #9fd6ff; backgroundColor: #382b20; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #80bfff; }

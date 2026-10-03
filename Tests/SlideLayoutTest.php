@@ -107,6 +107,32 @@ function slideTitleLineHeight(): void {
   }
 }
 
+/** Right-aligned script titles paint the same complete glyphs as left-aligned titles. */
+function rightAlignedTitleInkFits(): void {
+  foreach (['BrightEsoteric', 'DarkEsoteric'] as $theme) {
+    foreach ([[100, 50], [66, 18]] as [$columns, $rows]) {
+      $layout = (new SlideLayout($theme))->build(['title' => [['text' => 'Arcana']], 'elements' => []]);
+      measureSlide($layout, $columns, $rows);
+      $title = slideTexts($layout)[0];
+      $area = $title->pixelContent();
+      [$runs, $style, $referenceWidth, $referenceHeight] = (new \ReflectionMethod(SlideText::class, 'content'))->invoke($title->instance(), $area->width, $area->height);
+      $raster = new \SPTK\Widgets\StyledText\Raster();
+      $right = $raster->render($runs, $style, $area->width, $area->height, $referenceWidth, $referenceHeight);
+      $left = $raster->render($runs, array_replace($style, ['textAlign' => 'left']), $area->width, $area->height, $referenceWidth, $referenceHeight);
+      $ink = function(\SPTK\Core\RasterImage $image): int {
+        $background = substr($image->pixels, 0, 4);
+        $count = 0;
+        for ($offset = 0; $offset < strlen($image->pixels); $offset += 4) {
+          $count += substr($image->pixels, $offset, 4) !== $background;
+        }
+        return $count;
+      };
+      assertTrue($ink($left) > 0, 'Title raster contains painted text.');
+      assertSame($ink($left), $ink($right), 'Right alignment preserves every painted title pixel.');
+    }
+  }
+}
+
 /** Natural text height uses the pixel content width at both presentation and preview sizes. */
 function slideTextFits(): void {
   $parsed = SlideMarkdown::fromMarkdown([
@@ -246,6 +272,7 @@ return [
   'H1 content keeps normal slide styles' => __NAMESPACE__ . '\\mainSlideContentStyles',
   'H1 title has space before content' => __NAMESPACE__ . '\\mainTitleContentGap',
   'Styled text title height is stable' => __NAMESPACE__ . '\\slideTitleLineHeight',
+  'Right-aligned title ink stays within the raster' => __NAMESPACE__ . '\\rightAlignedTitleInkFits',
   'Pixel slide text and box fillers fit' => __NAMESPACE__ . '\\slideTextFits',
   'List rows keep grouped selection' => __NAMESPACE__ . '\\listRowsStayGrouped',
   'Centered themes keep lists left aligned' => __NAMESPACE__ . '\\centeredThemeListsStayLeftAligned',

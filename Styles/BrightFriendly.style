@@ -3,12 +3,16 @@ BrightFriendly is for demos, team talks, and onboarding. It should feel warm
 and inviting: sunny paper, peach panels, honey titles, and coral emphasis.
 */
 Slide { backgroundColor: #fff7ec; padding: 5% 7% 6% 7%; }
-Body { color: #3a2418; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 3.15vh; lineGap: 0.85vh; }
-MainTitle { color: #8a4b00; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 7.5vh; fontWeight: bold; textAlign: center; backgroundColor: #ffe6c8; borderColor: #f3b26c; borderWidth: 1px; padding: 0.9vh 1.6vw; }
-SlideTitle { color: #8a4b00; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 4.7vh; fontWeight: bold; textAlign: center; backgroundColor: #ffe6c8; borderColor: #f3b26c; borderWidth: 1px; padding: 0.65vh 1.4vw; margin: 0 1vw 0.8vh; }
-Block { backgroundColor: #fff0dc; borderColor: #e8753c; borderWidth: 0 0 0 5px; margin: 0.8vh 0.6vw; padding: 1.5vh 1.5vw; fontSize: 2.85vh; }
-Quote { color: #9c4a1a; backgroundColor: #fff0dc; borderColor: #e8753c; borderWidth: 1px; margin: 0.9vh 0.9vw; padding: 1.4vh 1.5vw; fontSize: 3.1vh; textAlign: center; }
-Code { color: #00617a; backgroundColor: #ffe9d0; borderColor: #f3b26c; borderWidth: 1px; margin: 0.7vh 0.7vw; padding: 1.1vh 1.1vw; fontFamily: monospace; fontSize: 2.45vh; }
+Body { color: #3a2418; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 3.3vh; lineGap: 0.95vh; }
+List { gap: 0.75vh; }
+ListItem { textAlign: left; }
+ListMarker { color: #c05621; fontWeight: bold; textAlign: left; width: 4vh; margin: 0 0.7vw 0 0; }
+Image { height: 17vh; }
+MainTitle { color: #8a4b00; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 8vh; fontWeight: bold; textAlign: center; backgroundColor: #ffe6c8; borderColor: #f3b26c; borderWidth: 1px; padding: 1.15vh 2vw; }
+SlideTitle { color: #8a4b00; fontFamily: Ubuntu Sans, Noto Sans Display, sans-serif; fontSize: 5.1vh; fontWeight: bold; textAlign: center; backgroundColor: #ffe6c8; borderColor: #f3b26c; borderWidth: 1px; padding: 0.8vh 1.8vw; margin: 0 1.2vw 1vh; }
+Block { backgroundColor: #fff0dc; borderColor: #e8753c; borderWidth: 0 0 0 5px; margin: 1.1vh 0.8vw; padding: 1.75vh 2vw; fontSize: 3vh; }
+Quote { color: #9c4a1a; backgroundColor: #fff0dc; borderColor: #e8753c; borderWidth: 1px; margin: 1.1vh 1.1vw; padding: 1.7vh 1.8vw; fontSize: 3.25vh; textAlign: center; }
+Code { color: #00617a; backgroundColor: #ffe9d0; borderColor: #f3b26c; borderWidth: 1px; margin: 0.8vh 0.8vw; padding: 1.2vh 1.25vw; fontFamily: monospace; fontSize: 2.4vh; }
 Strong { color: #b23a22; fontWeight: bold; }
 InlineCode { color: #00617a; backgroundColor: #ffe9d0; fontFamily: monospace; fontSize: 2.5vh; }
 Link { color: #1c66a3; }

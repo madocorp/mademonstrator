@@ -24,7 +24,7 @@ final class SlideText extends StyledText {
   /** Put text decoration on its layout leaf; a heading box owns its shared inset. */
   public function pixelBox(): PixelBox {
     $style = SlideTheme::rawStyle($this->theme, $this->role);
-    if ($this->insideBox && in_array($this->role, ['body', 'subtitle', 'block-title'], true)) {
+    if ($this->listItem || ($this->insideBox && in_array($this->role, ['body', 'subtitle', 'block-title'], true))) {
       return new PixelBox(background: Color::from($this->backgroundColor));
     }
     $background = ($style['background'] ?? 'transparent') === 'transparent' ? $this->backgroundColor : $style['background'];
@@ -46,10 +46,11 @@ final class SlideText extends StyledText {
     $fonts = new Fonts();
     $face = $fonts->face($style, $referenceWidth, $referenceHeight);
     $ink = $fonts->measure($this->sourceRuns[0]['text'] ?? '', $face)[0];
-    $margin = Format::edges($style['margin'], $referenceWidth, $referenceHeight);
-    $padding = Format::edges($style['padding'], $referenceWidth, $referenceHeight);
-    $border = Format::edges($style['borderWidth'], $referenceWidth, $referenceHeight);
-    $pixels = $ink + $margin['left'] + $margin['right'] + $padding['left'] + $padding['right'] + $border['left'] + $border['right'] + 2;
+    $box = $this->pixelBox();
+    $margin = PixelBox::edges($box->margin, $referenceWidth, $referenceHeight);
+    $padding = PixelBox::edges($box->padding, $referenceWidth, $referenceHeight);
+    $border = PixelBox::edges($box->borderWidth, $referenceWidth, $referenceHeight);
+    $pixels = $ink + $margin['left'] + $margin['right'] + $padding['left'] + $padding['right'] + $border['left'] + $border['right'];
     return max(1, (int)ceil($pixels / (\SPTK\App::fontOrNull()?->cellWidth() ?? 8)));
   }
 
@@ -60,7 +61,7 @@ final class SlideText extends StyledText {
     }
     [, $style, $referenceWidth, $referenceHeight] = $this->content(0, 0);
     $face = (new Fonts())->face($style, $referenceWidth, $referenceHeight);
-    return max(1, (new Fonts())->measure($this->sourceRuns[0]['text'] ?? '', $face)[0] + 2);
+    return max(1, (new Fonts())->measure($this->sourceRuns[0]['text'] ?? '', $face)[0]);
   }
 
   /** Resolve viewport units and inline styles using the measured slide grid. */
@@ -69,30 +70,14 @@ final class SlideText extends StyledText {
     $referenceWidth = max(1, $this->slide->pixelTile()?->width ?? $this->slide->grid()->width * ($font?->cellWidth() ?? 8));
     $referenceHeight = max(1, $this->slide->pixelTile()?->height ?? $this->slide->grid()->height * ($font?->cellHeight() ?? 16));
     $style = SlideTheme::textStyle($this->theme, $this->role, $referenceWidth, $referenceHeight);
+    if ($this->insideBox && in_array($this->role, ['list-item', 'list-marker'], true)) {
+      $style = array_replace(SlideTheme::textStyle($this->theme, 'block', $referenceWidth, $referenceHeight), SlideTheme::ruleStyle($this->theme, $this->role, $referenceWidth, $referenceHeight));
+    }
     if ($this->insideBox && in_array($this->role, ['body', 'subtitle'], true)) {
       $style = $this->role === 'body' ? SlideTheme::textStyle($this->theme, 'block', $referenceWidth, $referenceHeight) : $style;
     }
-    if ($this->insideBox && in_array($this->role, ['subtitle', 'block-title'], true)) {
-      $style['padding'] = SlideTheme::textStyle($this->theme, 'block', $referenceWidth, $referenceHeight)['padding'];
-    }
     if (($style['background'] ?? 'transparent') === 'transparent') {
       $style['background'] = $this->backgroundColor;
-    }
-    if ($this->insideBox && in_array($this->role, ['body', 'subtitle', 'block-title'], true)) {
-      $style['margin'] = 0;
-      $style['borderWidth'] = 0;
-    }
-    if ($this->insideBox && $this->listItem) {
-      $padding = Format::edges($style['padding'], $referenceWidth, $referenceHeight);
-      $style['padding'] = ['top' => 0, 'right' => $padding['right'], 'bottom' => 0, 'left' => $padding['left']];
-    }
-    if ($this->listItem && $style['textAlign'] === 'center') {
-      $style['textAlign'] = 'left';
-    }
-    if ($this->externalBoxModel()) {
-      $style['margin'] = 0;
-      $style['padding'] = 0;
-      $style['borderWidth'] = 0;
     }
     $style['verticalAlign'] ??= in_array($this->role, ['main-title', 'slide-title'], true) ? 'center' : 'top';
     $runs = [];
@@ -109,6 +94,7 @@ final class SlideText extends StyledText {
       }
       $runs[] = $run;
     }
+    unset($style['gap'], $style['width'], $style['height'], $style['margin'], $style['padding'], $style['borderWidth'], $style['borderColor']);
     return [Format::runs($runs), array_replace(Format::DEFAULTS, Format::style($style)), $referenceWidth, $referenceHeight];
   }
 
