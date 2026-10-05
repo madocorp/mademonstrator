@@ -4,11 +4,11 @@ MaDemonstrator presents Markdown files as slides and includes a slide editor.
 
 ## Requirements
 
-- PHP 8.2 or newer on the command line, with FFI, XMLReader, mbstring, GD,
-  and PCNTL enabled.
+- PHP 8.2 or newer on the command line, with FFI, XMLReader, mbstring, and
+  PCNTL enabled. GD is needed for graphs and non-PNG images.
 - [SPTK](https://github.com/madocorp/SPTK), with SDL3 and SDL3_ttf available
   as described by its installation instructions. SDL3_ttf also needs FreeType
-  and HarfBuzz.
+  and HarfBuzz. PNG images require `libpng16.so.16`.
 - A graphical desktop session to run the application.
 
 Check PHP with:
