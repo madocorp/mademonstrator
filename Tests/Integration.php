@@ -1,11 +1,9 @@
 <?php
 
 define('APP_DIR', dirname(__DIR__));
+define('APP_NAMESPACE', 'MADEMO');
 define('APP_PATH', APP_DIR . '/mademonstrator.php');
 require_once APP_DIR . '/SPTK/App.php';
-require_once APP_DIR . '/App/Autoload.php';
-spl_autoload_register(['SPTK\\App', 'load']);
-spl_autoload_register(['MADEMO\\App\\Autoload', 'load']);
 require_once __DIR__ . '/Support.php';
 
 use MADEMO\App\{Controller, EditorPreview, FileActions, Presenter, Settings, WindowPreferences};

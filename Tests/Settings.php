@@ -7,11 +7,9 @@ foreach (['SPTK', 'App', 'Layout', 'Assets', 'Styles'] as $name) {
 }
 symlink(dirname(__DIR__) . '/UNLICENSE', $fixture . '/UNLICENSE');
 define('APP_DIR', $fixture);
+define('APP_NAMESPACE', 'MADEMO');
 define('APP_PATH', APP_DIR . '/mademonstrator.php');
 require_once APP_DIR . '/SPTK/App.php';
-require_once APP_DIR . '/App/Autoload.php';
-spl_autoload_register(['SPTK\\App', 'load']);
-spl_autoload_register(['MADEMO\\App\\Autoload', 'load']);
 require_once __DIR__ . '/Support.php';
 
 use MADEMO\App\{Controller, Presenter, Settings, WindowPreferences};
