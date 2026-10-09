@@ -1,8 +1,4 @@
 <App>
-  <Style>
-    <Background>#0000aa</Background>
-    <CursorBackground>#000055</CursorBackground>
-  </Style>
   <Event type="init" action="MADEMO\App\Controller::initialize" />
   <Event type="timer" period="250" action="MADEMO\App\Controller::preview" />
   <Window title="MaDemonstrator" width="132" height="54" mode="maximized" resizable="true">

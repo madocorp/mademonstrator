@@ -46,7 +46,7 @@ final class Settings {
     $directory = trim(Controller::widget('settings', 'directory')->getValue());
     $theme = Controller::widget('settings', 'defaultTheme')->getValue() ?? 'Default';
     if (!is_dir($directory) || !is_readable($directory)) {
-      self::status('Choose a readable default directory.');
+      self::status('Choose a readable default directory.', true);
       return;
     }
     $presentation = trim(Controller::widget('settings', 'presentationWindow')->getValue());
@@ -55,13 +55,13 @@ final class Settings {
       WindowPreferences::parse($presentation);
       WindowPreferences::parse($helper, true);
     } catch (\InvalidArgumentException $error) {
-      self::status($error->getMessage());
+      self::status($error->getMessage(), true);
       return;
     }
     $directory = realpath($directory) ?: $directory;
     $config = array_replace(self::$config, ['defaultStyle' => $theme, 'defaultDir' => $directory, 'presentationWindow' => $presentation, 'promptBox' => $helper]);
     if (!AppData::saveJson('config.json', $config)) {
-      self::status('Could not save settings.');
+      self::status('Could not save settings.', true);
       return;
     }
     self::$config = $config;
@@ -90,8 +90,13 @@ final class Settings {
   }
 
   /** Refresh the settings status line. */
-  private static function status(string $message): void {
-    Controller::widget('settings', 'status')->notify($message);
+  private static function status(string $message, bool $error = false): void {
+    $bar = Controller::widget('settings', 'status');
+    if ($error) {
+      $bar->error($message);
+    } else {
+      $bar->info($message);
+    }
     Controller::$window->resize();
   }
 

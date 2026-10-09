@@ -59,3 +59,8 @@ presentation. Use **F1** to present from the first slide, **F2** to present
 from the selected slide, and **Esc** to return to the editor. Space and
 Backspace move between slides while presenting. The editor's Settings screen
 includes the Markdown reference.
+
+Press H on a selected tile to see its help. Save and other routine messages
+use the highlighted info color and wait for Return or Esc. Warnings and errors
+also wait for acknowledgment; decisions use Y/Return or N/Esc. File browser
+guidance stays visible while you choose a path and returns after other messages.

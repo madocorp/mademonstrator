@@ -130,7 +130,7 @@ try {
   assertSame(1, count($loop->windows()), 'Only the editor window opens at startup.');
   assertSame('Markdown Presentation Engine', Controller::widget('editor', 'heading')->text(), 'Editor heading uses the first H1 instead of the first slide label.');
   assertTrue(Controller::widget('editor', 'status') instanceof \SPTK\Widgets\StatusBar\StatusBar, 'Editor uses the reusable status widget.');
-  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Presentation title'), 'Initial status follows the selected heading tip.');
+  assertSame('', Controller::widget('editor', 'status')->text(), 'Status starts empty without automatic tile help.');
   $previewBlank = null;
   foreach (Controller::screen('editor')->layout->leaves() as $leaf) {
     if ($leaf->isPixel() && $leaf->instance() instanceof \SPTK\Widgets\Empty\Placeholder && $leaf->pixelContent()->width > 0 && $leaf->pixelContent()->height > 0) {
@@ -196,7 +196,9 @@ try {
   $keys->key->key = SDL::KEY_RIGHT;
   $window->handleEvent($keys);
   assertSame('previewTile', $editorScreen->selectedLeaf()->instance()->id(), 'Right arrow selects the preview as one tile.');
-  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Slide preview'), 'Preview XML tip reaches the status bar.');
+  pressKey($window, $sdl, ord('h'));
+  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Slide preview'), 'H shows the preview XML tip.');
+  pressKey($window, $sdl, SDL::KEY_ESCAPE);
   $selectedBlank = null;
   foreach ($editorScreen->layout->leaves() as $leaf) {
     if ($leaf->isPixel() && $leaf->instance() instanceof \SPTK\Widgets\Empty\Placeholder && $leaf->pixelContent()->width > 0 && $leaf->pixelContent()->height > 0) {
@@ -226,7 +228,9 @@ try {
   $window->handleEvent($keys);
   assertSame('themes', $editorScreen->selectedLeaf()->instance()->id(), 'Next arrow skips preview descendants.');
   activateWidget('editor', 'themes', $sdl);
-  assertSame('Up/Down changes the slide style; Esc finishes.', Controller::widget('editor', 'status')->text(), 'Active XML tip overrides the list default.');
+  pressKey($window, $sdl, ord('h'));
+  assertSame('Up/Down changes the slide style; Esc finishes.', Controller::widget('editor', 'status')->text(), 'H shows the active XML tip.');
+  pressKey($window, $sdl, SDL::KEY_ESCAPE);
   $editorScreen->release();
   assertTrue(!($editorScreen->selectedLeaf()->instance() instanceof \MADEMO\App\SlideText), 'Arrow navigation skips preview text tiles.');
   assertTrue(!($editorScreen->selectedLeaf()->instance() instanceof \MADEMO\App\SlideImage), 'Arrow navigation skips preview image tiles.');
@@ -234,7 +238,9 @@ try {
   $editor->setValue("## Edited slide\n\nA **styled** preview.\n\n<!-- Only the presenter sees this. -->");
   activateWidget('editor', 'markdown', $sdl);
   assertTrue($editor->editing(), 'Real screen activates Markdown editor.');
-  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Editing text:'), 'Activated editor shows editing controls instead of slide-list help.');
+  pressKey($window, $sdl, ord('h'));
+  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Editing text:'), 'H shows editing controls while the editor is active.');
+  pressKey($window, $sdl, SDL::KEY_ESCAPE);
   Controller::preview(new EventContext('timer'));
   assertTrue($editor->editing(), 'Live preview retains the activated editor.');
   assertSame('Edited slide', Controller::$session->document->slideTitles()[1], 'Live preview commits the new title.');
@@ -251,7 +257,9 @@ try {
   $beforeCode = $editor->getValue();
   $keys->key->key = SDL::KEY_UP;
   $keys->key->mod = SDL::MOD_SHIFT;
-  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Shift+Up/Down reorders'), 'Active slide list explains its reorder shortcut.');
+  pressKey($window, $sdl, ord('h'));
+  assertTrue(str_contains(Controller::widget('editor', 'status')->text(), 'Shift+Up/Down reorders'), 'H explains the slide reorder shortcut.');
+  pressKey($window, $sdl, SDL::KEY_ESCAPE);
   Controller::screen('editor')->handleEvent($keys);
   [$beforeOrder[1], $beforeOrder[2]] = [$beforeOrder[2], $beforeOrder[1]];
   assertSame($beforeOrder, Controller::$session->document->slideTitles(), 'Native list reordering updates document order.');
@@ -359,11 +367,14 @@ try {
   Controller::widget('editor', 'path')->setValue($path);
   FileActions::choose($event);
   assertTrue(Controller::widget('editor', 'status')->confirming(), 'Save As asks before overwriting an existing file.');
-  assertSame('warning', Controller::widget('editor', 'status')->kind(), 'Confirmation uses warning color.');
+  assertSame('confirmation', Controller::widget('editor', 'status')->behavior(), 'Confirmation uses its own input behavior.');
   pressKey($window, $sdl, ord('y'));
   assertSame(false, Controller::$session->dirty, 'Successful save clears the unsaved state.');
   assertSame(realpath($path), Controller::$session->document->file(), 'Successful save updates the file path.');
   assertSame($beforeOrder, (new \MADEMO\App\Presentation($path))->slideTitles(), 'Reordered slides survive save and reload.');
+  assertSame('info', Controller::widget('editor', 'status')->kind(), 'Successful save uses the info color.');
+  assertSame('modal', Controller::widget('editor', 'status')->behavior(), 'Successful save requires acknowledgment.');
+  pressKey($window, $sdl, SDL::KEY_RETURN);
   activateWidget('editor', 'markdown', $sdl);
   $beforeHotkeyText = Controller::widget('editor', 'markdown')->getValue();
   $beforeHotkeySlides = Controller::$session->document->count();
@@ -384,6 +395,8 @@ try {
   assertSame('markdown', Controller::screen('editor')->activeLeaf()?->instance()->id(), 'Ctrl+O does not open the file browser while a widget is active.');
   FileActions::save($event);
   assertSame(false, Controller::$session->dirty, 'Explicit Save commits the edited Markdown.');
+  assertSame('modal', Controller::widget('editor', 'status')->behavior(), 'Explicit Save waits for acknowledgment.');
+  pressKey($window, $sdl, SDL::KEY_RETURN);
   $savedDocument = Controller::$session->document;
   $originalFocus = Controller::screen('editor')->selectedLeaf();
   FileActions::openScreen($event);
@@ -391,6 +404,8 @@ try {
   $keys->key->key = SDL::KEY_ESCAPE;
   $window->handleEvent($keys);
   assertSame('editor', Controller::$screenId, 'Escape cancels the active file browser.');
+  assertSame('info', Controller::widget('editor', 'status')->kind(), 'Cancelling the file browser shows information.');
+  pressKey($window, $sdl, SDL::KEY_RETURN);
   assertTrue(Controller::screen('editor')->selectedLeaf() === $originalFocus, 'Cancelling restores original editor focus.');
   assertTrue(Controller::$session->document === $savedDocument, 'Cancelling a browser does not accept its selected file.');
   FileActions::openScreen($event);
@@ -410,6 +425,8 @@ try {
   $keys->key->key = SDL::KEY_RETURN;
   $window->handleEvent($keys);
   assertSame('editor', Controller::$screenId, 'Return on a selected file opens it through the real widget event.');
+  assertSame('info', Controller::widget('editor', 'status')->kind(), 'Successful open shows information.');
+  pressKey($window, $sdl, SDL::KEY_RETURN);
   assertTrue(Controller::screen('editor')->selectedLeaf() === $originalFocus, 'Accepting a file restores original editor focus.');
   assertTrue(Controller::$session->document !== $savedDocument, 'Accepted file creates a successfully loaded document.');
   $count = Controller::$session->document->count();
