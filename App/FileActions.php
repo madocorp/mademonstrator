@@ -49,8 +49,12 @@ final class FileActions {
     $path = Controller::$session->document->file();
     if ($path === null) {
       self::browser(true);
-    } else if (self::write($path) && self::$continueAfterSave) {
-      self::perform();
+    } else if (self::write($path)) {
+      if (self::$continueAfterSave) {
+        self::perform();
+      } else {
+        Controller::status('Saved ' . Controller::$session->document->file());
+      }
     }
     return true;
   }
@@ -195,7 +199,6 @@ final class FileActions {
       Controller::$session->document->save($path);
       Controller::$session->dirty = false;
       Controller::sync();
-      Controller::status('Saved ' . Controller::$session->document->file());
       return true;
     } catch (\Throwable $error) {
       self::error($error->getMessage());
@@ -241,7 +244,7 @@ final class FileActions {
     if ($browseError !== null) {
       self::error($browseError);
     } else {
-      Controller::status($saving ? 'Select a file or press F5 to enter a save path.' : 'Select a Markdown file or press F5 to enter its path.');
+      Controller::status($saving ? 'Select a file or press F5 to enter a save path.' : 'Select a Markdown file or press F5 to enter its path.', 'notice', 'continuous');
     }
   }
 

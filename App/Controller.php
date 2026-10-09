@@ -267,8 +267,8 @@ final class Controller {
   }
 
   /** Show a one-line editor message and update its rendered screen. */
-  public static function status(string $message, string $kind = 'notice'): void {
-    self::widget('editor', 'status')->{$kind}($message);
+  public static function status(string $message, string $kind = 'info', string $behavior = 'modal'): void {
+    self::widget('editor', 'status')->{$kind}($message, $behavior);
     self::$window->resize();
   }
 
