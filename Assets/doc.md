@@ -166,7 +166,7 @@ Use `[text](url)` syntax to show a text instead of the url, and `<url>` syntax t
 
 Images can be embedded directly into slides as standalone slide content:
 
-![Example Image](mademo.png)
+![Example Image](logo.png)
 
 They are centered in their allocated slide area and scaled down to fit.
 Images are useful for diagrams, logos, and screenshots.
@@ -178,7 +178,7 @@ Images are useful for diagrams, logos, and screenshots.
 ### Image box
 Images can also live inside a heading box.
 
-![Box Image](mademo.png)
+![Box Image](logo.png)
 
 Text after the image stays in the same box.
 

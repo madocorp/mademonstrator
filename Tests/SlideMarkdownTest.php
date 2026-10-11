@@ -98,7 +98,7 @@ return [
       '## Image box',
       '### Box',
       'Before',
-      '![Logo](Assets/mademo.png)',
+      '![Logo](Assets/logo.png)',
       'After',
     ], dirname(__DIR__));
     $box = $result['slide']['elements'][0];
@@ -112,7 +112,7 @@ return [
     $result = SlideMarkdown::fromMarkdown([
       '## Absolute',
       '### Box',
-      '![:absolute:20%x30%-80%-0](Assets/mademo.png)',
+      '![:absolute:20%x30%-80%-0](Assets/logo.png)',
       'Inside box',
     ], dirname(__DIR__));
     $elements = $result['slide']['elements'];

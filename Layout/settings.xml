@@ -5,7 +5,7 @@
     <Separator />
     <Layout direction="horizontal" height="1*">
       <Layout width="34">
-        <Image src="../Assets/mademo.png" fit="contain" interactive="false" />
+        <Image src="../Assets/logo.png" fit="contain" interactive="false" />
         <Separator />
         <List id="defaultTheme" title="DEFAULT STYLE" height="1*" filterable="false" />
         <Input id="directory" height="2" label="DEFAULT DIRECTORY" />

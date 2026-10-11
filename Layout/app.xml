@@ -1,7 +1,7 @@
 <App>
   <Event type="init" action="MADEMO\App\Controller::initialize" />
   <Event type="timer" period="250" action="MADEMO\App\Controller::preview" />
-  <Window title="MaDemonstrator" width="132" height="54" mode="maximized" resizable="true">
+  <Window title="MaDemonstrator" width="132" height="54" mode="maximized" resizable="true" icon="../Assets/icon.png">
     <Screen id="editor" title="Editor" file="editor.xml" />
     <Screen id="presentation" title="Presentation" file="presentation.xml" />
     <Screen id="settings" title="Settings and about" file="settings.xml" />

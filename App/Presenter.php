@@ -41,7 +41,7 @@ final class Presenter {
     }
     if (self::window() === null) {
       $screen = (new ScreenParser())->parse('presenter.xml', new Style(), 'presenter', 'Speaker notes');
-      self::$window = new Window(['title' => 'MaDemonstrator — Speaker notes', 'width' => 78, 'height' => 36, 'state' => 'hidden', 'resizable' => true, 'screens' => [$screen]]);
+      self::$window = new Window(['title' => 'MaDemonstrator — Speaker notes', 'width' => 78, 'height' => 36, 'state' => 'hidden', 'resizable' => true, 'icon' => APP_DIR . '/Assets/icon.png', 'screens' => [$screen]]);
       App::eventLoop()->registerWindow(self::$window);
       self::$timingColor = null;
       self::$timingLabel = null;
