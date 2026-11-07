@@ -33,6 +33,12 @@
         <Separator />
         <Layout direction="horizontal" height="2*">
           <TextEditor id="markdown" width="1*" label="MARKDOWN - Esc finishes editing" textWrap="true" />
+          <Layout id="file-browser" overwrite="#markdown" width="1*">
+            <Style><Background>#0000aa</Background><CursorBackground>#000055</CursorBackground></Style>
+            <Text id="fileHeading" wrap="false" height="1" />
+            <FileSelector id="browser" height="1*"><Event type="keyDown" key="enter" action="MADEMO\App\FileActions::fileAccepted" /><Event type="change" action="MADEMO\App\FileActions::directoryChanged" /></FileSelector>
+            <Input id="path" label="FILE PATH (F5 to edit)" height="2" />
+          </Layout>
           <Separator />
           <Layout width="18">
             <Title navigate="false">Slide</Title>

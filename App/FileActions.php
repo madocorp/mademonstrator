@@ -3,9 +3,8 @@
 namespace MADEMO\App;
 
 use SPTK\App;
-use SPTK\Core\{Color, Style};
-use SPTK\Events\{EventContext, KeyNormalizer, EventDefinition};
-use SPTK\Layout\{LayoutLeaf, LayoutNode};
+use SPTK\Events\{EventContext, KeyNormalizer};
+use SPTK\Layout\LayoutLeaf;
 use SPTK\Widgets\FileSelector\FileSelector;
 use SPTK\Widgets\Input\Input;
 use SPTK\Widgets\Text\Text;
@@ -18,11 +17,6 @@ final class FileActions {
   private static ?string $pendingPath = null;
   private static ?string $overwritePath = null;
   private static bool $continueAfterSave = false;
-  private static ?LayoutLeaf $editorLeaf = null;
-  private static ?LayoutLeaf $originalFocus = null;
-  private static ?LayoutLeaf $selectorLeaf = null;
-  private static ?LayoutLeaf $pathLeaf = null;
-  private static ?LayoutNode $panel = null;
   private static ?FileSelector $selector = null;
   private static ?Input $pathInput = null;
   private static ?Text $heading = null;
@@ -89,7 +83,7 @@ final class FileActions {
   }
 
   private static function focusPath(): bool {
-    Controller::screen('editor')->activateLeaf(self::$pathLeaf);
+    Controller::screen('editor')->activateLeaf(self::browserLeaf('path'));
     Controller::$window->resize();
     return true;
   }
@@ -218,7 +212,7 @@ final class FileActions {
 
   /** Keep both widget instances and swap the visible layout subtree. */
   private static function browser(bool $saving): void {
-    self::buildPanel();
+    self::bindPanel();
     self::$saving = $saving;
     $file = Controller::$session->document->file();
     $directory = $file === null ? Settings::$directory : dirname($file);
@@ -233,13 +227,10 @@ final class FileActions {
     Controller::show('editor');
     $screen = Controller::screen('editor');
     if (!self::$browsing) {
-      self::$originalFocus = $screen->selectedLeaf();
-      $screen->release();
-      $screen->layout->replaceChild(self::$editorLeaf, self::$panel);
-      $screen->setLayout($screen->layout);
+      $screen->show('file-browser');
       self::$browsing = true;
     }
-    $screen->activateLeaf(self::$selectorLeaf);
+    $screen->activateLeaf(self::browserLeaf('browser'));
     Controller::$window->resize();
     if ($browseError !== null) {
       self::error($browseError);
@@ -252,48 +243,28 @@ final class FileActions {
     if (!self::$browsing) {
       return;
     }
-    $screen = Controller::screen('editor');
-    $screen->release();
-    $screen->layout->replaceChild(self::$panel, self::$editorLeaf);
-    $screen->setLayout($screen->layout);
+    // Restoring the editor also returns focus to the leaf selected before the browser opened.
+    Controller::screen('editor')->restore('file-browser');
     self::$browsing = false;
-    if (self::$originalFocus !== null) {
-      $screen->selectLeaf(self::$originalFocus);
-    }
-    self::$originalFocus = null;
     Controller::$window->resize();
   }
 
-  private static function buildPanel(): void {
-    if (self::$panel !== null) {
-      return;
-    }
+  /** Bind the browser widgets that editor.xml defines in place of the Markdown editor. */
+  private static function bindPanel(): void {
     $screen = Controller::screen('editor');
-    foreach ($screen->layout->leaves() as $leaf) {
-      if ($leaf->instance()->id() === 'markdown') {
-        self::$editorLeaf = $leaf;
-        break;
+    self::$selector = $screen->widget('browser');
+    self::$pathInput = $screen->widget('path');
+    self::$heading = $screen->widget('fileHeading');
+  }
+
+  /** Find the shown leaf of a browser widget. */
+  private static function browserLeaf(string $id): LayoutLeaf {
+    foreach (Controller::screen('editor')->layout->leaves() as $leaf) {
+      if ($leaf->instance()->id() === $id) {
+        return $leaf;
       }
     }
-    if (self::$editorLeaf === null) {
-      throw new \RuntimeException('Markdown editor slot is missing.');
-    }
-    $style = new Style(background: Color::from('#0000aa'), cursorBackground: Color::from('#000055'));
-    self::$selector = new FileSelector(Settings::$directory, false, true, true, $style);
-    self::$selector->setId('browser');
-    self::$pathInput = new Input('', $style, label: 'FILE PATH (F5 to edit)');
-    self::$pathInput->setId('path');
-    self::$heading = new Text('', $style, false);
-    self::$heading->setId('fileHeading');
-    self::$panel = new LayoutNode('vertical', '1*', '');
-    self::$panel->addLeaf(new LayoutLeaf('Text', '', '1', self::$heading));
-    self::$selectorLeaf = new LayoutLeaf('FileSelector', '', '1*', self::$selector, [
-      new EventDefinition('keyDown', 'enter', self::class . '::fileAccepted'),
-      new EventDefinition('change', null, self::class . '::directoryChanged'),
-    ]);
-    self::$panel->addLeaf(self::$selectorLeaf);
-    self::$pathLeaf = new LayoutLeaf('Input', '', '2', self::$pathInput);
-    self::$panel->addLeaf(self::$pathLeaf);
+    throw new \LogicException('Browser widget is not shown: ' . $id);
   }
 
   private static function confirm(string $message, callable $yes, callable $no): void {

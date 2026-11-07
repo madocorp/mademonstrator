@@ -1,6 +1,6 @@
-# MaDemonstrator
+# mademonstrator
 
-MaDemonstrator presents Markdown files as slides and includes a slide editor.
+mademonstrator presents Markdown files as slides and includes a slide editor.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ manager. Package names vary by system.
 
 ## Installation
 
-MaDemonstrator is installed manually; it does not use Composer. The example
+mademonstrator is installed manually; it does not use Composer. The example
 below installs both projects for one Linux user:
 
 ```sh
@@ -54,7 +54,7 @@ mademonstrator
 mademonstrator /path/to/presentation.md
 ```
 
-Without a file argument, MaDemonstrator opens its bundled example
+Without a file argument, mademonstrator opens its bundled example
 presentation. Use **F1** to present from the first slide, **F2** to present
 from the selected slide, and **Esc** to return to the editor. Space and
 Backspace move between slides while presenting. The editor's Settings screen
